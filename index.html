@@ -619,10 +619,29 @@
     <div class="card">
       <h3>Assign New Pass</h3>
       <div class="grid-2" style="margin-top: 10px;">
+        <!-- Season Selection -->
         <div class="form-group">
-          <label>Player Name:</label>
-          <input type="text" id="passPlayerName" placeholder="Exact name">
+          <label>Select Season:</label>
+          <select id="passSeasonSelect" onchange="updatePassPlayerDropdown()">
+            <!-- Populated dynamically -->
+          </select>
         </div>
+
+        <!-- Registered Player Selection -->
+        <div class="form-group">
+          <label>Select Registered Player:</label>
+          <select id="passPlayerSelect">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+
+        <!-- Optional Custom Player Name -->
+        <div class="form-group">
+          <label>Or New Player Name (If Unregistered):</label>
+          <input type="text" id="passPlayerName" placeholder="Type name only if not in dropdown">
+        </div>
+
+        <!-- Pass Type -->
         <div class="form-group">
           <label>Pass Type:</label>
           <select id="passTypeSelect">
@@ -630,6 +649,8 @@
             <option value="gold">Gold Pass (10 Matches)</option>
           </select>
         </div>
+
+        <!-- Start Week -->
         <div class="form-group">
           <label>Start Match/Week #:</label>
           <input type="number" id="passStartWeek" value="1" min="1">
@@ -830,6 +851,7 @@
     renderSeasonDropdown();
     renderSeasonFilters();
     renderLeaderboard();
+    renderPassSeasonDropdown();
     renderPassesTable();
     renderHistory();
     
@@ -1240,33 +1262,77 @@
     window.switchTab('leaderboard');
   };
 
+  // PASS SEASON & PLAYER DROPDOWNS
+  function renderPassSeasonDropdown() {
+    const seasonSelect = document.getElementById("passSeasonSelect");
+    if (!seasonSelect) return;
+
+    seasonSelect.innerHTML = "";
+    Object.keys(window.appState.seasons).forEach(sId => {
+      const s = window.appState.seasons[sId];
+      const selected = sId === window.appState.activeSeasonId ? "selected" : "";
+      seasonSelect.innerHTML += `<option value="${sId}" ${selected}>${escapeHtml(s.name)}</option>`;
+    });
+
+    updatePassPlayerDropdown();
+  }
+
+  window.updatePassPlayerDropdown = function() {
+    const seasonSelect = document.getElementById("passSeasonSelect");
+    const playerSelect = document.getElementById("passPlayerSelect");
+    if (!seasonSelect || !playerSelect) return;
+
+    const sId = seasonSelect.value;
+    const targetSeason = window.appState.seasons[sId];
+
+    playerSelect.innerHTML = `<option value="">-- Choose Registered Player --</option>`;
+
+    if (targetSeason && targetSeason.players) {
+      const playerNames = Object.keys(targetSeason.players).sort();
+      playerNames.forEach(name => {
+        playerSelect.innerHTML += `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`;
+      });
+    }
+  };
+
   window.assignPass = function() {
-    const name = document.getElementById("passPlayerName").value.trim();
+    const seasonId = document.getElementById("passSeasonSelect").value;
+    const selectedPlayer = document.getElementById("passPlayerSelect").value;
+    const customPlayerName = document.getElementById("passPlayerName").value.trim();
+    
+    // Priority: Custom name if typed, otherwise selected player from dropdown
+    const name = customPlayerName || selectedPlayer;
     const type = document.getElementById("passTypeSelect").value;
     const startWeek = parseInt(document.getElementById("passStartWeek").value) || 1;
 
-    if (!name) return alert("Please enter a player name.");
+    if (!name) return alert("Please select a registered player or type a name.");
 
     const duration = type === 'gold' ? 10 : 5;
     const endWeek = startWeek + duration - 1;
 
-    const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
-    if (!currentSeason.players) currentSeason.players = {};
-    if (!currentSeason.players[name]) {
-      currentSeason.players[name] = { totalPoints: 0, attendedCount: 0, pass: null };
+    const targetSeason = window.appState.seasons[seasonId];
+    if (!targetSeason) return alert("Selected season not found.");
+
+    if (!targetSeason.players) targetSeason.players = {};
+    if (!targetSeason.players[name]) {
+      targetSeason.players[name] = { totalPoints: 0, attendedCount: 0, pass: null };
     }
 
-    currentSeason.players[name].pass = { type, startWeek, endWeek };
+    targetSeason.players[name].pass = { type, startWeek, endWeek };
 
     window.saveData();
     document.getElementById("passPlayerName").value = "";
-    alert(`Assigned ${type.toUpperCase()} pass to ${name}.`);
+    document.getElementById("passPlayerSelect").value = "";
+    alert(`Assigned ${type.toUpperCase()} pass to ${name} in ${targetSeason.name}.`);
   };
 
   function renderPassesTable() {
     const tbody = document.getElementById("passesTableBody");
     tbody.innerHTML = "";
-    const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
+
+    const seasonSelect = document.getElementById("passSeasonSelect");
+    const sId = seasonSelect ? seasonSelect.value : window.appState.activeSeasonId;
+    const currentSeason = window.appState.seasons[sId];
 
     if (!currentSeason || !currentSeason.players) return;
 
@@ -1278,7 +1344,7 @@
     });
 
     if (passHolders.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:15px;">No active passes assigned this season.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:15px;">No active passes assigned in ${escapeHtml(currentSeason.name)}.</td></tr>`;
       return;
     }
 
