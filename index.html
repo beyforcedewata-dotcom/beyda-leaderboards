@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BEYFORCE LEADERBOARDS</title>
+  <style>
+    :root {
+      --bg-dark: #050b14;
+      --bg-card: #0a1224;
+      --bg-input: #02060d;
+      --accent-cyan: #00e5ff;
+      --accent-orange: #ff3d00;
+      --accent-blue: #0d2a9d;
+      --text-white: #ffffff;
+      --text-muted: #8a99ad;
+      --border-color: rgba(0, 229, 255, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-white);
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 15px;
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand-logo {
+      max-height: 65px;
+      width: auto;
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      color: var(--accent-cyan);
+      letter-spacing: 1px;
+      text-shadow: 0 0 12px rgba(0,229,255,0.3);
+    }
+
+    .header-sub {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+    .status-online { background: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); }
+    .status-syncing { background: rgba(255, 61, 0, 0.15); color: var(--accent-orange); border: 1px solid var(--accent-orange); }
+
+    .season-badge {
+      background: var(--accent-orange);
+      color: #fff;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    .season-badge.closed {
+      background: #4a5568;
+      border: 1px solid #a0aec0;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-white);
+      border-color: var(--accent-cyan);
+    }
+
+    .tab-btn.active {
+      background: var(--accent-cyan);
+      color: var(--bg-dark);
+      border-color: var(--accent-cyan);
+    }
+
+    .tab-btn.admin-locked {
+      display: none;
+    }
+
+    /* Sub-tabs for Seasons Filter */
+    .season-filter-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .season-subtab {
+      background: #101a2e;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .season-subtab:hover {
+      color: #fff;
+      border-color: var(--accent-cyan);
+    }
+
+    .season-subtab.active {
+      background: var(--accent-orange);
+      color: #fff;
+      border-color: var(--accent-orange);
+    }
+
+    /* Views */
+    .view-panel {
+      display: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 22px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    .view-panel.active {
+      display: block;
+    }
+
+    h2 {
+      color: var(--accent-cyan);
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+    }
+
+    h3 {
+      color: var(--text-white);
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-color);
+      padding: 16px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: var(--text-white);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 9px 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--text-white);
+      font-size: 0.95rem;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 9px 16px;
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover { opacity: 0.88; }
+    .btn-primary { background: var(--accent-cyan); color: var(--bg-dark); }
+    .btn-action { background: var(--accent-orange); color: var(--text-white); }
+    .btn-secondary { background: #132240; color: var(--text-white); border: 1px solid var(--border-color); }
+    .btn-danger { background: #c62828; color: var(--text-white); }
+
+    .btn-mini {
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      border-radius: 4px;
+      background: #1a2b4c;
+      color: var(--accent-cyan);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      margin-right: 5px;
+    }
+    .btn-mini:hover { background: var(--accent-cyan); color: var(--bg-dark); }
+
+    .toggle-btn {
+      background: #121c2d;
+      color: var(--text-muted);
+      border: 1px solid #233554;
+    }
+    .toggle-btn.active {
+      background: var(--accent-orange);
+      color: #fff;
+      border-color: var(--accent-orange);
+    }
+
+    /* Clean Leaderboard Table */
+    .lb-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .lb-table th {
+      background: rgba(0, 0, 0, 0.4);
+      color: var(--accent-cyan);
+      font-weight: bold;
+      padding: 12px 14px;
+      text-align: left;
+    }
+
+    .player-row {
+      cursor: pointer;
+      transition: background 0.2s;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .player-row:hover {
+      background: rgba(0, 229, 255, 0.05);
+    }
+
+    .player-row td {
+      padding: 12px 14px;
+    }
+
+    /* Expandable Stats Drawer */
+    .details-row {
+      display: none;
+      background: rgba(2, 8, 20, 0.8);
+      border-bottom: 2px solid var(--border-color);
+    }
+    .details-row.open {
+      display: table-row;
+    }
+
+    .details-container {
+      padding: 14px 18px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .stat-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      padding: 8px 14px;
+      border-radius: 6px;
+      text-align: center;
+      min-width: 100px;
+    }
+    .stat-box .val {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: var(--accent-cyan);
+    }
+    .stat-box .lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .expand-icon {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-left: 8px;
+    }
+
+    /* Medals & Badges */
+    .rank-1 { color: #ffd700; font-weight: bold; font-size: 1.1rem; }
+    .rank-2 { color: #e0e0e0; font-weight: bold; font-size: 1.05rem; }
+    .rank-3 { color: #cd7f32; font-weight: bold; font-size: 1.05rem; }
+
+    .pass-badge {
+      font-size: 0.72rem;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: bold;
+      display: inline-block;
+      letter-spacing: 0.5px;
+      vertical-align: middle;
+    }
+    .pass-silver { background: #c0c0c0; color: #000; }
+    .pass-gold { background: #ffd700; color: #000; }
+
+    .tie-badge {
+      background: rgba(255, 61, 0, 0.2);
+      color: #ff8c00;
+      border: 1px solid #ff8c00;
+      font-size: 0.7rem;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-weight: bold;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .flex-gap {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .top-scorer-bar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 15px;
+      background: rgba(0,0,0,0.25);
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px dashed var(--border-color);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="brand-header">
+      <img src="logo.png" alt="Beyforce Dewata Logo" class="brand-logo">
+      <h1>BEYFORCE LEADERBOARDS</h1>
+    </div>
+
+    <div class="header-sub">
+      <div>
+        <span style="font-weight: bold;">Active Season: </span>
+        <span class="season-badge" id="currentSeasonLabel">Season 1</span>
+      </div>
+      <span class="status-pill status-online" id="syncStatus">🟢 Cloud Live Sync Active</span>
+      <button class="btn btn-secondary" id="adminAuthBtn" onclick="toggleAdminAuth()" style="padding: 4px 12px; font-size: 0.85rem;">
+        🔒 Admin Login
+      </button>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('leaderboard')">🏆 Live Leaderboard</button>
+    <button class="tab-btn" onclick="switchTab('history')">📊 History Logs</button>
+    
+    <!-- Admin Restricted Tabs -->
+    <button class="tab-btn admin-locked" id="tab_admin" onclick="switchTab('admin')">⚙️ Weekly Entry Panel</button>
+    <button class="tab-btn admin-locked" id="tab_passes" onclick="switchTab('passes')">🎟️ Season Passes</button>
+    <button class="tab-btn admin-locked" id="tab_seasons" onclick="switchTab('seasons')">📁 Seasons & Data Controls</button>
+  </div>
+
+  <!-- TAB 1: LIVE LEADERBOARD -->
+  <div id="leaderboard" class="view-panel active">
+    <h2>🏆 Live Standings</h2>
+    
+    <!-- Season Filter Sub-tabs -->
+    <div class="season-filter-bar" id="lbSeasonFilter">
+      <!-- Season tabs rendered dynamically -->
+    </div>
+
+    <div>
+      <table class="lb-table">
+        <thead>
+          <tr>
+            <th style="width: 10%;">Rank</th>
+            <th style="width: 40%;">Player Name</th>
+            <th style="width: 15%;">Pass</th>
+            <th style="width: 12%;">Attended</th>
+            <th style="width: 10%;">Wins</th>
+            <th style="width: 13%; text-align: right;">Total Pts</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboardBody">
+          <!-- Rendered dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 2: HISTORY LOGS -->
+  <div id="history" class="view-panel">
+    <h2>📊 Weekly Results History</h2>
+
+    <!-- Season Filter Sub-tabs -->
+    <div class="season-filter-bar" id="historySeasonFilter">
+      <!-- Season tabs rendered dynamically -->
+    </div>
+
+    <div id="historyContainer">
+      <!-- Historical records rendered dynamically -->
+    </div>
+  </div>
+
+  <!-- TAB 3: ADMIN WEEKLY ENTRY PANEL -->
+  <div id="admin" class="view-panel">
+    <h2>⚙️ Add Weekly Match Results</h2>
+    
+    <div class="card flex-gap" style="justify-content: space-between;">
+      <div class="flex-gap">
+        <label for="weekNumInput" style="margin:0;">Week/Match #:</label>
+        <input type="number" id="weekNumInput" value="1" min="1" style="width: 80px;">
+      </div>
+      <button type="button" class="btn toggle-btn" id="doublePtsToggle" onclick="toggleDoublePoints()">
+        🔥 Double Points Week: OFF
+      </button>
+    </div>
+
+    <!-- Top Scorer Bar -->
+    <div class="top-scorer-bar">
+      <div style="flex: 1;">
+        <label for="topScorerInput" style="margin-bottom: 4px;">⭐ Top Scorers (+1 pt Bonus):</label>
+        <input type="text" id="topScorerInput" placeholder="Separated by commas (e.g. Alex, Sam, Jo)">
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Supports 2–4 players. Affected by 2x week multiplier.</span>
+      </div>
+      <div style="flex: 1; font-size: 0.85rem; color: var(--accent-cyan); background: rgba(0, 229, 255, 0.05); padding: 10px; border-radius: 4px; border: 1px solid var(--border-color);">
+        🔄 <strong>Returnee Bonus (+2 pts) is Automatic!</strong><br>
+        Checks history to auto-grant +2 pts to players returning after 3+ missed matches or joining late. Flat bonus (not doubled).
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Placement Form -->
+      <div class="card">
+        <h3>Specific Placements</h3>
+        
+        <div class="form-group">
+          <label>🥇 1st Place (6 pts):</label>
+          <input type="text" id="p1_input" placeholder="Player name">
+        </div>
+
+        <div class="form-group">
+          <label>🥈 2nd Place (5 pts):</label>
+          <input type="text" id="p2_input" placeholder="Player name">
+        </div>
+
+        <div class="form-group">
+          <label>🥉 3rd Place (4 pts):</label>
+          <input type="text" id="p3_input" placeholder="Player name">
+        </div>
+
+        <div class="form-group">
+          <label>4th - 8th Place (3 pts each):</label>
+          <textarea id="p4_8_input" placeholder="One name per line or separated by commas"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>9th+ Top Cut (2 pts each):</label>
+          <textarea id="p9_plus_input" placeholder="One name per line or separated by commas"></textarea>
+        </div>
+      </div>
+
+      <!-- Bulk Participants Input -->
+      <div class="card">
+        <h3>Bulk Participants & Quick Entry</h3>
+        <p style="font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 10px;">
+          <strong>Tip:</strong> Paste names here (one per line). All listed names automatically get 1 pt participation.
+        </p>
+
+        <div class="form-group">
+          <label>Participants (1 pt each):</label>
+          <textarea id="bulkParticipantsInput" style="height: 160px;" placeholder="John Doe&#10;Jane Smith&#10;Alex"></textarea>
+        </div>
+
+        <div style="margin-top: 15px;">
+          <button class="btn btn-secondary" style="width: 100%;" onclick="autoFillRemainingParticipants()">
+            📝 Auto-Add All Unlisted Registered Players as Participants (1 pt)
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-action" style="width: 100%; padding: 12px; font-size: 1.1rem; margin-top: 10px;" onclick="submitWeeklyResults()">
+      💾 Save & Submit Weekly Score Results
+    </button>
+  </div>
+
+  <!-- TAB 4: SEASON PASSES -->
+  <div id="passes" class="view-panel">
+    <h2>🎟️ Manage Season Passes</h2>
+    <p style="font-size: 0.9rem; margin-bottom: 15px; color: var(--text-muted);">
+      Passes grant a <strong>guaranteed 1 participant point</strong> for every match played within the pass duration, even if the player is absent.
+    </p>
+
+    <div class="card">
+      <h3>Assign New Pass</h3>
+      <div class="grid-2" style="margin-top: 10px;">
+        <div class="form-group">
+          <label>Player Name:</label>
+          <input type="text" id="passPlayerName" placeholder="Exact name">
+        </div>
+        <div class="form-group">
+          <label>Pass Type:</label>
+          <select id="passTypeSelect">
+            <option value="silver">Silver Pass (5 Matches)</option>
+            <option value="gold">Gold Pass (10 Matches)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Start Match/Week #:</label>
+          <input type="number" id="passStartWeek" value="1" min="1">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="assignPass()">🎟️ Issue Season Pass</button>
+    </div>
+
+    <h3>Active Passes Overview</h3>
+    <div>
+      <table class="lb-table">
+        <thead>
+          <tr>
+            <th>Player</th>
+            <th>Pass Type</th>
+            <th>Valid Match Range</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="passesTableBody">
+          <!-- Rendered dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 5: SEASONS & DATA CONTROLS -->
+  <div id="seasons" class="view-panel">
+    <h2>📁 Season & System Data Management</h2>
+    
+    <div class="grid-2">
+      <!-- Season Controls -->
+      <div class="card">
+        <h3>Season Configuration</h3>
+        
+        <div class="form-group" style="margin-top:10px;">
+          <label>Switch Active Season:</label>
+          <select id="seasonSelect" onchange="switchSeason(this.value)">
+            <!-- Rendered dynamically -->
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-top: 10px;">
+          <button class="btn btn-action" id="closeSeasonBtn" style="width: 100%;" onclick="toggleCloseCurrentSeason()">
+            🔒 Close Season / Mark as Finalized
+          </button>
+        </div>
+
+        <hr style="border-color: var(--border-color); margin: 15px 0;">
+
+        <div class="form-group">
+          <label>Create New Season:</label>
+          <div class="flex-gap">
+            <input type="text" id="newSeasonNameInput" placeholder="Season Name (e.g. Season 2)">
+            <button class="btn btn-primary" onclick="createNewSeason()">Create</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Rename Current Season:</label>
+          <div class="flex-gap">
+            <input type="text" id="renameSeasonInput" placeholder="New season label">
+            <button class="btn btn-secondary" onclick="renameCurrentSeason()">Rename</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export/Import Controls -->
+      <div class="card">
+        <h3>Import / Export Options</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Backup your leaderboard data or open it in Excel.</p>
+        
+        <div class="flex-gap" style="margin-bottom: 15px;">
+          <button class="btn btn-primary" onclick="exportCSV()">📊 Export Standings (Excel CSV)</button>
+          <button class="btn btn-secondary" onclick="exportJSON()">💾 Export Backup (JSON)</button>
+        </div>
+
+        <div class="form-group">
+          <label>Import Data Backup (JSON):</label>
+          <input type="file" id="importJsonInput" accept=".json" onchange="importJSON(event)">
+        </div>
+
+        <hr style="border-color: var(--border-color); margin: 15px 0;">
+
+        <button class="btn btn-danger" onclick="clearAllData()">⚠️ Clear All Data / System Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE MODULE SCRIPTS -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+  // Regional Firebase Database URL
+  const firebaseConfig = {
+    apiKey: "AIzaSyCEU08RVmLf1Sjdw8ALyN9ZwkzF76nJu9I",
+    authDomain: "beyda-leaderboards.firebaseapp.com",
+    databaseURL: "https://beyda-leaderboards-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "beyda-leaderboards",
+    storageBucket: "beyda-leaderboards.firebasestorage.app",
+    messagingSenderId: "432594521410",
+    appId: "1:432594521410:web:ed6c25e5b4eb42ff5c4cdb",
+    measurementId: "G-0E742XY5LW"
+  };
+
+  const ADMIN_PASSCODE = "1234";
+  window.isAdminLoggedIn = false;
+
+  window.viewLeaderboardSeasonId = null;
+  window.viewHistorySeasonId = null;
+
+  // Initialize Firebase & Database
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const dbRef = ref(db, 'appState');
+
+  // App State Structure
+  window.appState = {
+    activeSeasonId: "s1",
+    seasons: {
+      "s1": {
+        name: "Season 1",
+        isClosed: false,
+        players: {},
+        manualOrder: [],
+        weeklyLogs: []
+      }
+    }
+  };
+
+  window.doublePointsActive = false;
+
+  // Admin Toggle
+  window.toggleAdminAuth = function() {
+    if (window.isAdminLoggedIn) {
+      window.isAdminLoggedIn = false;
+      document.getElementById("adminAuthBtn").innerHTML = "🔒 Admin Login";
+      document.querySelectorAll(".admin-locked").forEach(el => el.style.display = "none");
+      window.switchTab('leaderboard');
+      alert("Logged out of Admin mode.");
+    } else {
+      const input = prompt("Enter Admin Passcode:");
+      if (input === ADMIN_PASSCODE) {
+        window.isAdminLoggedIn = true;
+        document.getElementById("adminAuthBtn").innerHTML = "🔓 Admin Logout";
+        document.querySelectorAll(".admin-locked").forEach(el => el.style.display = "inline-block");
+        window.renderAll();
+        alert("Admin Mode Unlocked!");
+      } else if (input !== null) {
+        alert("Incorrect Passcode!");
+      }
+    }
+  };
+
+  // Sync to Firebase
+  window.saveData = function() {
+    document.getElementById("syncStatus").className = "status-pill status-syncing";
+    document.getElementById("syncStatus").textContent = "⏳ Syncing...";
+    set(dbRef, window.appState).then(() => {
+      document.getElementById("syncStatus").className = "status-pill status-online";
+      document.getElementById("syncStatus").textContent = "🟢 Cloud Live Sync Active";
+    }).catch(err => {
+      console.error("Firebase save error:", err);
+    });
+  };
+
+  // Real-time Cloud Listener
+  onValue(dbRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      window.appState = data;
+
+      if (!window.viewLeaderboardSeasonId || !window.appState.seasons[window.viewLeaderboardSeasonId]) {
+        window.viewLeaderboardSeasonId = window.appState.activeSeasonId;
+      }
+      if (!window.viewHistorySeasonId || !window.appState.seasons[window.viewHistorySeasonId]) {
+        window.viewHistorySeasonId = window.appState.activeSeasonId;
+      }
+
+      window.renderAll();
+    } else {
+      window.saveData();
+    }
+  });
+
+  // Navigation Tabs
+  window.switchTab = function(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
+    
+    event.currentTarget.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  };
+
+  window.renderAll = function() {
+    renderSeasonDropdown();
+    renderSeasonFilters();
+    renderLeaderboard();
+    renderPassesTable();
+    renderHistory();
+    
+    const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
+    if (currentSeason) {
+      const badge = document.getElementById('currentSeasonLabel');
+      if (currentSeason.isClosed) {
+        badge.textContent = `${currentSeason.name} (FINAL - CLOSED)`;
+        badge.classList.add("closed");
+      } else {
+        badge.textContent = currentSeason.name;
+        badge.classList.remove("closed");
+      }
+
+      const closeBtn = document.getElementById("closeSeasonBtn");
+      if (closeBtn) {
+        closeBtn.textContent = currentSeason.isClosed ? "🔓 Re-open Season for Matches" : "🔒 Close Season / Mark as Finalized";
+      }
+    }
+  };
+
+  function renderSeasonFilters() {
+    const lbContainer = document.getElementById("lbSeasonFilter");
+    const histContainer = document.getElementById("historySeasonFilter");
+
+    lbContainer.innerHTML = `<span style="font-size:0.85rem; color:var(--text-muted); align-self:center; font-weight:bold;">Filter Season:</span>`;
+    histContainer.innerHTML = `<span style="font-size:0.85rem; color:var(--text-muted); align-self:center; font-weight:bold;">Filter Season:</span>`;
+
+    Object.keys(window.appState.seasons).forEach(sId => {
+      const s = window.appState.seasons[sId];
+      const sLabel = s.isClosed ? `${s.name} (Closed)` : s.name;
+
+      const lbActive = sId === window.viewLeaderboardSeasonId ? "active" : "";
+      lbContainer.innerHTML += `<button class="season-subtab ${lbActive}" onclick="setLeaderboardSeason('${sId}')">${escapeHtml(sLabel)}</button>`;
+
+      const histActive = sId === window.viewHistorySeasonId ? "active" : "";
+      histContainer.innerHTML += `<button class="season-subtab ${histActive}" onclick="setHistorySeason('${sId}')">${escapeHtml(sLabel)}</button>`;
+    });
+  }
+
+  window.setLeaderboardSeason = function(sId) {
+    window.viewLeaderboardSeasonId = sId;
+    renderSeasonFilters();
+    renderLeaderboard();
+  };
+
+  window.setHistorySeason = function(sId) {
+    window.viewHistorySeasonId = sId;
+    renderSeasonFilters();
+    renderHistory();
+  };
+
+  function getPassBadgeHtml(passObj) {
+    if (!passObj) return '';
+    const passClass = passObj.type === 'gold' ? 'pass-gold' : 'pass-silver';
+    return `<span class="pass-badge ${passClass}">${passObj.type.toUpperCase()} PASS</span>`;
+  }
+
+  // RENDER LEADERBOARD (ATTENDED & WINS VISIBLE + DRAWER FOR EXTRAS)
+  function renderLeaderboard() {
+    const sId = window.viewLeaderboardSeasonId || window.appState.activeSeasonId;
+    const currentSeason = window.appState.seasons[sId];
+    const tbody = document.getElementById("leaderboardBody");
+    tbody.innerHTML = "";
+
+    if (!currentSeason || !currentSeason.players) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">No player standings recorded yet for this season.</td></tr>`;
+      return;
+    }
+
+    let playerStatsMap = {};
+    Object.keys(currentSeason.players).forEach(name => {
+      playerStatsMap[name] = {
+        name: name,
+        totalPoints: currentSeason.players[name].totalPoints || 0,
+        attendedCount: 0,
+        wins: 0,
+        topScorerCount: 0,
+        topCutCount: 0,
+        pass: currentSeason.players[name].pass
+      };
+    });
+
+    if (currentSeason.weeklyLogs) {
+      currentSeason.weeklyLogs.forEach(log => {
+        if (log.scores) {
+          log.scores.forEach(s => {
+            const pName = s.name;
+            if (!playerStatsMap[pName]) {
+              playerStatsMap[pName] = { name: pName, totalPoints: 0, attendedCount: 0, wins: 0, topScorerCount: 0, topCutCount: 0, pass: null };
+            }
+
+            const isPassGuarantee = s.category.includes('Pass Guarantee');
+            if (!isPassGuarantee) {
+              playerStatsMap[pName].attendedCount += 1;
+            }
+
+            if (s.category === "1st Place") playerStatsMap[pName].wins += 1;
+            if (s.bonusPts > 0) playerStatsMap[pName].topScorerCount += 1;
+            if (s.category !== "Participant" && !isPassGuarantee) playerStatsMap[pName].topCutCount += 1;
+          });
+        }
+      });
+    }
+
+    let scoreCount = {};
+    Object.values(playerStatsMap).forEach(p => {
+      scoreCount[p.totalPoints] = (scoreCount[p.totalPoints] || 0) + 1;
+    });
+
+    let sortedPlayers = Object.values(playerStatsMap).sort((a, b) => {
+      if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
+      if (b.wins !== a.wins) return b.wins - a.wins;
+      if (b.topCutCount !== a.topCutCount) return b.topCutCount - a.topCutCount;
+      
+      const avgA = a.attendedCount > 0 ? a.totalPoints / a.attendedCount : 0;
+      const avgB = b.attendedCount > 0 ? b.totalPoints / b.attendedCount : 0;
+      if (avgB !== avgA) return avgB - avgA;
+
+      return b.attendedCount - a.attendedCount;
+    });
+
+    if (currentSeason.manualOrder && currentSeason.manualOrder.length > 0) {
+      let orderMap = {};
+      currentSeason.manualOrder.forEach((name, idx) => { orderMap[name] = idx; });
+      sortedPlayers.sort((a, b) => {
+        const idxA = orderMap[a.name] !== undefined ? orderMap[a.name] : 999;
+        const idxB = orderMap[b.name] !== undefined ? orderMap[b.name] : 999;
+        return idxA - idxB;
+      });
+    }
+
+    if (sortedPlayers.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">No player standings recorded yet for this season.</td></tr>`;
+      return;
+    }
+
+    sortedPlayers.forEach((player, index) => {
+      const rank = index + 1;
+      let rankDisplay = rank;
+      if (rank === 1) rankDisplay = `<span class="rank-1">🥇 1st</span>`;
+      else if (rank === 2) rankDisplay = `<span class="rank-2">🥈 2nd</span>`;
+      else if (rank === 3) rankDisplay = `<span class="rank-3">🥉 3rd</span>`;
+
+      let passDisplay = `<span style="color:var(--text-muted); font-size:0.85rem;">None</span>`;
+      if (player.pass) {
+        const passClass = player.pass.type === 'gold' ? 'pass-gold' : 'pass-silver';
+        passDisplay = `<span class="pass-badge ${passClass}">${player.pass.type.toUpperCase()}</span>`;
+      }
+
+      const isPointsTied = scoreCount[player.totalPoints] > 1;
+      const tieBadgeHtml = isPointsTied ? `<span class="tie-badge">🤝 TIED (${player.totalPoints} pts)</span>` : '';
+
+      const avgPts = player.attendedCount > 0 
+        ? (player.totalPoints / player.attendedCount).toFixed(2) 
+        : "0.00";
+
+      const adminControlsHtml = window.isAdminLoggedIn ? `
+        <div style="margin-top: 10px; border-top: 1px dashed var(--border-color); padding-top: 8px;">
+          <span style="font-size:0.75rem; color:var(--text-muted); margin-right:8px;">Admin Manual Tiebreak:</span>
+          <button class="btn-mini" onclick="event.stopPropagation(); movePlayerRank('${sId}', ${index}, -1)">▲ Move Up</button>
+          <button class="btn-mini" onclick="event.stopPropagation(); movePlayerRank('${sId}', ${index}, 1)">▼ Move Down</button>
+        </div>
+      ` : '';
+
+      const rowId = `drawer_${index}`;
+
+      tbody.innerHTML += `
+        <tr class="player-row" onclick="togglePlayerDrawer('${rowId}')">
+          <td>${rankDisplay}</td>
+          <td>
+            <strong>${escapeHtml(player.name)}</strong>${tieBadgeHtml}
+            <span class="expand-icon">👁️</span>
+          </td>
+          <td>${passDisplay}</td>
+          <td>${player.attendedCount}</td>
+          <td>${player.wins > 0 ? `🥇 ${player.wins}` : '0'}</td>
+          <td style="text-align: right; color:var(--accent-cyan); font-weight:bold; font-size:1.1rem;">${player.totalPoints} pts</td>
+        </tr>
+        <tr class="details-row" id="${rowId}">
+          <td colspan="6">
+            <div class="details-container">
+              <div class="stat-box">
+                <div class="val">${player.topScorerCount}</div>
+                <div class="lbl">Top Scorers (⭐)</div>
+              </div>
+              <div class="stat-box">
+                <div class="val">${player.topCutCount}</div>
+                <div class="lbl">Top Cuts</div>
+              </div>
+              <div class="stat-box">
+                <div class="val">${avgPts}</div>
+                <div class="lbl">Avg Pts/Match</div>
+              </div>
+            </div>
+            ${adminControlsHtml}
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  window.togglePlayerDrawer = function(drawerId) {
+    const el = document.getElementById(drawerId);
+    if (el) {
+      el.classList.toggle('open');
+    }
+  };
+
+  window.movePlayerRank = function(seasonId, index, direction) {
+    const currentSeason = window.appState.seasons[seasonId];
+    if (!currentSeason) return;
+
+    let sortedNames = Object.keys(currentSeason.players);
+    if (currentSeason.manualOrder && currentSeason.manualOrder.length > 0) {
+      sortedNames = currentSeason.manualOrder.slice();
+    }
+
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= sortedNames.length) return;
+
+    const temp = sortedNames[index];
+    sortedNames[index] = sortedNames[newIndex];
+    sortedNames[newIndex] = temp;
+
+    currentSeason.manualOrder = sortedNames;
+    window.saveData();
+  };
+
+  window.toggleDoublePoints = function() {
+    window.doublePointsActive = !window.doublePointsActive;
+    const btn = document.getElementById("doublePtsToggle");
+    if (window.doublePointsActive) {
+      btn.classList.add("active");
+      btn.innerHTML = "🔥 Double Points Week: ON (2x)";
+    } else {
+      btn.classList.remove("active");
+      btn.innerHTML = "🔥 Double Points Week: OFF";
+    }
+  };
+
+  window.autoFillRemainingParticipants = function() {
+    const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
+    const enteredNames = getCurrentlyEnteredNames();
+    
+    let remaining = [];
+    if (currentSeason && currentSeason.players) {
+      Object.keys(currentSeason.players).forEach(name => {
+        if (!enteredNames.has(name.toLowerCase())) remaining.push(name);
+      });
+    }
+
+    if (remaining.length === 0) return alert("No registered unlisted players found to auto-add.");
+
+    const textArea = document.getElementById("bulkParticipantsInput");
+    const existingVal = textArea.value.trim();
+    textArea.value = existingVal ? `${existingVal}\n${remaining.join("\n")}` : remaining.join("\n");
+    alert(`Added ${remaining.length} player(s) as participants.`);
+  };
+
+  function getCurrentlyEnteredNames() {
+    const names = new Set();
+    const add = name => { if (name.trim()) names.add(name.trim().toLowerCase()); };
+
+    add(document.getElementById("p1_input").value);
+    add(document.getElementById("p2_input").value);
+    add(document.getElementById("p3_input").value);
+
+    parseLineInputs(document.getElementById("p4_8_input").value).forEach(add);
+    parseLineInputs(document.getElementById("p9_plus_input").value).forEach(add);
+    parseLineInputs(document.getElementById("bulkParticipantsInput").value).forEach(add);
+
+    return names;
+  }
+
+  function parseLineInputs(rawText) {
+    if (!rawText) return [];
+    return rawText
+      .split(/[\n,]+/)
+      .map(s => s.trim())
+      .filter(s => s.length > 0)
+      .map(s => s.replace(/\s*\(?[pP]\)?$/i, "").trim())
+      .filter(s => s.length > 0);
+  }
+
+  function checkIsReturnee(playerName, pastLogs) {
+    if (!pastLogs || pastLogs.length < 3) return false;
+
+    const nameLower = playerName.toLowerCase();
+    const last3Logs = pastLogs.slice(-3);
+    let absentInLast3 = true;
+
+    for (let log of last3Logs) {
+      const participated = log.scores && log.scores.some(s => s.name.toLowerCase() === nameLower && !s.category.includes('Pass Guarantee'));
+      if (participated) {
+        absentInLast3 = false;
+        break;
+      }
+    }
+
+    return absentInLast3;
+  }
+
+  window.submitWeeklyResults = function() {
+    const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
+
+    if (currentSeason.isClosed) {
+      return alert("This season is marked as CLOSED. Please re-open it or switch to an active season in the Seasons tab before adding match results.");
+    }
+
+    const weekNum = parseInt(document.getElementById("weekNumInput").value) || 1;
+    const multiplier = window.doublePointsActive ? 2 : 1;
+
+    const topScorersList = parseLineInputs(document.getElementById("topScorerInput").value).map(n => n.toLowerCase());
+
+    if (!currentSeason.weeklyLogs) currentSeason.weeklyLogs = [];
+    if (!currentSeason.players) currentSeason.players = {};
+
+    let weekEntryLog = { weekNum: weekNum, isDouble: window.doublePointsActive, scores: [] };
+    let processedPlayersThisWeek = new Set();
+
+    const addPlayerScore = (rawName, basePoints, categoryLabel = "") => {
+      const name = rawName.trim();
+      if (!name) return;
+
+      const nameLower = name.toLowerCase();
+      const isTopScorer = topScorersList.includes(nameLower);
+      const isReturnee = checkIsReturnee(name, currentSeason.weeklyLogs);
+
+      const bonusPoints = isTopScorer ? 1 : 0;
+      const returneePts = isReturnee ? 2 : 0;
+      const totalCalculated = ((basePoints + bonusPoints) * multiplier) + returneePts;
+      
+      processedPlayersThisWeek.add(nameLower);
+
+      if (!currentSeason.players[name]) {
+        currentSeason.players[name] = { totalPoints: 0, attendedCount: 0, pass: null };
+      }
+
+      currentSeason.players[name].totalPoints += totalCalculated;
+      currentSeason.players[name].attendedCount += 1;
+
+      weekEntryLog.scores.push({
+        name: name,
+        category: categoryLabel,
+        basePts: basePoints,
+        bonusPts: bonusPoints,
+        returneePts: returneePts,
+        earned: totalCalculated,
+        pass: currentSeason.players[name].pass
+      });
+    };
+
+    const p1 = document.getElementById("p1_input").value;
+    if (p1.trim()) addPlayerScore(p1, 6, "1st Place");
+
+    const p2 = document.getElementById("p2_input").value;
+    if (p2.trim()) addPlayerScore(p2, 5, "2nd Place");
+
+    const p3 = document.getElementById("p3_input").value;
+    if (p3.trim()) addPlayerScore(p3, 4, "3rd Place");
+
+    parseLineInputs(document.getElementById("p4_8_input").value).forEach(name => addPlayerScore(name, 3, "4th-8th Place"));
+    parseLineInputs(document.getElementById("p9_plus_input").value).forEach(name => addPlayerScore(name, 2, "9th+ Top Cut"));
+    parseLineInputs(document.getElementById("bulkParticipantsInput").value).forEach(name => addPlayerScore(name, 1, "Participant"));
+
+    // Pass Guarantee Automation
+    Object.keys(currentSeason.players).forEach(name => {
+      const pObj = currentSeason.players[name];
+      if (pObj.pass) {
+        const inPassWindow = weekNum >= pObj.pass.startWeek && weekNum <= pObj.pass.endWeek;
+        const absent = !processedPlayersThisWeek.has(name.toLowerCase());
+
+        if (inPassWindow && absent) {
+          const passEarned = 1 * multiplier;
+          pObj.totalPoints += passEarned;
+
+          weekEntryLog.scores.push({
+            name: name,
+            category: `🎟️ Pass Guarantee (${pObj.pass.type.toUpperCase()})`,
+            basePts: 1,
+            bonusPts: 0,
+            returneePts: 0,
+            earned: passEarned,
+            pass: pObj.pass
+          });
+        }
+      }
+    });
+
+    if (weekEntryLog.scores.length === 0) return alert("Please enter at least one player result.");
+
+    currentSeason.weeklyLogs.push(weekEntryLog);
+    window.saveData();
+
+    document.getElementById("p1_input").value = "";
+    document.getElementById("p2_input").value = "";
+    document.getElementById("p3_input").value = "";
+    document.getElementById("p4_8_input").value = "";
+    document.getElementById("p9_plus_input").value = "";
+    document.getElementById("bulkParticipantsInput").value = "";
+    document.getElementById("topScorerInput").value = "";
+    
+    if (window.doublePointsActive) window.toggleDoublePoints();
+    document.getElementById("weekNumInput").value = weekNum + 1;
+
+    alert(`Week ${weekNum} results saved & synced to cloud!`);
+    window.switchTab('leaderboard');
+  };
+
+  window.assignPass = function() {
+    const name = document.getElementById("passPlayerName").value.trim();
+    const type = document.getElementById("passTypeSelect").value;
+    const startWeek = parseInt(document.getElementById("passStartWeek").value) || 1;
+
+    if (!name) return alert("Please enter a player name.");
+
+    const duration = type === 'gold' ? 10 : 5;
+    const endWeek = startWeek + duration - 1;
+
+    const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
+    if (!currentSeason.players) currentSeason.players = {};
+    if (!currentSeason.players[name]) {
+      currentSeason.players[name] = { totalPoints: 0, attendedCount: 0, pass: null };
+    }
+
+    currentSeason.players[name].pass = { type, startWeek, endWeek };
+
+    window.saveData();
+    document.getElementById("passPlayerName").value = "";
+    alert(`Assigned ${type.toUpperCase()} pass to ${name}.`);
+  };
+
+  function renderPassesTable() {
+    const tbody = document.getElementById("passesTableBody");
+    tbody.innerHTML = "";
+    const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
+
+    if (!currentSeason || !currentSeason.players) return;
+
+    let passHolders = [];
+    Object.keys(currentSeason.players).forEach(name => {
+      if (currentSeason.players[name].pass) {
+        passHolders.push({ name: name, pass: currentSeason.players[name].pass });
+      }
+    });
+
+    if (passHolders.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:15px;">No active passes assigned this season.</td></tr>`;
+      return;
+    }
+
+    passHolders.forEach(item => {
+      const p = item.pass;
+      const passClass = p.type === 'gold' ? 'pass-gold' : 'pass-silver';
+      tbody.innerHTML += `
+        <tr>
+          <td><strong>${escapeHtml(item.name)}</strong></td>
+          <td><span class="pass-badge ${passClass}">${p.type.toUpperCase()}</span></td>
+          <td>Matches W${p.startWeek} – W${p.endWeek}</td>
+          <td><span style="color:var(--accent-cyan);">Active</span></td>
+        </tr>
+      `;
+    });
+  }
+
+  function renderHistory() {
+    const container = document.getElementById("historyContainer");
+    container.innerHTML = "";
+
+    const sId = window.viewHistorySeasonId || window.appState.activeSeasonId;
+    const currentSeason = window.appState.seasons[sId];
+
+    if (!currentSeason || !currentSeason.weeklyLogs || currentSeason.weeklyLogs.length === 0) {
+      container.innerHTML = `<p style="color:var(--text-muted); text-align:center;">No match logs recorded yet for this season.</p>`;
+      return;
+    }
+
+    currentSeason.weeklyLogs.slice().reverse().forEach(log => {
+      let rows = log.scores.map(s => {
+        let bonuses = [];
+        if (s.bonusPts) bonuses.push('+1 ⭐ Top Scorer');
+        if (s.returneePts) bonuses.push('+2 🔄 Returnee (Auto)');
+        let bonusLabel = bonuses.length ? `(${bonuses.join(', ')})` : '';
+
+        return `
+          <tr>
+            <td><strong>${escapeHtml(s.name)}</strong>${getPassBadgeHtml(s.pass)}</td>
+            <td>${s.category}</td>
+            <td>${s.basePts} ${bonusLabel}</td>
+            <td style="color:var(--accent-cyan); font-weight:bold;">+${s.earned} pts</td>
+          </tr>
+        `;
+      }).join('');
+
+      container.innerHTML += `
+        <div class="card">
+          <div class="flex-gap" style="justify-space-between; margin-bottom:8px;">
+            <h3>Week / Match ${log.weekNum} ${log.isDouble ? '🔥 (Double Points Week)' : ''}</h3>
+            <span style="font-size:0.85rem; color:var(--text-muted);">${log.scores.length} entries</span>
+          </div>
+          <div>
+            <table class="lb-table">
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>Result Placement</th>
+                  <th>Base Points / Bonuses</th>
+                  <th>Total Earned</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  function renderSeasonDropdown() {
+    const select = document.getElementById("seasonSelect");
+    select.innerHTML = "";
+    Object.keys(window.appState.seasons).forEach(sId => {
+      const s = window.appState.seasons[sId];
+      const selected = sId === window.appState.activeSeasonId ? "selected" : "";
+      const label = s.isClosed ? `${s.name} (Closed)` : s.name;
+      select.innerHTML += `<option value="${sId}" ${selected}>${escapeHtml(label)}</option>`;
+    });
+  }
+
+  window.switchSeason = function(sId) {
+    window.appState.activeSeasonId = sId;
+    window.viewLeaderboardSeasonId = sId;
+    window.viewHistorySeasonId = sId;
+    window.saveData();
+  };
+
+  window.toggleCloseCurrentSeason = function() {
+    const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
+    if (!currentSeason) return;
+
+    currentSeason.isClosed = !currentSeason.isClosed;
+    window.saveData();
+    alert(`Season is now ${currentSeason.isClosed ? "CLOSED (FINAL)" : "RE-OPENED"}.`);
+  };
+
+  window.createNewSeason = function() {
+    const nameInput = document.getElementById("newSeasonNameInput");
+    const name = nameInput.value.trim();
+    if (!name) return alert("Enter season name.");
+
+    const newId = "s_" + Date.now();
+    window.appState.seasons[newId] = { name: name, isClosed: false, players: {}, manualOrder: [], weeklyLogs: [] };
+    window.appState.activeSeasonId = newId;
+    window.viewLeaderboardSeasonId = newId;
+    window.viewHistorySeasonId = newId;
+
+    nameInput.value = "";
+    window.saveData();
+    alert(`Created and switched to ${name}`);
+  };
+
+  window.renameCurrentSeason = function() {
+    const renameInput = document.getElementById("renameSeasonInput");
+    const newName = renameInput.value.trim();
+    if (!newName) return alert("Enter a valid name.");
+
+    window.appState.seasons[window.appState.activeSeasonId].name = newName;
+    renameInput.value = "";
+    window.saveData();
+    alert("Season renamed successfully.");
+  };
+
+  window.exportCSV = function() {
+    const sId = window.viewLeaderboardSeasonId || window.appState.activeSeasonId;
+    const currentSeason = window.appState.seasons[sId];
+    let csv = "Rank,Player Name,Pass Status,Games Attended,Wins,Top Scorers,Top Cuts,Avg Pts/Match,Total Points\n";
+
+    if (currentSeason && currentSeason.players) {
+      let sorted = Object.keys(currentSeason.players).map(n => ({
+        name: n, ...currentSeason.players[n]
+      })).sort((a, b) => b.totalPoints - a.totalPoints);
+
+      sorted.forEach((p, idx) => {
+        const passInfo = p.pass ? `${p.pass.type.toUpperCase()} (W${p.pass.startWeek}-W${p.pass.endWeek})` : "None";
+        csv += `${idx + 1},"${p.name}","${passInfo}",${p.attendedCount || 0},${p.totalPoints}\n`;
+      });
+    }
+
+    downloadFile(csv, `${currentSeason.name}_Standings.csv`, "text/csv");
+  };
+
+  window.exportJSON = function() {
+    const dataStr = JSON.stringify(window.appState, null, 2);
+    downloadFile(dataStr, `Leaderboard_Backup_${new Date().toISOString().slice(0,10)}.json`, "application/json");
+  };
+
+  window.importJSON = function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const imported = JSON.parse(e.target.result);
+        if (imported.seasons && imported.activeSeasonId) {
+          window.appState = imported;
+          window.saveData();
+          alert("Leaderboard data restored and synced to cloud!");
+        } else {
+          alert("Invalid backup file structure.");
+        }
+      } catch (err) {
+        alert("Failed to parse JSON file.");
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  window.clearAllData = function() {
+    if (confirm("Are you sure you want to completely clear all data from the database? This cannot be undone.")) {
+      window.appState = {
+        activeSeasonId: "s1",
+        seasons: { "s1": { name: "Season 1", isClosed: false, players: {}, manualOrder: [], weeklyLogs: [] } }
+      };
+      window.saveData();
+      alert("System reset complete.");
+    }
+  };
+
+  function downloadFile(content, fileName, mimeType) {
+    const a = document.createElement('a');
+    const blob = new Blob([content], { type: mimeType });
+    a.href = URL.createObjectURL(blob);
+    a.download = fileName;
+    a.click();
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+</script>
+</body>
+</html>
