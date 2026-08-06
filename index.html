@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BEYFORCE LEADERBOARDS</title>
+
+  <!-- TAB FAVICON ICON -->
   <link rel="icon" type="image/png" href="logo.png">
+
   <style>
     :root {
       --bg-dark: #050b14;
@@ -196,7 +199,7 @@
 
     .grid-2 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
     }
 
@@ -294,7 +297,7 @@
       background: rgba(0, 0, 0, 0.4);
       color: var(--accent-cyan);
       font-weight: bold;
-      padding: 12px 14px;
+      padding: 12px 10px;
       text-align: left;
     }
 
@@ -308,7 +311,7 @@
     }
 
     .player-row td {
-      padding: 12px 14px;
+      padding: 12px 10px;
     }
 
     /* Expandable Stats Drawer */
@@ -322,9 +325,9 @@
     }
 
     .details-container {
-      padding: 14px 18px;
+      padding: 12px 15px;
       display: flex;
-      gap: 15px;
+      gap: 12px;
       flex-wrap: wrap;
       align-items: center;
       justify-content: flex-start;
@@ -333,10 +336,11 @@
     .stat-box {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-color);
-      padding: 8px 14px;
+      padding: 8px 12px;
       border-radius: 6px;
       text-align: center;
-      min-width: 100px;
+      min-width: 90px;
+      flex: 1;
     }
     .stat-box .val {
       font-size: 1.1rem;
@@ -344,7 +348,7 @@
       color: var(--accent-cyan);
     }
     .stat-box .lbl {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
       text-transform: uppercase;
     }
@@ -352,7 +356,7 @@
     .expand-icon {
       color: var(--text-muted);
       font-size: 0.8rem;
-      margin-left: 8px;
+      margin-left: 6px;
     }
 
     /* Medals & Badges */
@@ -400,6 +404,51 @@
       padding: 12px;
       border-radius: 6px;
       border: 1px dashed var(--border-color);
+    }
+
+    /* RESPONSIVE MOBILE STYLES */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      .brand-logo {
+        max-height: 50px;
+      }
+
+      .view-panel {
+        padding: 14px;
+      }
+
+      .tabs {
+        gap: 6px;
+      }
+
+      .tab-btn {
+        flex: 1 1 auto;
+        text-align: center;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+      }
+
+      .lb-table th, .lb-table td {
+        padding: 8px 6px;
+        font-size: 0.85rem;
+      }
+
+      .stat-box {
+        min-width: 80px;
+        padding: 6px 8px;
+      }
+
+      .top-scorer-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
     }
   </style>
 </head>
@@ -449,11 +498,11 @@
         <thead>
           <tr>
             <th style="width: 10%;">Rank</th>
-            <th style="width: 40%;">Player Name</th>
+            <th style="width: 38%;">Player Name</th>
             <th style="width: 15%;">Pass</th>
             <th style="width: 12%;">Attended</th>
             <th style="width: 10%;">Wins</th>
-            <th style="width: 13%; text-align: right;">Total Pts</th>
+            <th style="width: 15%; text-align: right;">Total Pts</th>
           </tr>
         </thead>
         <tbody id="leaderboardBody">
@@ -839,7 +888,7 @@
     return `<span class="pass-badge ${passClass}">${passObj.type.toUpperCase()} PASS</span>`;
   }
 
-  // RENDER LEADERBOARD (ATTENDED & WINS VISIBLE + DRAWER FOR EXTRAS)
+  // RENDER LEADERBOARD
   function renderLeaderboard() {
     const sId = window.viewLeaderboardSeasonId || window.appState.activeSeasonId;
     const currentSeason = window.appState.seasons[sId];
