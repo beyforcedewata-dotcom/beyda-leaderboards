@@ -205,7 +205,7 @@
 
     .grid-3 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
       gap: 10px;
     }
 
@@ -552,7 +552,7 @@
     <!-- Top Scorer Bar -->
     <div class="top-scorer-bar">
       <div style="flex: 1;">
-        <label for="topScorerInput" style="margin-bottom: 4px;">⭐ Top Scorers (+1 pt Bonus):</label>
+        <label for="topScorerInput" style="margin-bottom: 4px;" id="lbl_top_scorer">⭐ Top Scorers (+1 pt Bonus):</label>
         <input type="text" id="topScorerInput" placeholder="Separated by commas (e.g. Alex, Sam, Jo)">
         <span style="font-size: 0.75rem; color: var(--text-muted);">Supports 2–4 players. Affected by 2x week multiplier.</span>
       </div>
@@ -734,13 +734,29 @@
         </div>
       </div>
 
-      <!-- Point Sets Creator -->
+      <!-- Point Sets Creator & Active Package Manager -->
       <div class="card">
-        <h3>⚙️ Create / Edit Point Sets</h3>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Define custom point packages to bind to seasons.</p>
+        <h3>⚙️ Point Package Rulesets</h3>
+        
+        <!-- View/Edit Active Season Package -->
+        <div style="background: rgba(0,229,255,0.05); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 15px;">
+          <h4 style="color: var(--accent-cyan); margin-bottom: 6px; font-size: 0.95rem;">Active Season's Assigned Ruleset</h4>
+          <div class="form-group" style="margin-bottom: 8px;">
+            <select id="switchActiveSeasonPointSet" onchange="changeActiveSeasonPointSet(this.value)">
+              <!-- Rendered dynamically -->
+            </select>
+          </div>
+          <button class="btn btn-mini" style="width: 100%; text-align: center;" onclick="loadPointSetIntoEditor()">
+            ✏️ Load Current Package into Editor Below
+          </button>
+        </div>
+
+        <hr style="border-color: var(--border-color); margin: 12px 0;">
+
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Create a new package or edit an existing one:</p>
 
         <div class="form-group">
-          <label>Point Set Name:</label>
+          <label>Package Name:</label>
           <input type="text" id="ps_name" placeholder="e.g., Grand Prix Major">
         </div>
 
@@ -769,10 +785,14 @@
             <label>Part.:</label>
             <input type="number" id="ps_part" value="1">
           </div>
+          <div class="form-group" style="grid-column: span 3;">
+            <label>⭐ Top Scorer Bonus:</label>
+            <input type="number" id="ps_top_scorer" value="1">
+          </div>
         </div>
 
         <button class="btn btn-primary" style="width:100%; margin-top:5px;" onclick="saveCustomPointSet()">
-          💾 Save Point Set Package
+          💾 Save / Update Point Set Package
         </button>
       </div>
     </div>
@@ -831,9 +851,9 @@
   window.appState = {
     activeSeasonId: "s1",
     pointSets: {
-      "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1 },
-      "ps_major": { name: "Major Championship (2x Base)", p1: 12, p2: 10, p3: 8, p4_8: 6, p9_plus: 4, part: 2 },
-      "ps_blitz": { name: "Casual Blitz", p1: 3, p2: 2, p3: 1, p4_8: 1, p9_plus: 1, part: 1 }
+      "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1 },
+      "ps_major": { name: "Major Championship (2x Base)", p1: 12, p2: 10, p3: 8, p4_8: 6, p9_plus: 4, part: 2, topScorer: 2 },
+      "ps_blitz": { name: "Casual Blitz", p1: 3, p2: 2, p3: 1, p4_8: 1, p9_plus: 1, part: 1, topScorer: 1 }
     },
     seasons: {
       "s1": {
@@ -891,7 +911,7 @@
 
       if (!window.appState.pointSets) {
         window.appState.pointSets = {
-          "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1 }
+          "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1 }
         };
       }
 
@@ -948,7 +968,9 @@
   function getActiveSeasonPointSet() {
     const s = window.appState.seasons[window.appState.activeSeasonId];
     const psId = (s && s.pointSetId) ? s.pointSetId : "ps_std";
-    return window.appState.pointSets[psId] || { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1 };
+    const ps = window.appState.pointSets[psId] || { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1 };
+    if (ps.topScorer === undefined) ps.topScorer = 1;
+    return ps;
   }
 
   function updateWeeklyFormLabels() {
@@ -961,18 +983,55 @@
     document.getElementById("lbl_p4_8").textContent = `4th - 8th Place (${ps.p4_8} pts each):`;
     document.getElementById("lbl_p9_plus").textContent = `9th+ Top Cut (${ps.p9_plus} pts each):`;
     document.getElementById("lbl_part").textContent = `Participants (${ps.part} pt each):`;
+    document.getElementById("lbl_top_scorer").textContent = `⭐ Top Scorers (+${ps.topScorer || 1} pt Bonus):`;
   }
 
   function renderPointSetSelects() {
-    const select = document.getElementById("newSeasonPointSetSelect");
-    if (!select) return;
+    const newSeasonSelect = document.getElementById("newSeasonPointSetSelect");
+    const activeSeasonSelect = document.getElementById("switchActiveSeasonPointSet");
 
-    select.innerHTML = "";
-    Object.keys(window.appState.pointSets).forEach(psId => {
-      const ps = window.appState.pointSets[psId];
-      select.innerHTML += `<option value="${psId}">${escapeHtml(ps.name)} (${ps.p1}-${ps.p2}-${ps.p3}-${ps.p4_8}-${ps.p9_plus}-${ps.part})</option>`;
-    });
+    if (newSeasonSelect) {
+      newSeasonSelect.innerHTML = "";
+      Object.keys(window.appState.pointSets).forEach(psId => {
+        const ps = window.appState.pointSets[psId];
+        newSeasonSelect.innerHTML += `<option value="${psId}">${escapeHtml(ps.name)} (${ps.p1}-${ps.p2}-${ps.p3}-${ps.p4_8}-${ps.p9_plus}-${ps.part})</option>`;
+      });
+    }
+
+    if (activeSeasonSelect) {
+      activeSeasonSelect.innerHTML = "";
+      const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
+      const activePsId = currentSeason ? currentSeason.pointSetId : "ps_std";
+
+      Object.keys(window.appState.pointSets).forEach(psId => {
+        const ps = window.appState.pointSets[psId];
+        const selected = psId === activePsId ? "selected" : "";
+        activeSeasonSelect.innerHTML += `<option value="${psId}" ${selected}>Active: ${escapeHtml(ps.name)}</option>`;
+      });
+    }
   }
+
+  window.changeActiveSeasonPointSet = function(psId) {
+    const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
+    if (currentSeason) {
+      currentSeason.pointSetId = psId;
+      window.saveData();
+      alert(`Changed active season's ruleset to: ${window.appState.pointSets[psId].name}`);
+    }
+  };
+
+  window.loadPointSetIntoEditor = function() {
+    const ps = getActiveSeasonPointSet();
+    document.getElementById("ps_name").value = ps.name;
+    document.getElementById("ps_p1").value = ps.p1;
+    document.getElementById("ps_p2").value = ps.p2;
+    document.getElementById("ps_p3").value = ps.p3;
+    document.getElementById("ps_p4_8").value = ps.p4_8;
+    document.getElementById("ps_p9_plus").value = ps.p9_plus;
+    document.getElementById("ps_part").value = ps.part;
+    document.getElementById("ps_top_scorer").value = ps.topScorer || 1;
+    alert(`Loaded "${ps.name}" into editor below.`);
+  };
 
   window.saveCustomPointSet = function() {
     const name = document.getElementById("ps_name").value.trim();
@@ -984,9 +1043,21 @@
     const p4_8 = parseInt(document.getElementById("ps_p4_8").value) || 0;
     const p9_plus = parseInt(document.getElementById("ps_p9_plus").value) || 0;
     const part = parseInt(document.getElementById("ps_part").value) || 0;
+    const topScorer = parseInt(document.getElementById("ps_top_scorer").value) || 1;
 
-    const newPsId = "ps_" + Date.now();
-    window.appState.pointSets[newPsId] = { name, p1, p2, p3, p4_8, p9_plus, part };
+    // Check if editing existing package with same name or create new
+    let targetPsId = null;
+    Object.keys(window.appState.pointSets).forEach(psId => {
+      if (window.appState.pointSets[psId].name.toLowerCase() === name.toLowerCase()) {
+        targetPsId = psId;
+      }
+    });
+
+    if (!targetPsId) {
+      targetPsId = "ps_" + Date.now();
+    }
+
+    window.appState.pointSets[targetPsId] = { name, p1, p2, p3, p4_8, p9_plus, part, topScorer };
 
     document.getElementById("ps_name").value = "";
     window.saveData();
@@ -1302,7 +1373,7 @@
       const isTopScorer = topScorersList.includes(nameLower);
       const isReturnee = checkIsReturnee(name, currentSeason.weeklyLogs);
 
-      const bonusPoints = isTopScorer ? 1 : 0;
+      const bonusPoints = isTopScorer ? (ps.topScorer || 1) : 0;
       const returneePts = isReturnee ? 2 : 0;
       const totalCalculated = ((basePoints + bonusPoints) * multiplier) + returneePts;
       
@@ -1497,7 +1568,7 @@
     currentSeason.weeklyLogs.slice().reverse().forEach(log => {
       let rows = log.scores.map(s => {
         let bonuses = [];
-        if (s.bonusPts) bonuses.push('+1 ⭐ Top Scorer');
+        if (s.bonusPts) bonuses.push(`+${s.bonusPts} ⭐ Top Scorer`);
         if (s.returneePts) bonuses.push('+2 🔄 Returnee (Auto)');
         let bonusLabel = bonuses.length ? `(${bonuses.join(', ')})` : '';
 
@@ -1651,7 +1722,7 @@
       window.appState = {
         activeSeasonId: "s1",
         pointSets: {
-          "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1 }
+          "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1 }
         },
         seasons: { "s1": { name: "Season 1", pointSetId: "ps_std", isClosed: false, players: {}, manualOrder: [], weeklyLogs: [] } }
       };
