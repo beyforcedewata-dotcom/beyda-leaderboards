@@ -203,6 +203,12 @@
       gap: 20px;
     }
 
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+    }
+
     .card {
       background: rgba(0, 0, 0, 0.3);
       border: 1px solid var(--border-color);
@@ -535,6 +541,9 @@
         <label for="weekNumInput" style="margin:0;">Week/Match #:</label>
         <input type="number" id="weekNumInput" value="1" min="1" style="width: 80px;">
       </div>
+      <div style="font-size:0.85rem; color:var(--accent-cyan); font-weight:bold;" id="activePointSetBadge">
+        Ruleset: Standard Circuit
+      </div>
       <button type="button" class="btn toggle-btn" id="doublePtsToggle" onclick="toggleDoublePoints()">
         🔥 Double Points Week: OFF
       </button>
@@ -559,27 +568,27 @@
         <h3>Specific Placements</h3>
         
         <div class="form-group">
-          <label>🥇 1st Place (6 pts):</label>
+          <label id="lbl_p1">🥇 1st Place (6 pts):</label>
           <input type="text" id="p1_input" placeholder="Player name">
         </div>
 
         <div class="form-group">
-          <label>🥈 2nd Place (5 pts):</label>
+          <label id="lbl_p2">🥈 2nd Place (5 pts):</label>
           <input type="text" id="p2_input" placeholder="Player name">
         </div>
 
         <div class="form-group">
-          <label>🥉 3rd Place (4 pts):</label>
+          <label id="lbl_p3">🥉 3rd Place (4 pts):</label>
           <input type="text" id="p3_input" placeholder="Player name">
         </div>
 
         <div class="form-group">
-          <label>4th - 8th Place (3 pts each):</label>
+          <label id="lbl_p4_8">4th - 8th Place (3 pts each):</label>
           <textarea id="p4_8_input" placeholder="One name per line or separated by commas"></textarea>
         </div>
 
         <div class="form-group">
-          <label>9th+ Top Cut (2 pts each):</label>
+          <label id="lbl_p9_plus">9th+ Top Cut (2 pts each):</label>
           <textarea id="p9_plus_input" placeholder="One name per line or separated by commas"></textarea>
         </div>
       </div>
@@ -588,17 +597,17 @@
       <div class="card">
         <h3>Bulk Participants & Quick Entry</h3>
         <p style="font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 10px;">
-          <strong>Tip:</strong> Paste names here (one per line). All listed names automatically get 1 pt participation.
+          <strong>Tip:</strong> Paste names here (one per line). All listed names automatically get participation points.
         </p>
 
         <div class="form-group">
-          <label>Participants (1 pt each):</label>
+          <label id="lbl_part">Participants (1 pt each):</label>
           <textarea id="bulkParticipantsInput" style="height: 160px;" placeholder="John Doe&#10;Jane Smith&#10;Alex"></textarea>
         </div>
 
         <div style="margin-top: 15px;">
           <button class="btn btn-secondary" style="width: 100%;" onclick="autoFillRemainingParticipants()">
-            📝 Auto-Add All Unlisted Registered Players as Participants (1 pt)
+            📝 Auto-Add All Unlisted Registered Players as Participants
           </button>
         </div>
       </div>
@@ -701,13 +710,20 @@
 
         <hr style="border-color: var(--border-color); margin: 15px 0;">
 
+        <!-- Create Season with Bound Point Set -->
         <div class="form-group">
           <label>Create New Season:</label>
-          <div class="flex-gap">
-            <input type="text" id="newSeasonNameInput" placeholder="Season Name (e.g. Season 2)">
-            <button class="btn btn-primary" onclick="createNewSeason()">Create</button>
-          </div>
+          <input type="text" id="newSeasonNameInput" placeholder="Season Name (e.g. Season 2)" style="margin-bottom:8px;">
+          
+          <label>Select Bound Point Set Ruleset:</label>
+          <select id="newSeasonPointSetSelect" style="margin-bottom:12px;">
+            <!-- Rendered dynamically -->
+          </select>
+
+          <button class="btn btn-primary" style="width:100%;" onclick="createNewSeason()">➕ Create Season</button>
         </div>
+
+        <hr style="border-color: var(--border-color); margin: 15px 0;">
 
         <div class="form-group">
           <label>Rename Current Season:</label>
@@ -718,25 +734,67 @@
         </div>
       </div>
 
-      <!-- Export/Import Controls -->
+      <!-- Point Sets Creator -->
       <div class="card">
-        <h3>Import / Export Options</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Backup your leaderboard data or open it in Excel.</p>
-        
-        <div class="flex-gap" style="margin-bottom: 15px;">
-          <button class="btn btn-primary" onclick="exportCSV()">📊 Export Standings (Excel CSV)</button>
-          <button class="btn btn-secondary" onclick="exportJSON()">💾 Export Backup (JSON)</button>
-        </div>
+        <h3>⚙️ Create / Edit Point Sets</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Define custom point packages to bind to seasons.</p>
 
         <div class="form-group">
-          <label>Import Data Backup (JSON):</label>
-          <input type="file" id="importJsonInput" accept=".json" onchange="importJSON(event)">
+          <label>Point Set Name:</label>
+          <input type="text" id="ps_name" placeholder="e.g., Grand Prix Major">
         </div>
 
-        <hr style="border-color: var(--border-color); margin: 15px 0;">
+        <div class="grid-3">
+          <div class="form-group">
+            <label>🥇 1st:</label>
+            <input type="number" id="ps_p1" value="6">
+          </div>
+          <div class="form-group">
+            <label>🥈 2nd:</label>
+            <input type="number" id="ps_p2" value="5">
+          </div>
+          <div class="form-group">
+            <label>🥉 3rd:</label>
+            <input type="number" id="ps_p3" value="4">
+          </div>
+          <div class="form-group">
+            <label>4th-8th:</label>
+            <input type="number" id="ps_p4_8" value="3">
+          </div>
+          <div class="form-group">
+            <label>Top Cut:</label>
+            <input type="number" id="ps_p9_plus" value="2">
+          </div>
+          <div class="form-group">
+            <label>Part.:</label>
+            <input type="number" id="ps_part" value="1">
+          </div>
+        </div>
 
-        <button class="btn btn-danger" onclick="clearAllData()">⚠️ Clear All Data / System Reset</button>
+        <button class="btn btn-primary" style="width:100%; margin-top:5px;" onclick="saveCustomPointSet()">
+          💾 Save Point Set Package
+        </button>
       </div>
+    </div>
+
+    <!-- Export/Import Controls -->
+    <div class="card" style="margin-top:20px;">
+      <h3>Import / Export & System Controls</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Backup your leaderboard data or open it in Excel.</p>
+      
+      <div class="flex-gap" style="margin-bottom: 15px;">
+        <button class="btn btn-primary" onclick="exportCSV()">📊 Export Standings (Excel CSV)</button>
+        <button class="btn btn-secondary" onclick="exportJSON()">💾 Export Backup (JSON)</button>
+      </div>
+
+      <div class="form-group">
+        <label>Import Data Backup (JSON):</label>
+        <input type="file" id="importJsonInput" accept=".json" onchange="importJSON(event)">
+      </div>
+
+      <hr style="border-color: var(--border-color); margin: 15px 0;">
+
+      <button class="btn btn-danger" onclick="clearAllData()">⚠️ Clear All Data / System Reset</button>
     </div>
   </div>
 </div>
@@ -769,12 +827,18 @@
   const db = getDatabase(app);
   const dbRef = ref(db, 'appState');
 
-  // App State Structure
+  // App State Structure with Default Point Sets
   window.appState = {
     activeSeasonId: "s1",
+    pointSets: {
+      "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1 },
+      "ps_major": { name: "Major Championship (2x Base)", p1: 12, p2: 10, p3: 8, p4_8: 6, p9_plus: 4, part: 2 },
+      "ps_blitz": { name: "Casual Blitz", p1: 3, p2: 2, p3: 1, p4_8: 1, p9_plus: 1, part: 1 }
+    },
     seasons: {
       "s1": {
         name: "Season 1",
+        pointSetId: "ps_std",
         isClosed: false,
         players: {},
         manualOrder: [],
@@ -825,6 +889,12 @@
     if (data) {
       window.appState = data;
 
+      if (!window.appState.pointSets) {
+        window.appState.pointSets = {
+          "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1 }
+        };
+      }
+
       if (!window.viewLeaderboardSeasonId || !window.appState.seasons[window.viewLeaderboardSeasonId]) {
         window.viewLeaderboardSeasonId = window.appState.activeSeasonId;
       }
@@ -854,6 +924,8 @@
     renderPassSeasonDropdown();
     renderPassesTable();
     renderHistory();
+    renderPointSetSelects();
+    updateWeeklyFormLabels();
     
     const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
     if (currentSeason) {
@@ -871,6 +943,54 @@
         closeBtn.textContent = currentSeason.isClosed ? "🔓 Re-open Season for Matches" : "🔒 Close Season / Mark as Finalized";
       }
     }
+  };
+
+  function getActiveSeasonPointSet() {
+    const s = window.appState.seasons[window.appState.activeSeasonId];
+    const psId = (s && s.pointSetId) ? s.pointSetId : "ps_std";
+    return window.appState.pointSets[psId] || { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1 };
+  }
+
+  function updateWeeklyFormLabels() {
+    const ps = getActiveSeasonPointSet();
+    
+    document.getElementById("activePointSetBadge").textContent = `Ruleset: ${ps.name}`;
+    document.getElementById("lbl_p1").textContent = `🥇 1st Place (${ps.p1} pts):`;
+    document.getElementById("lbl_p2").textContent = `🥈 2nd Place (${ps.p2} pts):`;
+    document.getElementById("lbl_p3").textContent = `🥉 3rd Place (${ps.p3} pts):`;
+    document.getElementById("lbl_p4_8").textContent = `4th - 8th Place (${ps.p4_8} pts each):`;
+    document.getElementById("lbl_p9_plus").textContent = `9th+ Top Cut (${ps.p9_plus} pts each):`;
+    document.getElementById("lbl_part").textContent = `Participants (${ps.part} pt each):`;
+  }
+
+  function renderPointSetSelects() {
+    const select = document.getElementById("newSeasonPointSetSelect");
+    if (!select) return;
+
+    select.innerHTML = "";
+    Object.keys(window.appState.pointSets).forEach(psId => {
+      const ps = window.appState.pointSets[psId];
+      select.innerHTML += `<option value="${psId}">${escapeHtml(ps.name)} (${ps.p1}-${ps.p2}-${ps.p3}-${ps.p4_8}-${ps.p9_plus}-${ps.part})</option>`;
+    });
+  }
+
+  window.saveCustomPointSet = function() {
+    const name = document.getElementById("ps_name").value.trim();
+    if (!name) return alert("Enter point set name.");
+
+    const p1 = parseInt(document.getElementById("ps_p1").value) || 0;
+    const p2 = parseInt(document.getElementById("ps_p2").value) || 0;
+    const p3 = parseInt(document.getElementById("ps_p3").value) || 0;
+    const p4_8 = parseInt(document.getElementById("ps_p4_8").value) || 0;
+    const p9_plus = parseInt(document.getElementById("ps_p9_plus").value) || 0;
+    const part = parseInt(document.getElementById("ps_part").value) || 0;
+
+    const newPsId = "ps_" + Date.now();
+    window.appState.pointSets[newPsId] = { name, p1, p2, p3, p4_8, p9_plus, part };
+
+    document.getElementById("ps_name").value = "";
+    window.saveData();
+    alert(`Saved Point Set: ${name}`);
   };
 
   function renderSeasonFilters() {
@@ -1157,6 +1277,7 @@
 
   window.submitWeeklyResults = function() {
     const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
+    const ps = getActiveSeasonPointSet();
 
     if (currentSeason.isClosed) {
       return alert("This season is marked as CLOSED. Please re-open it or switch to an active season in the Seasons tab before adding match results.");
@@ -1206,17 +1327,17 @@
     };
 
     const p1 = document.getElementById("p1_input").value;
-    if (p1.trim()) addPlayerScore(p1, 6, "1st Place");
+    if (p1.trim()) addPlayerScore(p1, ps.p1, "1st Place");
 
     const p2 = document.getElementById("p2_input").value;
-    if (p2.trim()) addPlayerScore(p2, 5, "2nd Place");
+    if (p2.trim()) addPlayerScore(p2, ps.p2, "2nd Place");
 
     const p3 = document.getElementById("p3_input").value;
-    if (p3.trim()) addPlayerScore(p3, 4, "3rd Place");
+    if (p3.trim()) addPlayerScore(p3, ps.p3, "3rd Place");
 
-    parseLineInputs(document.getElementById("p4_8_input").value).forEach(name => addPlayerScore(name, 3, "4th-8th Place"));
-    parseLineInputs(document.getElementById("p9_plus_input").value).forEach(name => addPlayerScore(name, 2, "9th+ Top Cut"));
-    parseLineInputs(document.getElementById("bulkParticipantsInput").value).forEach(name => addPlayerScore(name, 1, "Participant"));
+    parseLineInputs(document.getElementById("p4_8_input").value).forEach(name => addPlayerScore(name, ps.p4_8, "4th-8th Place"));
+    parseLineInputs(document.getElementById("p9_plus_input").value).forEach(name => addPlayerScore(name, ps.p9_plus, "9th+ Top Cut"));
+    parseLineInputs(document.getElementById("bulkParticipantsInput").value).forEach(name => addPlayerScore(name, ps.part, "Participant"));
 
     // Pass Guarantee Automation
     Object.keys(currentSeason.players).forEach(name => {
@@ -1226,13 +1347,13 @@
         const absent = !processedPlayersThisWeek.has(name.toLowerCase());
 
         if (inPassWindow && absent) {
-          const passEarned = 1 * multiplier;
+          const passEarned = ps.part * multiplier;
           pObj.totalPoints += passEarned;
 
           weekEntryLog.scores.push({
             name: name,
             category: `🎟️ Pass Guarantee (${pObj.pass.type.toUpperCase()})`,
-            basePts: 1,
+            basePts: ps.part,
             bonusPts: 0,
             returneePts: 0,
             earned: passEarned,
@@ -1300,7 +1421,6 @@
     const selectedPlayer = document.getElementById("passPlayerSelect").value;
     const customPlayerName = document.getElementById("passPlayerName").value.trim();
     
-    // Priority: Custom name if typed, otherwise selected player from dropdown
     const name = customPlayerName || selectedPlayer;
     const type = document.getElementById("passTypeSelect").value;
     const startWeek = parseInt(document.getElementById("passStartWeek").value) || 1;
@@ -1447,8 +1567,19 @@
     const name = nameInput.value.trim();
     if (!name) return alert("Enter season name.");
 
+    const psSelect = document.getElementById("newSeasonPointSetSelect");
+    const pointSetId = psSelect ? psSelect.value : "ps_std";
+
     const newId = "s_" + Date.now();
-    window.appState.seasons[newId] = { name: name, isClosed: false, players: {}, manualOrder: [], weeklyLogs: [] };
+    window.appState.seasons[newId] = { 
+      name: name, 
+      pointSetId: pointSetId,
+      isClosed: false, 
+      players: {}, 
+      manualOrder: [], 
+      weeklyLogs: [] 
+    };
+
     window.appState.activeSeasonId = newId;
     window.viewLeaderboardSeasonId = newId;
     window.viewHistorySeasonId = newId;
@@ -1519,7 +1650,10 @@
     if (confirm("Are you sure you want to completely clear all data from the database? This cannot be undone.")) {
       window.appState = {
         activeSeasonId: "s1",
-        seasons: { "s1": { name: "Season 1", isClosed: false, players: {}, manualOrder: [], weeklyLogs: [] } }
+        pointSets: {
+          "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1 }
+        },
+        seasons: { "s1": { name: "Season 1", pointSetId: "ps_std", isClosed: false, players: {}, manualOrder: [], weeklyLogs: [] } }
       };
       window.saveData();
       alert("System reset complete.");
