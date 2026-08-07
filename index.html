@@ -217,6 +217,12 @@
       margin-bottom: 15px;
     }
 
+    .card-upcoming {
+      background: rgba(10, 20, 38, 0.4);
+      border: 1px dashed rgba(0, 229, 255, 0.3);
+      opacity: 0.85;
+    }
+
     .form-group {
       margin-bottom: 14px;
     }
@@ -365,6 +371,23 @@
       margin-left: 6px;
     }
 
+    /* Progress bar for schedule */
+    .progress-bar-bg {
+      width: 100%;
+      background: rgba(255,255,255,0.08);
+      height: 12px;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 8px 0;
+      border: 1px solid var(--border-color);
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-orange));
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
     /* Medals & Badges */
     .rank-1 { color: #ffd700; font-weight: bold; font-size: 1.1rem; }
     .rank-2 { color: #e0e0e0; font-weight: bold; font-size: 1.05rem; }
@@ -482,7 +505,7 @@
   <!-- Navigation Tabs -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('leaderboard')">🏆 Live Leaderboard</button>
-    <button class="tab-btn" onclick="switchTab('history')">📊 History Logs</button>
+    <button class="tab-btn" onclick="switchTab('history')">📅 Schedule & History</button>
     
     <!-- Admin Restricted Tabs -->
     <button class="tab-btn admin-locked" id="tab_admin" onclick="switchTab('admin')">⚙️ Weekly Entry Panel</button>
@@ -518,17 +541,22 @@
     </div>
   </div>
 
-  <!-- TAB 2: HISTORY LOGS -->
+  <!-- TAB 2: SCHEDULE & HISTORY LOGS -->
   <div id="history" class="view-panel">
-    <h2>📊 Weekly Results History</h2>
+    <h2>📅 Season Roadmap & Match History</h2>
 
     <!-- Season Filter Sub-tabs -->
     <div class="season-filter-bar" id="historySeasonFilter">
       <!-- Season tabs rendered dynamically -->
     </div>
 
+    <!-- Public Estimate Overview Card -->
+    <div id="seasonEstimateOverview" class="card" style="border-color: var(--accent-cyan); background: rgba(0, 229, 255, 0.03);">
+      <!-- Rendered dynamically -->
+    </div>
+
     <div id="historyContainer">
-      <!-- Historical records rendered dynamically -->
+      <!-- Historical & upcoming records rendered dynamically -->
     </div>
   </div>
 
@@ -539,11 +567,18 @@
     <div class="card flex-gap" style="justify-content: space-between;">
       <div class="flex-gap">
         <label for="weekNumInput" style="margin:0;">Week/Match #:</label>
-        <input type="number" id="weekNumInput" value="1" min="1" style="width: 80px;">
+        <input type="number" id="weekNumInput" value="1" min="1" style="width: 70px;">
       </div>
+
+      <div class="flex-gap">
+        <label for="matchDateInput" style="margin:0;">Match Date:</label>
+        <input type="date" id="matchDateInput" style="width: 140px;">
+      </div>
+
       <div style="font-size:0.85rem; color:var(--accent-cyan); font-weight:bold;" id="activePointSetBadge">
         Ruleset: Standard Circuit
       </div>
+
       <button type="button" class="btn toggle-btn" id="doublePtsToggle" onclick="toggleDoublePoints()">
         🔥 Double Points Week: OFF
       </button>
@@ -693,7 +728,7 @@
     <div class="grid-2">
       <!-- Season Controls -->
       <div class="card">
-        <h3>Season Configuration</h3>
+        <h3>Season Configuration & Schedule</h3>
         
         <div class="form-group" style="margin-top:10px;">
           <label>Switch Active Season:</label>
@@ -710,11 +745,42 @@
 
         <hr style="border-color: var(--border-color); margin: 15px 0;">
 
+        <!-- Edit Active Season Schedule Config -->
+        <div style="background: rgba(0, 0, 0, 0.2); padding: 10px; border-radius: 6px; margin-bottom: 15px;">
+          <h4 style="color:var(--accent-cyan); font-size: 0.95rem; margin-bottom: 8px;">Active Season Schedule Config</h4>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Total Matches Planned:</label>
+              <input type="number" id="activeSeasonTotalMatchesInput" min="1" value="10">
+            </div>
+            <div class="form-group">
+              <label>Season Start Date:</label>
+              <input type="date" id="activeSeasonStartDateInput">
+            </div>
+          </div>
+          <button class="btn btn-secondary" style="width:100%; font-size: 0.85rem;" onclick="saveActiveSeasonSchedule()">
+            💾 Update Active Season Schedule
+          </button>
+        </div>
+
+        <hr style="border-color: var(--border-color); margin: 15px 0;">
+
         <!-- Create Season with Bound Point Set -->
         <div class="form-group">
           <label>Create New Season:</label>
           <input type="text" id="newSeasonNameInput" placeholder="Season Name (e.g. Season 2)" style="margin-bottom:8px;">
           
+          <div class="grid-2" style="margin-bottom:8px;">
+            <div>
+              <label>Total Matches Planned:</label>
+              <input type="number" id="newSeasonTotalMatches" value="10" min="1">
+            </div>
+            <div>
+              <label>Start Date:</label>
+              <input type="date" id="newSeasonStartDate">
+            </div>
+          </div>
+
           <label>Select Bound Point Set Ruleset:</label>
           <select id="newSeasonPointSetSelect" style="margin-bottom:12px;">
             <!-- Rendered dynamically -->
@@ -791,9 +857,14 @@
           </div>
         </div>
 
-        <button class="btn btn-primary" style="width:100%; margin-top:5px;" onclick="saveCustomPointSet()">
-          💾 Save / Update Point Set Package
-        </button>
+        <div class="flex-gap" style="margin-top:10px;">
+          <button class="btn btn-primary" style="flex:1;" onclick="saveCustomPointSet()">
+            💾 Save / Update Point Set
+          </button>
+          <button class="btn btn-danger" style="flex:1;" onclick="deleteSelectedPointSet()">
+            🗑️ Delete Point Set
+          </button>
+        </div>
       </div>
     </div>
 
@@ -847,7 +918,7 @@
   const db = getDatabase(app);
   const dbRef = ref(db, 'appState');
 
-  // App State Structure with Default Point Sets
+  // App State Structure with Default Point Sets and Schedule Tracking
   window.appState = {
     activeSeasonId: "s1",
     pointSets: {
@@ -859,6 +930,9 @@
       "s1": {
         name: "Season 1",
         pointSetId: "ps_std",
+        totalMatches: 10,
+        startDate: new Date().toISOString().slice(0, 10),
+        scheduleOverrides: {},
         isClosed: false,
         players: {},
         manualOrder: [],
@@ -868,6 +942,11 @@
   };
 
   window.doublePointsActive = false;
+
+  // Initialize Match Date default to today
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("matchDateInput").value = new Date().toISOString().slice(0, 10);
+  });
 
   // Admin Toggle
   window.toggleAdminAuth = function() {
@@ -962,11 +1041,19 @@
       if (closeBtn) {
         closeBtn.textContent = currentSeason.isClosed ? "🔓 Re-open Season for Matches" : "🔒 Close Season / Mark as Finalized";
       }
+
+      const totMatchInput = document.getElementById("activeSeasonTotalMatchesInput");
+      const startDateInput = document.getElementById("activeSeasonStartDateInput");
+      if (totMatchInput) totMatchInput.value = currentSeason.totalMatches || 10;
+      if (startDateInput) startDateInput.value = currentSeason.startDate || new Date().toISOString().slice(0, 10);
     }
   };
 
   function getActiveSeasonPointSet() {
     const s = window.appState.seasons[window.appState.activeSeasonId];
+    if (s && s.pointSetSnapshot) {
+      return s.pointSetSnapshot;
+    }
     const psId = (s && s.pointSetId) ? s.pointSetId : "ps_std";
     const ps = window.appState.pointSets[psId] || { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1 };
     if (ps.topScorer === undefined) ps.topScorer = 1;
@@ -1015,6 +1102,7 @@
     const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
     if (currentSeason) {
       currentSeason.pointSetId = psId;
+      delete currentSeason.pointSetSnapshot;
       window.saveData();
       alert(`Changed active season's ruleset to: ${window.appState.pointSets[psId].name}`);
     }
@@ -1045,7 +1133,6 @@
     const part = parseInt(document.getElementById("ps_part").value) || 0;
     const topScorer = parseInt(document.getElementById("ps_top_scorer").value) || 1;
 
-    // Check if editing existing package with same name or create new
     let targetPsId = null;
     Object.keys(window.appState.pointSets).forEach(psId => {
       if (window.appState.pointSets[psId].name.toLowerCase() === name.toLowerCase()) {
@@ -1061,7 +1148,40 @@
 
     document.getElementById("ps_name").value = "";
     window.saveData();
-    alert(`Saved Point Set: ${name}`);
+    alert(`Saved Point Set: ${name}\nNote: Existing seasons using this set will retain their locked point configuration.`);
+  };
+
+  window.deleteSelectedPointSet = function() {
+    const activeSeasonSelect = document.getElementById("switchActiveSeasonPointSet");
+    const psIdToDelete = activeSeasonSelect ? activeSeasonSelect.value : null;
+
+    if (!psIdToDelete) return alert("No Point Set selected to delete.");
+    if (Object.keys(window.appState.pointSets).length <= 1) {
+      return alert("Cannot delete the last remaining Point Set package.");
+    }
+
+    const psName = window.appState.pointSets[psIdToDelete].name;
+
+    if (confirm(`Are you sure you want to delete the Point Set "${psName}"?\nAny existing seasons currently bound to this set will safely snapshot their point values so historical scoring remains intact.`)) {
+      
+      Object.keys(window.appState.seasons).forEach(sId => {
+        const season = window.appState.seasons[sId];
+        if (season.pointSetId === psIdToDelete) {
+          season.pointSetSnapshot = { ...window.appState.pointSets[psIdToDelete] };
+        }
+      });
+
+      delete window.appState.pointSets[psIdToDelete];
+
+      const remainingPsId = Object.keys(window.appState.pointSets)[0];
+      const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
+      if (currentSeason && currentSeason.pointSetId === psIdToDelete) {
+        currentSeason.pointSetId = remainingPsId;
+      }
+
+      window.saveData();
+      alert(`Point Set "${psName}" deleted.`);
+    }
   };
 
   function renderSeasonFilters() {
@@ -1355,6 +1475,7 @@
     }
 
     const weekNum = parseInt(document.getElementById("weekNumInput").value) || 1;
+    const matchDate = document.getElementById("matchDateInput").value || new Date().toISOString().slice(0, 10);
     const multiplier = window.doublePointsActive ? 2 : 1;
 
     const topScorersList = parseLineInputs(document.getElementById("topScorerInput").value).map(n => n.toLowerCase());
@@ -1362,7 +1483,7 @@
     if (!currentSeason.weeklyLogs) currentSeason.weeklyLogs = [];
     if (!currentSeason.players) currentSeason.players = {};
 
-    let weekEntryLog = { weekNum: weekNum, isDouble: window.doublePointsActive, scores: [] };
+    let weekEntryLog = { weekNum: weekNum, matchDate: matchDate, isDouble: window.doublePointsActive, scores: [] };
     let processedPlayersThisWeek = new Set();
 
     const addPlayerScore = (rawName, basePoints, categoryLabel = "") => {
@@ -1553,19 +1674,85 @@
     });
   }
 
+  // RENDER SCHEDULE & HISTORY
   function renderHistory() {
     const container = document.getElementById("historyContainer");
+    const overviewContainer = document.getElementById("seasonEstimateOverview");
     container.innerHTML = "";
+    overviewContainer.innerHTML = "";
 
     const sId = window.viewHistorySeasonId || window.appState.activeSeasonId;
     const currentSeason = window.appState.seasons[sId];
 
-    if (!currentSeason || !currentSeason.weeklyLogs || currentSeason.weeklyLogs.length === 0) {
-      container.innerHTML = `<p style="color:var(--text-muted); text-align:center;">No match logs recorded yet for this season.</p>`;
+    if (!currentSeason) {
+      overviewContainer.innerHTML = `<p style="color:var(--text-muted);">No season selected.</p>`;
       return;
     }
 
-    currentSeason.weeklyLogs.slice().reverse().forEach(log => {
+    const totalMatchesPlanned = currentSeason.totalMatches || 10;
+    const completedLogs = currentSeason.weeklyLogs || [];
+    const completedCount = completedLogs.length;
+    const remainingCount = Math.max(0, totalMatchesPlanned - completedCount);
+    const progressPercent = Math.min(100, Math.round((completedCount / totalMatchesPlanned) * 100));
+
+    // Calculate Dates and Estimates
+    let startDateObj = currentSeason.startDate ? new Date(currentSeason.startDate) : new Date();
+
+    // Helper for adding 7 days per match
+    const getEstimatedMatchDate = (matchIndex) => {
+      // Index is 0-based match number
+      let baseDate = new Date(startDateObj);
+      
+      // Check for past override
+      if (currentSeason.scheduleOverrides && currentSeason.scheduleOverrides[matchIndex + 1]) {
+        return currentSeason.scheduleOverrides[matchIndex + 1];
+      }
+
+      // If previous matches exist with dates, compute from last match date
+      if (completedLogs.length > 0) {
+        const lastLog = completedLogs[completedLogs.length - 1];
+        if (lastLog.matchDate && matchIndex >= completedLogs.length) {
+          const lastDate = new Date(lastLog.matchDate);
+          const diffWeeks = matchIndex - (completedLogs.length - 1);
+          lastDate.setDate(lastDate.getDate() + (diffWeeks * 7));
+          return lastDate.toISOString().slice(0, 10);
+        }
+      }
+
+      baseDate.setDate(baseDate.getDate() + (matchIndex * 7));
+      return baseDate.toISOString().slice(0, 10);
+    };
+
+    const estimatedEstEndDate = getEstimatedMatchDate(totalMatchesPlanned - 1);
+
+    overviewContainer.innerHTML = `
+      <div class="flex-gap" style="justify-content: space-between; margin-bottom: 8px;">
+        <h3>📌 ${escapeHtml(currentSeason.name)} Progress Overview</h3>
+        <span style="color: var(--accent-orange); font-weight: bold;">
+          ${currentSeason.isClosed ? '🔒 Season Finalized' : '⚡ In Progress'}
+        </span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" style="width: ${progressPercent}%;"></div>
+      </div>
+      <div class="grid-3" style="margin-top: 10px;">
+        <div class="stat-box">
+          <div class="val">${completedCount} / ${totalMatchesPlanned}</div>
+          <div class="lbl">Matches Played</div>
+        </div>
+        <div class="stat-box">
+          <div class="val">${remainingCount}</div>
+          <div class="lbl">Remaining</div>
+        </div>
+        <div class="stat-box">
+          <div class="val" style="font-size: 0.95rem;">${estimatedEstEndDate}</div>
+          <div class="lbl">Est. Season End</div>
+        </div>
+      </div>
+    `;
+
+    // Render Played Match History (Most recent first)
+    completedLogs.slice().reverse().forEach((log) => {
       let rows = log.scores.map(s => {
         let bonuses = [];
         if (s.bonusPts) bonuses.push(`+${s.bonusPts} ⭐ Top Scorer`);
@@ -1582,11 +1769,21 @@
         `;
       }).join('');
 
+      const adminDateControl = window.isAdminLoggedIn ? `
+        <div style="margin-top:5px;" onclick="event.stopPropagation();">
+          <span style="font-size:0.75rem; color:var(--text-muted);">Adjust Date:</span>
+          <input type="date" value="${log.matchDate || ''}" onchange="updateLoggedMatchDate('${sId}', ${log.weekNum}, this.value)" style="width: auto; padding: 2px 6px; font-size: 0.8rem; display: inline-block;">
+        </div>
+      ` : '';
+
       container.innerHTML += `
         <div class="card">
-          <div class="flex-gap" style="justify-space-between; margin-bottom:8px;">
-            <h3>Week / Match ${log.weekNum} ${log.isDouble ? '🔥 (Double Points Week)' : ''}</h3>
-            <span style="font-size:0.85rem; color:var(--text-muted);">${log.scores.length} entries</span>
+          <div class="flex-gap" style="justify-content: space-between; margin-bottom:8px;">
+            <h3>Week / Match ${log.weekNum} ${log.isDouble ? '🔥 (Double Points)' : ''}</h3>
+            <div style="text-align: right;">
+              <span style="font-size:0.85rem; color:var(--accent-cyan); font-weight:bold;">📅 ${log.matchDate || 'Date Not Set'}</span>
+              ${adminDateControl}
+            </div>
           </div>
           <div>
             <table class="lb-table">
@@ -1604,7 +1801,57 @@
         </div>
       `;
     });
+
+    // Render Upcoming Unplayed Matches
+    if (remainingCount > 0 && !currentSeason.isClosed) {
+      container.innerHTML += `<h3 style="margin: 20px 0 10px; color: var(--accent-orange);">⏳ Scheduled Upcoming Matches</h3>`;
+      for (let mNum = completedCount + 1; mNum <= totalMatchesPlanned; mNum++) {
+        const estDate = getEstimatedMatchDate(mNum - 1);
+
+        const adminUpcomingDateControl = window.isAdminLoggedIn ? `
+          <div style="margin-top:5px;">
+            <span style="font-size:0.75rem; color:var(--text-muted);">Override Scheduled Date:</span>
+            <input type="date" value="${estDate}" onchange="updateUpcomingMatchDate('${sId}', ${mNum}, this.value)" style="width: auto; padding: 2px 6px; font-size: 0.8rem; display: inline-block;">
+          </div>
+        ` : '';
+
+        container.innerHTML += `
+          <div class="card card-upcoming">
+            <div class="flex-gap" style="justify-content: space-between;">
+              <div>
+                <strong style="color: var(--accent-cyan);">Match ${mNum}</strong> 
+                <span style="color: var(--text-muted); font-size: 0.85rem;">(Unplayed)</span>
+              </div>
+              <div style="text-align: right;">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Scheduled Date: <strong>${estDate}</strong></span>
+                ${adminUpcomingDateControl}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
   }
+
+  window.updateLoggedMatchDate = function(seasonId, weekNum, newDate) {
+    const season = window.appState.seasons[seasonId];
+    if (season && season.weeklyLogs) {
+      const log = season.weeklyLogs.find(l => l.weekNum === weekNum);
+      if (log) {
+        log.matchDate = newDate;
+        window.saveData();
+      }
+    }
+  };
+
+  window.updateUpcomingMatchDate = function(seasonId, weekNum, newDate) {
+    const season = window.appState.seasons[seasonId];
+    if (season) {
+      if (!season.scheduleOverrides) season.scheduleOverrides = {};
+      season.scheduleOverrides[weekNum] = newDate;
+      window.saveData();
+    }
+  };
 
   function renderSeasonDropdown() {
     const select = document.getElementById("seasonSelect");
@@ -1624,6 +1871,20 @@
     window.saveData();
   };
 
+  window.saveActiveSeasonSchedule = function() {
+    const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
+    if (!currentSeason) return;
+
+    const totMatches = parseInt(document.getElementById("activeSeasonTotalMatchesInput").value) || 10;
+    const startDate = document.getElementById("activeSeasonStartDateInput").value;
+
+    currentSeason.totalMatches = totMatches;
+    if (startDate) currentSeason.startDate = startDate;
+
+    window.saveData();
+    alert("Updated schedule settings for active season.");
+  };
+
   window.toggleCloseCurrentSeason = function() {
     const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
     if (!currentSeason) return;
@@ -1638,6 +1899,9 @@
     const name = nameInput.value.trim();
     if (!name) return alert("Enter season name.");
 
+    const totMatches = parseInt(document.getElementById("newSeasonTotalMatches").value) || 10;
+    const startDate = document.getElementById("newSeasonStartDate").value || new Date().toISOString().slice(0, 10);
+
     const psSelect = document.getElementById("newSeasonPointSetSelect");
     const pointSetId = psSelect ? psSelect.value : "ps_std";
 
@@ -1645,6 +1909,9 @@
     window.appState.seasons[newId] = { 
       name: name, 
       pointSetId: pointSetId,
+      totalMatches: totMatches,
+      startDate: startDate,
+      scheduleOverrides: {},
       isClosed: false, 
       players: {}, 
       manualOrder: [], 
@@ -1724,7 +1991,19 @@
         pointSets: {
           "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1 }
         },
-        seasons: { "s1": { name: "Season 1", pointSetId: "ps_std", isClosed: false, players: {}, manualOrder: [], weeklyLogs: [] } }
+        seasons: { 
+          "s1": { 
+            name: "Season 1", 
+            pointSetId: "ps_std", 
+            totalMatches: 10,
+            startDate: new Date().toISOString().slice(0, 10),
+            scheduleOverrides: {},
+            isClosed: false, 
+            players: {}, 
+            manualOrder: [], 
+            weeklyLogs: [] 
+          } 
+        }
       };
       window.saveData();
       alert("System reset complete.");
