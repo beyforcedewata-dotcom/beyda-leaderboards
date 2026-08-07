@@ -584,16 +584,16 @@
       </button>
     </div>
 
-    <!-- Top Scorer Bar -->
+    <!-- Top Scorer & Returnee Bar -->
     <div class="top-scorer-bar">
-      <div style="flex: 1;">
+      <div style="flex: 1;" id="topScorerInputBox">
         <label for="topScorerInput" style="margin-bottom: 4px;" id="lbl_top_scorer">⭐ Top Scorers (+1 pt Bonus):</label>
         <input type="text" id="topScorerInput" placeholder="Separated by commas (e.g. Alex, Sam, Jo)">
         <span style="font-size: 0.75rem; color: var(--text-muted);">Supports 2–4 players. Affected by 2x week multiplier.</span>
       </div>
-      <div style="flex: 1; font-size: 0.85rem; color: var(--accent-cyan); background: rgba(0, 229, 255, 0.05); padding: 10px; border-radius: 4px; border: 1px solid var(--border-color);">
-        🔄 <strong>Returnee Bonus (+2 pts) is Automatic!</strong><br>
-        Checks history to auto-grant +2 pts to players returning after 3+ missed matches or joining late. Flat bonus (not doubled).
+      <div style="flex: 1; font-size: 0.85rem; color: var(--accent-cyan); background: rgba(0, 229, 255, 0.05); padding: 10px; border-radius: 4px; border: 1px solid var(--border-color);" id="returneeInfoBox">
+        🔄 <strong id="lbl_returnee_info">Returnee Bonus (+2 pts) is Automatic!</strong><br>
+        Checks history to auto-grant pts to players returning after 3+ missed matches or joining late.
       </div>
     </div>
 
@@ -657,7 +657,7 @@
   <div id="passes" class="view-panel">
     <h2>🎟️ Manage Season Passes</h2>
     <p style="font-size: 0.9rem; margin-bottom: 15px; color: var(--text-muted);">
-      Passes grant a <strong>guaranteed 1 participant point</strong> for every match played within the pass duration, even if the player is absent.
+      Passes grant a <strong>guaranteed participant point</strong> for every match played within the pass duration, even if the player is absent.
     </p>
 
     <div class="card">
@@ -852,8 +852,12 @@
             <input type="number" id="ps_part" value="1">
           </div>
           <div class="form-group" style="grid-column: span 3;">
-            <label>⭐ Top Scorer Bonus:</label>
-            <input type="number" id="ps_top_scorer" value="1">
+            <label>⭐ Top Scorer Bonus (0 = Disabled):</label>
+            <input type="number" id="ps_top_scorer" value="1" min="0">
+          </div>
+          <div class="form-group" style="grid-column: span 3;">
+            <label>🔄 Returnee Bonus (0 = Disabled):</label>
+            <input type="number" id="ps_returnee" value="2" min="0">
           </div>
         </div>
 
@@ -918,13 +922,13 @@
   const db = getDatabase(app);
   const dbRef = ref(db, 'appState');
 
-  // App State Structure with Default Point Sets and Schedule Tracking
+  // App State Structure
   window.appState = {
     activeSeasonId: "s1",
     pointSets: {
-      "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1 },
-      "ps_major": { name: "Major Championship (2x Base)", p1: 12, p2: 10, p3: 8, p4_8: 6, p9_plus: 4, part: 2, topScorer: 2 },
-      "ps_blitz": { name: "Casual Blitz", p1: 3, p2: 2, p3: 1, p4_8: 1, p9_plus: 1, part: 1, topScorer: 1 }
+      "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1, returnee: 2 },
+      "ps_major": { name: "Major Championship (2x Base)", p1: 12, p2: 10, p3: 8, p4_8: 6, p9_plus: 4, part: 2, topScorer: 2, returnee: 2 },
+      "ps_blitz": { name: "Casual Blitz", p1: 3, p2: 2, p3: 1, p4_8: 1, p9_plus: 1, part: 1, topScorer: 0, returnee: 0 }
     },
     seasons: {
       "s1": {
@@ -943,10 +947,24 @@
 
   window.doublePointsActive = false;
 
-  // Initialize Match Date default to today
   document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("matchDateInput").value = new Date().toISOString().slice(0, 10);
   });
+
+  // Two-Step Delete Helper Function
+  window.executeTwoStepDelete = function(actionDescription, onConfirmedCallback) {
+    // Step 1: Are you sure?
+    const step1Confirmed = confirm(`⚠️ DELETION CONFIRMATION (Step 1 of 2)\n\nAre you sure you want to ${actionDescription}?`);
+    if (!step1Confirmed) return;
+
+    // Step 2: Passcode verification
+    const enteredPasscode = prompt(`🔒 PASSCODE SECURITY VERIFICATION (Step 2 of 2)\n\nPlease enter the Admin Passcode to finalize this action:`);
+    if (enteredPasscode === ADMIN_PASSCODE) {
+      onConfirmedCallback();
+    } else if (enteredPasscode !== null) {
+      alert("❌ Incorrect passcode! Deletion action canceled.");
+    }
+  };
 
   // Admin Toggle
   window.toggleAdminAuth = function() {
@@ -990,7 +1008,7 @@
 
       if (!window.appState.pointSets) {
         window.appState.pointSets = {
-          "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1 }
+          "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1, returnee: 2 }
         };
       }
 
@@ -1055,8 +1073,9 @@
       return s.pointSetSnapshot;
     }
     const psId = (s && s.pointSetId) ? s.pointSetId : "ps_std";
-    const ps = window.appState.pointSets[psId] || { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1 };
+    const ps = window.appState.pointSets[psId] || { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1, returnee: 2 };
     if (ps.topScorer === undefined) ps.topScorer = 1;
+    if (ps.returnee === undefined) ps.returnee = 2;
     return ps;
   }
 
@@ -1070,7 +1089,24 @@
     document.getElementById("lbl_p4_8").textContent = `4th - 8th Place (${ps.p4_8} pts each):`;
     document.getElementById("lbl_p9_plus").textContent = `9th+ Top Cut (${ps.p9_plus} pts each):`;
     document.getElementById("lbl_part").textContent = `Participants (${ps.part} pt each):`;
-    document.getElementById("lbl_top_scorer").textContent = `⭐ Top Scorers (+${ps.topScorer || 1} pt Bonus):`;
+
+    // Handle Optional Top Scorer Box
+    const topScorerBox = document.getElementById("topScorerInputBox");
+    if (ps.topScorer > 0) {
+      topScorerBox.style.display = "block";
+      document.getElementById("lbl_top_scorer").textContent = `⭐ Top Scorers (+${ps.topScorer} pt Bonus):`;
+    } else {
+      topScorerBox.style.display = "none";
+    }
+
+    // Handle Optional Returnee Box Info
+    const returneeBox = document.getElementById("returneeInfoBox");
+    if (ps.returnee > 0) {
+      returneeBox.style.display = "block";
+      document.getElementById("lbl_returnee_info").textContent = `Returnee Bonus (+${ps.returnee} pts) is Automatic!`;
+    } else {
+      returneeBox.style.display = "none";
+    }
   }
 
   function renderPointSetSelects() {
@@ -1117,7 +1153,8 @@
     document.getElementById("ps_p4_8").value = ps.p4_8;
     document.getElementById("ps_p9_plus").value = ps.p9_plus;
     document.getElementById("ps_part").value = ps.part;
-    document.getElementById("ps_top_scorer").value = ps.topScorer || 1;
+    document.getElementById("ps_top_scorer").value = ps.topScorer !== undefined ? ps.topScorer : 1;
+    document.getElementById("ps_returnee").value = ps.returnee !== undefined ? ps.returnee : 2;
     alert(`Loaded "${ps.name}" into editor below.`);
   };
 
@@ -1131,7 +1168,8 @@
     const p4_8 = parseInt(document.getElementById("ps_p4_8").value) || 0;
     const p9_plus = parseInt(document.getElementById("ps_p9_plus").value) || 0;
     const part = parseInt(document.getElementById("ps_part").value) || 0;
-    const topScorer = parseInt(document.getElementById("ps_top_scorer").value) || 1;
+    const topScorer = parseInt(document.getElementById("ps_top_scorer").value) || 0;
+    const returnee = parseInt(document.getElementById("ps_returnee").value) || 0;
 
     let targetPsId = null;
     Object.keys(window.appState.pointSets).forEach(psId => {
@@ -1144,13 +1182,14 @@
       targetPsId = "ps_" + Date.now();
     }
 
-    window.appState.pointSets[targetPsId] = { name, p1, p2, p3, p4_8, p9_plus, part, topScorer };
+    window.appState.pointSets[targetPsId] = { name, p1, p2, p3, p4_8, p9_plus, part, topScorer, returnee };
 
     document.getElementById("ps_name").value = "";
     window.saveData();
-    alert(`Saved Point Set: ${name}\nNote: Existing seasons using this set will retain their locked point configuration.`);
+    alert(`Saved Point Set: ${name}`);
   };
 
+  // Two-Step Security Deletion for Point Set
   window.deleteSelectedPointSet = function() {
     const activeSeasonSelect = document.getElementById("switchActiveSeasonPointSet");
     const psIdToDelete = activeSeasonSelect ? activeSeasonSelect.value : null;
@@ -1162,8 +1201,7 @@
 
     const psName = window.appState.pointSets[psIdToDelete].name;
 
-    if (confirm(`Are you sure you want to delete the Point Set "${psName}"?\nAny existing seasons currently bound to this set will safely snapshot their point values so historical scoring remains intact.`)) {
-      
+    window.executeTwoStepDelete(`delete the Point Set package "${psName}"`, () => {
       Object.keys(window.appState.seasons).forEach(sId => {
         const season = window.appState.seasons[sId];
         if (season.pointSetId === psIdToDelete) {
@@ -1180,8 +1218,8 @@
       }
 
       window.saveData();
-      alert(`Point Set "${psName}" deleted.`);
-    }
+      alert(`✅ Point Set "${psName}" successfully deleted.`);
+    });
   };
 
   function renderSeasonFilters() {
@@ -1491,11 +1529,11 @@
       if (!name) return;
 
       const nameLower = name.toLowerCase();
-      const isTopScorer = topScorersList.includes(nameLower);
-      const isReturnee = checkIsReturnee(name, currentSeason.weeklyLogs);
+      const isTopScorer = (ps.topScorer > 0) && topScorersList.includes(nameLower);
+      const isReturnee = (ps.returnee > 0) && checkIsReturnee(name, currentSeason.weeklyLogs);
 
-      const bonusPoints = isTopScorer ? (ps.topScorer || 1) : 0;
-      const returneePts = isReturnee ? 2 : 0;
+      const bonusPoints = isTopScorer ? ps.topScorer : 0;
+      const returneePts = isReturnee ? ps.returnee : 0;
       const totalCalculated = ((basePoints + bonusPoints) * multiplier) + returneePts;
       
       processedPlayersThisWeek.add(nameLower);
@@ -1695,20 +1733,15 @@
     const remainingCount = Math.max(0, totalMatchesPlanned - completedCount);
     const progressPercent = Math.min(100, Math.round((completedCount / totalMatchesPlanned) * 100));
 
-    // Calculate Dates and Estimates
     let startDateObj = currentSeason.startDate ? new Date(currentSeason.startDate) : new Date();
 
-    // Helper for adding 7 days per match
     const getEstimatedMatchDate = (matchIndex) => {
-      // Index is 0-based match number
       let baseDate = new Date(startDateObj);
       
-      // Check for past override
       if (currentSeason.scheduleOverrides && currentSeason.scheduleOverrides[matchIndex + 1]) {
         return currentSeason.scheduleOverrides[matchIndex + 1];
       }
 
-      // If previous matches exist with dates, compute from last match date
       if (completedLogs.length > 0) {
         const lastLog = completedLogs[completedLogs.length - 1];
         if (lastLog.matchDate && matchIndex >= completedLogs.length) {
@@ -1751,12 +1784,11 @@
       </div>
     `;
 
-    // Render Played Match History (Most recent first)
     completedLogs.slice().reverse().forEach((log) => {
       let rows = log.scores.map(s => {
         let bonuses = [];
         if (s.bonusPts) bonuses.push(`+${s.bonusPts} ⭐ Top Scorer`);
-        if (s.returneePts) bonuses.push('+2 🔄 Returnee (Auto)');
+        if (s.returneePts) bonuses.push(`+${s.returneePts} 🔄 Returnee (Auto)`);
         let bonusLabel = bonuses.length ? `(${bonuses.join(', ')})` : '';
 
         return `
@@ -1802,7 +1834,6 @@
       `;
     });
 
-    // Render Upcoming Unplayed Matches
     if (remainingCount > 0 && !currentSeason.isClosed) {
       container.innerHTML += `<h3 style="margin: 20px 0 10px; color: var(--accent-orange);">⏳ Scheduled Upcoming Matches</h3>`;
       for (let mNum = completedCount + 1; mNum <= totalMatchesPlanned; mNum++) {
@@ -1984,12 +2015,13 @@
     reader.readAsText(file);
   };
 
+  // Two-Step Security Deletion for Clear All Data / Reset
   window.clearAllData = function() {
-    if (confirm("Are you sure you want to completely clear all data from the database? This cannot be undone.")) {
+    window.executeTwoStepDelete("PERMANENTLY CLEAR ALL DATABASE DATA & SYSTEM RESET", () => {
       window.appState = {
         activeSeasonId: "s1",
         pointSets: {
-          "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1 }
+          "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1, returnee: 2 }
         },
         seasons: { 
           "s1": { 
@@ -2006,8 +2038,8 @@
         }
       };
       window.saveData();
-      alert("System reset complete.");
-    }
+      alert("💥 System Reset Complete! All leaderboard data cleared.");
+    });
   };
 
   function downloadFile(content, fileName, mimeType) {
