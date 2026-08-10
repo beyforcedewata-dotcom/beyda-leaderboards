@@ -15,6 +15,8 @@
       --bg-input: #02060d;
       --accent-cyan: #00e5ff;
       --accent-orange: #ff3d00;
+      --accent-green: #00e676;
+      --accent-red: #ff1744;
       --accent-blue: #0d2a9d;
       --text-white: #ffffff;
       --text-muted: #8a99ad;
@@ -388,6 +390,31 @@
       transition: width 0.4s ease;
     }
 
+    /* Rank Trend Badges */
+    .trend-up {
+      color: var(--accent-green);
+      font-weight: bold;
+      font-size: 0.88rem;
+    }
+    .trend-down {
+      color: var(--accent-red);
+      font-weight: bold;
+      font-size: 0.88rem;
+    }
+    .trend-new {
+      background: #ffd700;
+      color: #000;
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+      display: inline-block;
+    }
+    .trend-same {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
     /* Medals & Badges */
     .rank-1 { color: #ffd700; font-weight: bold; font-size: 1.1rem; }
     .rank-2 { color: #e0e0e0; font-weight: bold; font-size: 1.05rem; }
@@ -526,11 +553,12 @@
       <table class="lb-table">
         <thead>
           <tr>
-            <th style="width: 10%;">Rank</th>
-            <th style="width: 38%;">Player Name</th>
-            <th style="width: 15%;">Pass</th>
-            <th style="width: 12%;">Attended</th>
-            <th style="width: 10%;">Wins</th>
+            <th style="width: 8%;">Rank</th>
+            <th style="width: 12%;">Trend</th>
+            <th style="width: 33%;">Player Name</th>
+            <th style="width: 12%;">Pass</th>
+            <th style="width: 11%;">Attended</th>
+            <th style="width: 9%;">Wins</th>
             <th style="width: 15%; text-align: right;">Total Pts</th>
           </tr>
         </thead>
@@ -953,11 +981,9 @@
 
   // Two-Step Delete Helper Function
   window.executeTwoStepDelete = function(actionDescription, onConfirmedCallback) {
-    // Step 1: Are you sure?
     const step1Confirmed = confirm(`⚠️ DELETION CONFIRMATION (Step 1 of 2)\n\nAre you sure you want to ${actionDescription}?`);
     if (!step1Confirmed) return;
 
-    // Step 2: Passcode verification
     const enteredPasscode = prompt(`🔒 PASSCODE SECURITY VERIFICATION (Step 2 of 2)\n\nPlease enter the Admin Passcode to finalize this action:`);
     if (enteredPasscode === ADMIN_PASSCODE) {
       onConfirmedCallback();
@@ -1090,7 +1116,6 @@
     document.getElementById("lbl_p9_plus").textContent = `9th+ Top Cut (${ps.p9_plus} pts each):`;
     document.getElementById("lbl_part").textContent = `Participants (${ps.part} pt each):`;
 
-    // Handle Optional Top Scorer Box
     const topScorerBox = document.getElementById("topScorerInputBox");
     if (ps.topScorer > 0) {
       topScorerBox.style.display = "block";
@@ -1099,7 +1124,6 @@
       topScorerBox.style.display = "none";
     }
 
-    // Handle Optional Returnee Box Info
     const returneeBox = document.getElementById("returneeInfoBox");
     if (ps.returnee > 0) {
       returneeBox.style.display = "block";
@@ -1189,7 +1213,6 @@
     alert(`Saved Point Set: ${name}`);
   };
 
-  // Two-Step Security Deletion for Point Set
   window.deleteSelectedPointSet = function() {
     const activeSeasonSelect = document.getElementById("switchActiveSeasonPointSet");
     const psIdToDelete = activeSeasonSelect ? activeSeasonSelect.value : null;
@@ -1259,7 +1282,47 @@
     return `<span class="pass-badge ${passClass}">${passObj.type.toUpperCase()} PASS</span>`;
   }
 
-  // RENDER LEADERBOARD
+  // Calculate standings up to a specific week index for rank shifts
+  function calculateStandingsUpToWeek(seasonObj, maxWeekIndex) {
+    if (!seasonObj || !seasonObj.players) return {};
+
+    let standingsMap = {};
+
+    const logsToProcess = seasonObj.weeklyLogs ? seasonObj.weeklyLogs.slice(0, maxWeekIndex) : [];
+
+    logsToProcess.forEach(log => {
+      if (log.scores) {
+        log.scores.forEach(s => {
+          const pName = s.name;
+          if (!standingsMap[pName]) {
+            standingsMap[pName] = { name: pName, totalPoints: 0, wins: 0, topCutCount: 0, attendedCount: 0 };
+          }
+          standingsMap[pName].totalPoints += (s.earned || 0);
+
+          const isPassGuarantee = s.category && s.category.includes('Pass Guarantee');
+          if (!isPassGuarantee) standingsMap[pName].attendedCount += 1;
+          if (s.category === "1st Place") standingsMap[pName].wins += 1;
+          if (s.category !== "Participant" && !isPassGuarantee) standingsMap[pName].topCutCount += 1;
+        });
+      }
+    });
+
+    let sorted = Object.values(standingsMap).sort((a, b) => {
+      if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
+      if (b.wins !== a.wins) return b.wins - a.wins;
+      if (b.topCutCount !== a.topCutCount) return b.topCutCount - a.topCutCount;
+      return b.attendedCount - a.attendedCount;
+    });
+
+    let rankMap = {};
+    sorted.forEach((p, idx) => {
+      rankMap[p.name.toLowerCase()] = idx + 1;
+    });
+
+    return rankMap;
+  }
+
+  // RENDER LEADERBOARD WITH RANK TREND COLUMN
   function renderLeaderboard() {
     const sId = window.viewLeaderboardSeasonId || window.appState.activeSeasonId;
     const currentSeason = window.appState.seasons[sId];
@@ -1267,9 +1330,12 @@
     tbody.innerHTML = "";
 
     if (!currentSeason || !currentSeason.players) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">No player standings recorded yet for this season.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:20px;">No player standings recorded yet for this season.</td></tr>`;
       return;
     }
+
+    const totalLogs = currentSeason.weeklyLogs ? currentSeason.weeklyLogs.length : 0;
+    const previousWeekRanks = totalLogs > 1 ? calculateStandingsUpToWeek(currentSeason, totalLogs - 1) : {};
 
     let playerStatsMap = {};
     Object.keys(currentSeason.players).forEach(name => {
@@ -1334,16 +1400,37 @@
     }
 
     if (sortedPlayers.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">No player standings recorded yet for this season.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:20px;">No player standings recorded yet for this season.</td></tr>`;
       return;
     }
 
     sortedPlayers.forEach((player, index) => {
-      const rank = index + 1;
-      let rankDisplay = rank;
-      if (rank === 1) rankDisplay = `<span class="rank-1">🥇 1st</span>`;
-      else if (rank === 2) rankDisplay = `<span class="rank-2">🥈 2nd</span>`;
-      else if (rank === 3) rankDisplay = `<span class="rank-3">🥉 3rd</span>`;
+      const currentRank = index + 1;
+      let rankDisplay = currentRank;
+      if (currentRank === 1) rankDisplay = `<span class="rank-1">🥇 1st</span>`;
+      else if (currentRank === 2) rankDisplay = `<span class="rank-2">🥈 2nd</span>`;
+      else if (currentRank === 3) rankDisplay = `<span class="rank-3">🥉 3rd</span>`;
+
+      // Trend Calculation
+      const pNameLower = player.name.toLowerCase();
+      let trendDisplay = `<span class="trend-same">—</span>`;
+
+      if (totalLogs <= 1) {
+        trendDisplay = `<span class="trend-new">⭐ NEW</span>`;
+      } else if (previousWeekRanks[pNameLower] === undefined) {
+        trendDisplay = `<span class="trend-new">⭐ NEW</span>`;
+      } else {
+        const prevRank = previousWeekRanks[pNameLower];
+        const diff = prevRank - currentRank; // positive means moved up
+
+        if (diff > 0) {
+          trendDisplay = `<span class="trend-up">🟢 ▲ ${diff}</span>`;
+        } else if (diff < 0) {
+          trendDisplay = `<span class="trend-down">🔴 ▼ ${Math.abs(diff)}</span>`;
+        } else {
+          trendDisplay = `<span class="trend-same">—</span>`;
+        }
+      }
 
       let passDisplay = `<span style="color:var(--text-muted); font-size:0.85rem;">None</span>`;
       if (player.pass) {
@@ -1371,6 +1458,7 @@
       tbody.innerHTML += `
         <tr class="player-row" onclick="togglePlayerDrawer('${rowId}')">
           <td>${rankDisplay}</td>
+          <td>${trendDisplay}</td>
           <td>
             <strong>${escapeHtml(player.name)}</strong>${tieBadgeHtml}
             <span class="expand-icon">👁️</span>
@@ -1381,7 +1469,7 @@
           <td style="text-align: right; color:var(--accent-cyan); font-weight:bold; font-size:1.1rem;">${player.totalPoints} pts</td>
         </tr>
         <tr class="details-row" id="${rowId}">
-          <td colspan="6">
+          <td colspan="7">
             <div class="details-container">
               <div class="stat-box">
                 <div class="val">${player.topScorerCount}</div>
