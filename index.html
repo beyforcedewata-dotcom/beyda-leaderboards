@@ -596,17 +596,17 @@
       <div class="card">
         <h3>Specific Placements</h3>
         
-        <div class="form-group">
+        <div class="form-group" id="group_p1">
           <label id="lbl_p1">🥇 1st Place (6 pts):</label>
           <input type="text" id="p1_input" placeholder="Player name">
         </div>
 
-        <div class="form-group">
+        <div class="form-group" id="group_p2">
           <label id="lbl_p2">🥈 2nd Place (5 pts):</label>
           <input type="text" id="p2_input" placeholder="Player name">
         </div>
 
-        <div class="form-group">
+        <div class="form-group" id="group_p3">
           <label id="lbl_p3">🥉 3rd Place (4 pts):</label>
           <input type="text" id="p3_input" placeholder="Player name">
         </div>
@@ -616,7 +616,8 @@
           <!-- Populated dynamically based on point package setting -->
         </div>
 
-        <div class="form-group" style="margin-top:10px;">
+        <!-- 9th+ TOP CUT CONTAINER (Hidden if 0 pts) -->
+        <div class="form-group" id="group_p9_plus" style="margin-top:10px;">
           <label id="lbl_p9_plus">9th+ Top Cut (2 pts each):</label>
           <textarea id="p9_plus_input" placeholder="One name per line or separated by commas"></textarea>
         </div>
@@ -840,8 +841,8 @@
 
         <!-- Grouped Mode Box -->
         <div id="ps_grouped_box" class="form-group">
-          <label>4th - 8th Place (Grouped):</label>
-          <input type="number" id="ps_p4_8" value="3">
+          <label>4th - 8th Place (Grouped, 0=Off):</label>
+          <input type="number" id="ps_p4_8" value="3" min="0">
         </div>
 
         <!-- Individual Mode Box (0 = Inactive) -->
@@ -870,8 +871,8 @@
 
         <div class="grid-2">
           <div class="form-group">
-            <label>Top Cut (9th+):</label>
-            <input type="number" id="ps_p9_plus" value="2">
+            <label>Top Cut 9th+ (0 = Inactive):</label>
+            <input type="number" id="ps_p9_plus" value="2" min="0">
           </div>
           <div class="form-group">
             <label>Participant:</label>
@@ -974,7 +975,7 @@
         mode4to8: "individual", 
         p1: 10, p2: 8, p3: 6, p4_8: 4, 
         p4: 5, p5: 4, p6: 3, p7: 2, p8: 0, 
-        p9_plus: 1, part: 1, topScorer: 1, returnee: 2 
+        p9_plus: 0, part: 1, topScorer: 1, returnee: 2 
       }
     },
     seasons: {
@@ -1132,6 +1133,7 @@
     if (ps.mode4to8 === undefined) ps.mode4to8 = "grouped";
     if (ps.topScorer === undefined) ps.topScorer = 1;
     if (ps.returnee === undefined) ps.returnee = 2;
+    if (ps.p9_plus === undefined) ps.p9_plus = 2;
     return ps;
   }
 
@@ -1166,15 +1168,28 @@
 
       container4to8.innerHTML = inputsHtml;
     } else {
-      container4to8.innerHTML = `
-        <div class="form-group">
-          <label id="lbl_p4_8">4th - 8th Place (${ps.p4_8 || 3} pts each):</label>
-          <textarea id="p4_8_input" placeholder="One name per line or separated by commas"></textarea>
-        </div>
-      `;
+      if ((ps.p4_8 || 3) > 0) {
+        container4to8.innerHTML = `
+          <div class="form-group">
+            <label id="lbl_p4_8">4th - 8th Place (${ps.p4_8 || 3} pts each):</label>
+            <textarea id="p4_8_input" placeholder="One name per line or separated by commas"></textarea>
+          </div>
+        `;
+      } else {
+        container4to8.innerHTML = "";
+      }
     }
 
-    document.getElementById("lbl_p9_plus").textContent = `9th+ Top Cut (${ps.p9_plus} pts each):`;
+    // Handle 9th+ Top Cut (Hidden if 0 pts)
+    const p9Group = document.getElementById("group_p9_plus");
+    const p9Points = ps.p9_plus !== undefined ? ps.p9_plus : 2;
+    if (p9Points > 0) {
+      p9Group.style.display = "block";
+      document.getElementById("lbl_p9_plus").textContent = `9th+ Top Cut (${p9Points} pts each):`;
+    } else {
+      p9Group.style.display = "none";
+    }
+
     document.getElementById("lbl_part").textContent = `Participants (${ps.part} pt each):`;
 
     const topScorerBox = document.getElementById("topScorerInputBox");
@@ -1245,7 +1260,7 @@
     document.getElementById("ps_p7").value = ps.p7 !== undefined ? ps.p7 : 3;
     document.getElementById("ps_p8").value = ps.p8 !== undefined ? ps.p8 : 3;
 
-    document.getElementById("ps_p9_plus").value = ps.p9_plus;
+    document.getElementById("ps_p9_plus").value = ps.p9_plus !== undefined ? ps.p9_plus : 2;
     document.getElementById("ps_part").value = ps.part;
     document.getElementById("ps_top_scorer").value = ps.topScorer !== undefined ? ps.topScorer : 1;
     document.getElementById("ps_returnee").value = ps.returnee !== undefined ? ps.returnee : 2;
@@ -1647,7 +1662,7 @@
     }
 
     const p9_el = document.getElementById("p9_plus_input");
-    if (p9_el) parseLineInputs(p9_el.value).forEach(add);
+    if (p9_el && ps.p9_plus > 0) parseLineInputs(p9_el.value).forEach(add);
 
     const part_el = document.getElementById("bulkParticipantsInput");
     if (part_el) parseLineInputs(part_el.value).forEach(add);
@@ -1761,10 +1776,15 @@
       checkAndAddIndividual("p8_input", 8, ps.p8 !== undefined ? ps.p8 : 3);
     } else {
       const p4_8_el = document.getElementById("p4_8_input");
-      if (p4_8_el) parseLineInputs(p4_8_el.value).forEach(name => addPlayerScore(name, ps.p4_8 || 3, "4th-8th Place"));
+      const p4_8_pts = ps.p4_8 !== undefined ? ps.p4_8 : 3;
+      if (p4_8_el && p4_8_pts > 0) parseLineInputs(p4_8_el.value).forEach(name => addPlayerScore(name, p4_8_pts, "4th-8th Place"));
     }
 
-    parseLineInputs(document.getElementById("p9_plus_input").value).forEach(name => addPlayerScore(name, ps.p9_plus, "9th+ Top Cut"));
+    const p9Points = ps.p9_plus !== undefined ? ps.p9_plus : 2;
+    if (p9Points > 0) {
+      parseLineInputs(document.getElementById("p9_plus_input").value).forEach(name => addPlayerScore(name, p9Points, "9th+ Top Cut"));
+    }
+
     parseLineInputs(document.getElementById("bulkParticipantsInput").value).forEach(name => addPlayerScore(name, ps.part, "Participant"));
 
     // Pass Guarantee Automation
