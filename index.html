@@ -611,7 +611,7 @@
           <input type="text" id="p3_input" placeholder="Player name">
         </div>
 
-        <!-- DYNAMIC 4th-8th CONTAINER (Switches between grouped vs individual) -->
+        <!-- DYNAMIC 4th-8th CONTAINER (Only shows active inputs > 0 pts) -->
         <div id="dynamicPlacementContainer4to8">
           <!-- Populated dynamically based on point package setting -->
         </div>
@@ -819,7 +819,7 @@
           <label>4th–8th Point Distribution Mode:</label>
           <select id="ps_mode_4to8" onchange="togglePointSetEditMode()">
             <option value="grouped">Grouped 4th–8th (Same Points)</option>
-            <option value="individual">Individual 4th, 5th, 6th, 7th, 8th Points</option>
+            <option value="individual">Individual 4th, 5th, 6th, 7th, 8th Points (0 = Inactive)</option>
           </select>
         </div>
 
@@ -844,27 +844,27 @@
           <input type="number" id="ps_p4_8" value="3">
         </div>
 
-        <!-- Individual Mode Box -->
+        <!-- Individual Mode Box (0 = Inactive) -->
         <div id="ps_individual_box" class="grid-3" style="display:none; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; margin-bottom: 12px; border: 1px dashed var(--border-color);">
           <div class="form-group">
-            <label>4th Place:</label>
-            <input type="number" id="ps_p4" value="3">
+            <label>4th Place (0=Off):</label>
+            <input type="number" id="ps_p4" value="3" min="0">
           </div>
           <div class="form-group">
-            <label>5th Place:</label>
-            <input type="number" id="ps_p5" value="3">
+            <label>5th Place (0=Off):</label>
+            <input type="number" id="ps_p5" value="3" min="0">
           </div>
           <div class="form-group">
-            <label>6th Place:</label>
-            <input type="number" id="ps_p6" value="3">
+            <label>6th Place (0=Off):</label>
+            <input type="number" id="ps_p6" value="3" min="0">
           </div>
           <div class="form-group">
-            <label>7th Place:</label>
-            <input type="number" id="ps_p7" value="3">
+            <label>7th Place (0=Off):</label>
+            <input type="number" id="ps_p7" value="3" min="0">
           </div>
           <div class="form-group">
-            <label>8th Place:</label>
-            <input type="number" id="ps_p8" value="3">
+            <label>8th Place (0=Off):</label>
+            <input type="number" id="ps_p8" value="3" min="0">
           </div>
         </div>
 
@@ -973,7 +973,7 @@
         name: "Gradual Circuit (Individual 4th-8th)", 
         mode4to8: "individual", 
         p1: 10, p2: 8, p3: 6, p4_8: 4, 
-        p4: 5, p5: 4, p6: 3, p7: 2, p8: 2, 
+        p4: 5, p5: 4, p6: 3, p7: 2, p8: 0, 
         p9_plus: 1, part: 1, topScorer: 1, returnee: 2 
       }
     },
@@ -998,7 +998,6 @@
     document.getElementById("matchDateInput").value = new Date().toISOString().slice(0, 10);
   });
 
-  // Toggle Point Set Editor Mode Display
   window.togglePointSetEditMode = function() {
     const mode = document.getElementById("ps_mode_4to8").value;
     document.getElementById("ps_grouped_box").style.display = mode === "grouped" ? "block" : "none";
@@ -1147,28 +1146,25 @@
     const container4to8 = document.getElementById("dynamicPlacementContainer4to8");
 
     if (ps.mode4to8 === "individual") {
-      container4to8.innerHTML = `
-        <div class="form-group">
-          <label>4th Place (${ps.p4 || 3} pts):</label>
-          <input type="text" id="p4_input" placeholder="Player name">
-        </div>
-        <div class="form-group">
-          <label>5th Place (${ps.p5 || 3} pts):</label>
-          <input type="text" id="p5_input" placeholder="Player name">
-        </div>
-        <div class="form-group">
-          <label>6th Place (${ps.p6 || 3} pts):</label>
-          <input type="text" id="p6_input" placeholder="Player name">
-        </div>
-        <div class="form-group">
-          <label>7th Place (${ps.p7 || 3} pts):</label>
-          <input type="text" id="p7_input" placeholder="Player name">
-        </div>
-        <div class="form-group">
-          <label>8th Place (${ps.p8 || 3} pts):</label>
-          <input type="text" id="p8_input" placeholder="Player name">
-        </div>
-      `;
+      let inputsHtml = "";
+      const addFieldIfActive = (fieldId, rankNum, pts) => {
+        if (pts > 0) {
+          inputsHtml += `
+            <div class="form-group">
+              <label>${rankNum}th Place (${pts} pts):</label>
+              <input type="text" id="${fieldId}" placeholder="Player name">
+            </div>
+          `;
+        }
+      };
+
+      addFieldIfActive("p4_input", 4, ps.p4 !== undefined ? ps.p4 : 3);
+      addFieldIfActive("p5_input", 5, ps.p5 !== undefined ? ps.p5 : 3);
+      addFieldIfActive("p6_input", 6, ps.p6 !== undefined ? ps.p6 : 3);
+      addFieldIfActive("p7_input", 7, ps.p7 !== undefined ? ps.p7 : 3);
+      addFieldIfActive("p8_input", 8, ps.p8 !== undefined ? ps.p8 : 3);
+
+      container4to8.innerHTML = inputsHtml;
     } else {
       container4to8.innerHTML = `
         <div class="form-group">
@@ -1242,12 +1238,12 @@
     document.getElementById("ps_p2").value = ps.p2;
     document.getElementById("ps_p3").value = ps.p3;
 
-    document.getElementById("ps_p4_8").value = ps.p4_8 || 3;
-    document.getElementById("ps_p4").value = ps.p4 || 3;
-    document.getElementById("ps_p5").value = ps.p5 || 3;
-    document.getElementById("ps_p6").value = ps.p6 || 3;
-    document.getElementById("ps_p7").value = ps.p7 || 3;
-    document.getElementById("ps_p8").value = ps.p8 || 3;
+    document.getElementById("ps_p4_8").value = ps.p4_8 !== undefined ? ps.p4_8 : 3;
+    document.getElementById("ps_p4").value = ps.p4 !== undefined ? ps.p4 : 3;
+    document.getElementById("ps_p5").value = ps.p5 !== undefined ? ps.p5 : 3;
+    document.getElementById("ps_p6").value = ps.p6 !== undefined ? ps.p6 : 3;
+    document.getElementById("ps_p7").value = ps.p7 !== undefined ? ps.p7 : 3;
+    document.getElementById("ps_p8").value = ps.p8 !== undefined ? ps.p8 : 3;
 
     document.getElementById("ps_p9_plus").value = ps.p9_plus;
     document.getElementById("ps_part").value = ps.part;
@@ -1749,17 +1745,20 @@
     if (p3.trim()) addPlayerScore(p3, ps.p3, "3rd Place");
 
     if (ps.mode4to8 === "individual") {
-      const p4 = document.getElementById("p4_input") ? document.getElementById("p4_input").value : "";
-      const p5 = document.getElementById("p5_input") ? document.getElementById("p5_input").value : "";
-      const p6 = document.getElementById("p6_input") ? document.getElementById("p6_input").value : "";
-      const p7 = document.getElementById("p7_input") ? document.getElementById("p7_input").value : "";
-      const p8 = document.getElementById("p8_input") ? document.getElementById("p8_input").value : "";
+      const checkAndAddIndividual = (fieldId, rankNum, pts) => {
+        if (pts > 0) {
+          const el = document.getElementById(fieldId);
+          if (el && el.value.trim()) {
+            addPlayerScore(el.value, pts, `${rankNum}th Place`);
+          }
+        }
+      };
 
-      if (p4.trim()) addPlayerScore(p4, ps.p4 || 3, "4th Place");
-      if (p5.trim()) addPlayerScore(p5, ps.p5 || 3, "5th Place");
-      if (p6.trim()) addPlayerScore(p6, ps.p6 || 3, "6th Place");
-      if (p7.trim()) addPlayerScore(p7, ps.p7 || 3, "7th Place");
-      if (p8.trim()) addPlayerScore(p8, ps.p8 || 3, "8th Place");
+      checkAndAddIndividual("p4_input", 4, ps.p4 !== undefined ? ps.p4 : 3);
+      checkAndAddIndividual("p5_input", 5, ps.p5 !== undefined ? ps.p5 : 3);
+      checkAndAddIndividual("p6_input", 6, ps.p6 !== undefined ? ps.p6 : 3);
+      checkAndAddIndividual("p7_input", 7, ps.p7 !== undefined ? ps.p7 : 3);
+      checkAndAddIndividual("p8_input", 8, ps.p8 !== undefined ? ps.p8 : 3);
     } else {
       const p4_8_el = document.getElementById("p4_8_input");
       if (p4_8_el) parseLineInputs(p4_8_el.value).forEach(name => addPlayerScore(name, ps.p4_8 || 3, "4th-8th Place"));
