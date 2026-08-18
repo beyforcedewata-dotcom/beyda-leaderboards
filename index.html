@@ -391,29 +391,10 @@
     }
 
     /* Rank Trend Badges */
-    .trend-up {
-      color: var(--accent-green);
-      font-weight: bold;
-      font-size: 0.88rem;
-    }
-    .trend-down {
-      color: var(--accent-red);
-      font-weight: bold;
-      font-size: 0.88rem;
-    }
-    .trend-new {
-      background: #ffd700;
-      color: #000;
-      font-size: 0.7rem;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: bold;
-      display: inline-block;
-    }
-    .trend-same {
-      color: var(--text-muted);
-      font-size: 0.88rem;
-    }
+    .trend-up { color: var(--accent-green); font-weight: bold; font-size: 0.88rem; }
+    .trend-down { color: var(--accent-red); font-weight: bold; font-size: 0.88rem; }
+    .trend-new { background: #ffd700; color: #000; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block; }
+    .trend-same { color: var(--text-muted); font-size: 0.88rem; }
 
     /* Medals & Badges */
     .rank-1 { color: #ffd700; font-weight: bold; font-size: 1.1rem; }
@@ -464,47 +445,15 @@
 
     /* RESPONSIVE MOBILE STYLES */
     @media (max-width: 768px) {
-      body {
-        padding: 10px;
-      }
-
-      header h1 {
-        font-size: 1.5rem;
-      }
-
-      .brand-logo {
-        max-height: 50px;
-      }
-
-      .view-panel {
-        padding: 14px;
-      }
-
-      .tabs {
-        gap: 6px;
-      }
-
-      .tab-btn {
-        flex: 1 1 auto;
-        text-align: center;
-        padding: 8px 12px;
-        font-size: 0.85rem;
-      }
-
-      .lb-table th, .lb-table td {
-        padding: 8px 6px;
-        font-size: 0.85rem;
-      }
-
-      .stat-box {
-        min-width: 80px;
-        padding: 6px 8px;
-      }
-
-      .top-scorer-bar {
-        flex-direction: column;
-        align-items: stretch;
-      }
+      body { padding: 10px; }
+      header h1 { font-size: 1.5rem; }
+      .brand-logo { max-height: 50px; }
+      .view-panel { padding: 14px; }
+      .tabs { gap: 6px; }
+      .tab-btn { flex: 1 1 auto; text-align: center; padding: 8px 12px; font-size: 0.85rem; }
+      .lb-table th, .lb-table td { padding: 8px 6px; font-size: 0.85rem; }
+      .stat-box { min-width: 80px; padding: 6px 8px; }
+      .top-scorer-bar { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
@@ -583,6 +532,23 @@
       <!-- Rendered dynamically -->
     </div>
 
+    <!-- PLAYER DETAILED MATCH BREAKDOWN CARD -->
+    <div class="card" style="border-color: var(--accent-orange); background: rgba(255, 61, 0, 0.03);">
+      <h3>🔍 Inspect Player Match Breakdown (Matches 1–10+)</h3>
+      <div class="grid-2" style="margin-top: 10px;">
+        <div class="form-group">
+          <label>Select Player:</label>
+          <select id="playerInspectSelect" onchange="renderPlayerMatchBreakdown()">
+            <!-- Rendered dynamically -->
+          </select>
+        </div>
+      </div>
+
+      <div id="playerBreakdownContainer">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
     <div id="historyContainer">
       <!-- Historical & upcoming records rendered dynamically -->
     </div>
@@ -645,12 +611,12 @@
           <input type="text" id="p3_input" placeholder="Player name">
         </div>
 
-        <div class="form-group">
-          <label id="lbl_p4_8">4th - 8th Place (3 pts each):</label>
-          <textarea id="p4_8_input" placeholder="One name per line or separated by commas"></textarea>
+        <!-- DYNAMIC 4th-8th CONTAINER (Switches between grouped vs individual) -->
+        <div id="dynamicPlacementContainer4to8">
+          <!-- Populated dynamically based on point package setting -->
         </div>
 
-        <div class="form-group">
+        <div class="form-group" style="margin-top:10px;">
           <label id="lbl_p9_plus">9th+ Top Cut (2 pts each):</label>
           <textarea id="p9_plus_input" placeholder="One name per line or separated by commas"></textarea>
         </div>
@@ -691,7 +657,6 @@
     <div class="card">
       <h3>Assign New Pass</h3>
       <div class="grid-2" style="margin-top: 10px;">
-        <!-- Season Selection -->
         <div class="form-group">
           <label>Select Season:</label>
           <select id="passSeasonSelect" onchange="updatePassPlayerDropdown()">
@@ -699,7 +664,6 @@
           </select>
         </div>
 
-        <!-- Registered Player Selection -->
         <div class="form-group">
           <label>Select Registered Player:</label>
           <select id="passPlayerSelect">
@@ -707,13 +671,11 @@
           </select>
         </div>
 
-        <!-- Optional Custom Player Name -->
         <div class="form-group">
           <label>Or New Player Name (If Unregistered):</label>
           <input type="text" id="passPlayerName" placeholder="Type name only if not in dropdown">
         </div>
 
-        <!-- Pass Type -->
         <div class="form-group">
           <label>Pass Type:</label>
           <select id="passTypeSelect">
@@ -722,7 +684,6 @@
           </select>
         </div>
 
-        <!-- Start Week -->
         <div class="form-group">
           <label>Start Match/Week #:</label>
           <input type="number" id="passStartWeek" value="1" min="1">
@@ -854,6 +815,14 @@
           <input type="text" id="ps_name" placeholder="e.g., Grand Prix Major">
         </div>
 
+        <div class="form-group">
+          <label>4th–8th Point Distribution Mode:</label>
+          <select id="ps_mode_4to8" onchange="togglePointSetEditMode()">
+            <option value="grouped">Grouped 4th–8th (Same Points)</option>
+            <option value="individual">Individual 4th, 5th, 6th, 7th, 8th Points</option>
+          </select>
+        </div>
+
         <div class="grid-3">
           <div class="form-group">
             <label>🥇 1st:</label>
@@ -867,23 +836,55 @@
             <label>🥉 3rd:</label>
             <input type="number" id="ps_p3" value="4">
           </div>
+        </div>
+
+        <!-- Grouped Mode Box -->
+        <div id="ps_grouped_box" class="form-group">
+          <label>4th - 8th Place (Grouped):</label>
+          <input type="number" id="ps_p4_8" value="3">
+        </div>
+
+        <!-- Individual Mode Box -->
+        <div id="ps_individual_box" class="grid-3" style="display:none; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; margin-bottom: 12px; border: 1px dashed var(--border-color);">
           <div class="form-group">
-            <label>4th-8th:</label>
-            <input type="number" id="ps_p4_8" value="3">
+            <label>4th Place:</label>
+            <input type="number" id="ps_p4" value="3">
           </div>
           <div class="form-group">
-            <label>Top Cut:</label>
+            <label>5th Place:</label>
+            <input type="number" id="ps_p5" value="3">
+          </div>
+          <div class="form-group">
+            <label>6th Place:</label>
+            <input type="number" id="ps_p6" value="3">
+          </div>
+          <div class="form-group">
+            <label>7th Place:</label>
+            <input type="number" id="ps_p7" value="3">
+          </div>
+          <div class="form-group">
+            <label>8th Place:</label>
+            <input type="number" id="ps_p8" value="3">
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Top Cut (9th+):</label>
             <input type="number" id="ps_p9_plus" value="2">
           </div>
           <div class="form-group">
-            <label>Part.:</label>
+            <label>Participant:</label>
             <input type="number" id="ps_part" value="1">
           </div>
-          <div class="form-group" style="grid-column: span 3;">
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
             <label>⭐ Top Scorer Bonus (0 = Disabled):</label>
             <input type="number" id="ps_top_scorer" value="1" min="0">
           </div>
-          <div class="form-group" style="grid-column: span 3;">
+          <div class="form-group">
             <label>🔄 Returnee Bonus (0 = Disabled):</label>
             <input type="number" id="ps_returnee" value="2" min="0">
           </div>
@@ -950,13 +951,31 @@
   const db = getDatabase(app);
   const dbRef = ref(db, 'appState');
 
-  // App State Structure
+  // App State Structure with Default Point Sets
   window.appState = {
     activeSeasonId: "s1",
     pointSets: {
-      "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1, returnee: 2 },
-      "ps_major": { name: "Major Championship (2x Base)", p1: 12, p2: 10, p3: 8, p4_8: 6, p9_plus: 4, part: 2, topScorer: 2, returnee: 2 },
-      "ps_blitz": { name: "Casual Blitz", p1: 3, p2: 2, p3: 1, p4_8: 1, p9_plus: 1, part: 1, topScorer: 0, returnee: 0 }
+      "ps_std": { 
+        name: "Standard Circuit", 
+        mode4to8: "grouped", 
+        p1: 6, p2: 5, p3: 4, p4_8: 3, 
+        p4: 3, p5: 3, p6: 3, p7: 3, p8: 3, 
+        p9_plus: 2, part: 1, topScorer: 1, returnee: 2 
+      },
+      "ps_major": { 
+        name: "Major Championship (2x Base)", 
+        mode4to8: "grouped", 
+        p1: 12, p2: 10, p3: 8, p4_8: 6, 
+        p4: 6, p5: 6, p6: 6, p7: 6, p8: 6, 
+        p9_plus: 4, part: 2, topScorer: 2, returnee: 2 
+      },
+      "ps_individual": { 
+        name: "Gradual Circuit (Individual 4th-8th)", 
+        mode4to8: "individual", 
+        p1: 10, p2: 8, p3: 6, p4_8: 4, 
+        p4: 5, p5: 4, p6: 3, p7: 2, p8: 2, 
+        p9_plus: 1, part: 1, topScorer: 1, returnee: 2 
+      }
     },
     seasons: {
       "s1": {
@@ -978,6 +997,13 @@
   document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("matchDateInput").value = new Date().toISOString().slice(0, 10);
   });
+
+  // Toggle Point Set Editor Mode Display
+  window.togglePointSetEditMode = function() {
+    const mode = document.getElementById("ps_mode_4to8").value;
+    document.getElementById("ps_grouped_box").style.display = mode === "grouped" ? "block" : "none";
+    document.getElementById("ps_individual_box").style.display = mode === "individual" ? "grid" : "none";
+  };
 
   // Two-Step Delete Helper Function
   window.executeTwoStepDelete = function(actionDescription, onConfirmedCallback) {
@@ -1034,7 +1060,7 @@
 
       if (!window.appState.pointSets) {
         window.appState.pointSets = {
-          "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1, returnee: 2 }
+          "ps_std": { name: "Standard Circuit", mode4to8: "grouped", p1: 6, p2: 5, p3: 4, p4_8: 3, p4: 3, p5: 3, p6: 3, p7: 3, p8: 3, p9_plus: 2, part: 1, topScorer: 1, returnee: 2 }
         };
       }
 
@@ -1099,7 +1125,12 @@
       return s.pointSetSnapshot;
     }
     const psId = (s && s.pointSetId) ? s.pointSetId : "ps_std";
-    const ps = window.appState.pointSets[psId] || { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1, returnee: 2 };
+    const ps = window.appState.pointSets[psId] || { 
+      name: "Standard Circuit", mode4to8: "grouped", p1: 6, p2: 5, p3: 4, p4_8: 3, 
+      p4: 3, p5: 3, p6: 3, p7: 3, p8: 3, p9_plus: 2, part: 1, topScorer: 1, returnee: 2 
+    };
+
+    if (ps.mode4to8 === undefined) ps.mode4to8 = "grouped";
     if (ps.topScorer === undefined) ps.topScorer = 1;
     if (ps.returnee === undefined) ps.returnee = 2;
     return ps;
@@ -1108,11 +1139,45 @@
   function updateWeeklyFormLabels() {
     const ps = getActiveSeasonPointSet();
     
-    document.getElementById("activePointSetBadge").textContent = `Ruleset: ${ps.name}`;
+    document.getElementById("activePointSetBadge").textContent = `Ruleset: ${ps.name} (${ps.mode4to8 === 'individual' ? 'Individual 4th-8th' : 'Grouped 4th-8th'})`;
     document.getElementById("lbl_p1").textContent = `🥇 1st Place (${ps.p1} pts):`;
     document.getElementById("lbl_p2").textContent = `🥈 2nd Place (${ps.p2} pts):`;
     document.getElementById("lbl_p3").textContent = `🥉 3rd Place (${ps.p3} pts):`;
-    document.getElementById("lbl_p4_8").textContent = `4th - 8th Place (${ps.p4_8} pts each):`;
+
+    const container4to8 = document.getElementById("dynamicPlacementContainer4to8");
+
+    if (ps.mode4to8 === "individual") {
+      container4to8.innerHTML = `
+        <div class="form-group">
+          <label>4th Place (${ps.p4 || 3} pts):</label>
+          <input type="text" id="p4_input" placeholder="Player name">
+        </div>
+        <div class="form-group">
+          <label>5th Place (${ps.p5 || 3} pts):</label>
+          <input type="text" id="p5_input" placeholder="Player name">
+        </div>
+        <div class="form-group">
+          <label>6th Place (${ps.p6 || 3} pts):</label>
+          <input type="text" id="p6_input" placeholder="Player name">
+        </div>
+        <div class="form-group">
+          <label>7th Place (${ps.p7 || 3} pts):</label>
+          <input type="text" id="p7_input" placeholder="Player name">
+        </div>
+        <div class="form-group">
+          <label>8th Place (${ps.p8 || 3} pts):</label>
+          <input type="text" id="p8_input" placeholder="Player name">
+        </div>
+      `;
+    } else {
+      container4to8.innerHTML = `
+        <div class="form-group">
+          <label id="lbl_p4_8">4th - 8th Place (${ps.p4_8 || 3} pts each):</label>
+          <textarea id="p4_8_input" placeholder="One name per line or separated by commas"></textarea>
+        </div>
+      `;
+    }
+
     document.getElementById("lbl_p9_plus").textContent = `9th+ Top Cut (${ps.p9_plus} pts each):`;
     document.getElementById("lbl_part").textContent = `Participants (${ps.part} pt each):`;
 
@@ -1141,7 +1206,8 @@
       newSeasonSelect.innerHTML = "";
       Object.keys(window.appState.pointSets).forEach(psId => {
         const ps = window.appState.pointSets[psId];
-        newSeasonSelect.innerHTML += `<option value="${psId}">${escapeHtml(ps.name)} (${ps.p1}-${ps.p2}-${ps.p3}-${ps.p4_8}-${ps.p9_plus}-${ps.part})</option>`;
+        const modeLabel = ps.mode4to8 === 'individual' ? 'Indiv 4-8' : 'Grouped 4-8';
+        newSeasonSelect.innerHTML += `<option value="${psId}">${escapeHtml(ps.name)} (${modeLabel})</option>`;
       });
     }
 
@@ -1171,14 +1237,24 @@
   window.loadPointSetIntoEditor = function() {
     const ps = getActiveSeasonPointSet();
     document.getElementById("ps_name").value = ps.name;
+    document.getElementById("ps_mode_4to8").value = ps.mode4to8 || "grouped";
     document.getElementById("ps_p1").value = ps.p1;
     document.getElementById("ps_p2").value = ps.p2;
     document.getElementById("ps_p3").value = ps.p3;
-    document.getElementById("ps_p4_8").value = ps.p4_8;
+
+    document.getElementById("ps_p4_8").value = ps.p4_8 || 3;
+    document.getElementById("ps_p4").value = ps.p4 || 3;
+    document.getElementById("ps_p5").value = ps.p5 || 3;
+    document.getElementById("ps_p6").value = ps.p6 || 3;
+    document.getElementById("ps_p7").value = ps.p7 || 3;
+    document.getElementById("ps_p8").value = ps.p8 || 3;
+
     document.getElementById("ps_p9_plus").value = ps.p9_plus;
     document.getElementById("ps_part").value = ps.part;
     document.getElementById("ps_top_scorer").value = ps.topScorer !== undefined ? ps.topScorer : 1;
     document.getElementById("ps_returnee").value = ps.returnee !== undefined ? ps.returnee : 2;
+
+    togglePointSetEditMode();
     alert(`Loaded "${ps.name}" into editor below.`);
   };
 
@@ -1186,10 +1262,18 @@
     const name = document.getElementById("ps_name").value.trim();
     if (!name) return alert("Enter point set name.");
 
+    const mode4to8 = document.getElementById("ps_mode_4to8").value;
     const p1 = parseInt(document.getElementById("ps_p1").value) || 0;
     const p2 = parseInt(document.getElementById("ps_p2").value) || 0;
     const p3 = parseInt(document.getElementById("ps_p3").value) || 0;
+
     const p4_8 = parseInt(document.getElementById("ps_p4_8").value) || 0;
+    const p4 = parseInt(document.getElementById("ps_p4").value) || 0;
+    const p5 = parseInt(document.getElementById("ps_p5").value) || 0;
+    const p6 = parseInt(document.getElementById("ps_p6").value) || 0;
+    const p7 = parseInt(document.getElementById("ps_p7").value) || 0;
+    const p8 = parseInt(document.getElementById("ps_p8").value) || 0;
+
     const p9_plus = parseInt(document.getElementById("ps_p9_plus").value) || 0;
     const part = parseInt(document.getElementById("ps_part").value) || 0;
     const topScorer = parseInt(document.getElementById("ps_top_scorer").value) || 0;
@@ -1206,7 +1290,9 @@
       targetPsId = "ps_" + Date.now();
     }
 
-    window.appState.pointSets[targetPsId] = { name, p1, p2, p3, p4_8, p9_plus, part, topScorer, returnee };
+    window.appState.pointSets[targetPsId] = { 
+      name, mode4to8, p1, p2, p3, p4_8, p4, p5, p6, p7, p8, p9_plus, part, topScorer, returnee 
+    };
 
     document.getElementById("ps_name").value = "";
     window.saveData();
@@ -1282,12 +1368,10 @@
     return `<span class="pass-badge ${passClass}">${passObj.type.toUpperCase()} PASS</span>`;
   }
 
-  // Calculate standings up to a specific week index for rank shifts
   function calculateStandingsUpToWeek(seasonObj, maxWeekIndex) {
     if (!seasonObj || !seasonObj.players) return {};
 
     let standingsMap = {};
-
     const logsToProcess = seasonObj.weeklyLogs ? seasonObj.weeklyLogs.slice(0, maxWeekIndex) : [];
 
     logsToProcess.forEach(log => {
@@ -1322,7 +1406,7 @@
     return rankMap;
   }
 
-  // RENDER LEADERBOARD WITH RANK TREND COLUMN
+  // RENDER LEADERBOARD
   function renderLeaderboard() {
     const sId = window.viewLeaderboardSeasonId || window.appState.activeSeasonId;
     const currentSeason = window.appState.seasons[sId];
@@ -1411,7 +1495,6 @@
       else if (currentRank === 2) rankDisplay = `<span class="rank-2">🥈 2nd</span>`;
       else if (currentRank === 3) rankDisplay = `<span class="rank-3">🥉 3rd</span>`;
 
-      // Trend Calculation
       const pNameLower = player.name.toLowerCase();
       let trendDisplay = `<span class="trend-same">—</span>`;
 
@@ -1421,7 +1504,7 @@
         trendDisplay = `<span class="trend-new">⭐ NEW</span>`;
       } else {
         const prevRank = previousWeekRanks[pNameLower];
-        const diff = prevRank - currentRank; // positive means moved up
+        const diff = prevRank - currentRank;
 
         if (diff > 0) {
           trendDisplay = `<span class="trend-up">🟢 ▲ ${diff}</span>`;
@@ -1493,9 +1576,7 @@
 
   window.togglePlayerDrawer = function(drawerId) {
     const el = document.getElementById(drawerId);
-    if (el) {
-      el.classList.toggle('open');
-    }
+    if (el) el.classList.toggle('open');
   };
 
   window.movePlayerRank = function(seasonId, index, direction) {
@@ -1551,15 +1632,29 @@
 
   function getCurrentlyEnteredNames() {
     const names = new Set();
-    const add = name => { if (name.trim()) names.add(name.trim().toLowerCase()); };
+    const add = name => { if (name && name.trim()) names.add(name.trim().toLowerCase()); };
 
-    add(document.getElementById("p1_input").value);
-    add(document.getElementById("p2_input").value);
-    add(document.getElementById("p3_input").value);
+    add(document.getElementById("p1_input") ? document.getElementById("p1_input").value : "");
+    add(document.getElementById("p2_input") ? document.getElementById("p2_input").value : "");
+    add(document.getElementById("p3_input") ? document.getElementById("p3_input").value : "");
 
-    parseLineInputs(document.getElementById("p4_8_input").value).forEach(add);
-    parseLineInputs(document.getElementById("p9_plus_input").value).forEach(add);
-    parseLineInputs(document.getElementById("bulkParticipantsInput").value).forEach(add);
+    const ps = getActiveSeasonPointSet();
+    if (ps.mode4to8 === "individual") {
+      add(document.getElementById("p4_input") ? document.getElementById("p4_input").value : "");
+      add(document.getElementById("p5_input") ? document.getElementById("p5_input").value : "");
+      add(document.getElementById("p6_input") ? document.getElementById("p6_input").value : "");
+      add(document.getElementById("p7_input") ? document.getElementById("p7_input").value : "");
+      add(document.getElementById("p8_input") ? document.getElementById("p8_input").value : "");
+    } else {
+      const p4_8_el = document.getElementById("p4_8_input");
+      if (p4_8_el) parseLineInputs(p4_8_el.value).forEach(add);
+    }
+
+    const p9_el = document.getElementById("p9_plus_input");
+    if (p9_el) parseLineInputs(p9_el.value).forEach(add);
+
+    const part_el = document.getElementById("bulkParticipantsInput");
+    if (part_el) parseLineInputs(part_el.value).forEach(add);
 
     return names;
   }
@@ -1653,7 +1748,23 @@
     const p3 = document.getElementById("p3_input").value;
     if (p3.trim()) addPlayerScore(p3, ps.p3, "3rd Place");
 
-    parseLineInputs(document.getElementById("p4_8_input").value).forEach(name => addPlayerScore(name, ps.p4_8, "4th-8th Place"));
+    if (ps.mode4to8 === "individual") {
+      const p4 = document.getElementById("p4_input") ? document.getElementById("p4_input").value : "";
+      const p5 = document.getElementById("p5_input") ? document.getElementById("p5_input").value : "";
+      const p6 = document.getElementById("p6_input") ? document.getElementById("p6_input").value : "";
+      const p7 = document.getElementById("p7_input") ? document.getElementById("p7_input").value : "";
+      const p8 = document.getElementById("p8_input") ? document.getElementById("p8_input").value : "";
+
+      if (p4.trim()) addPlayerScore(p4, ps.p4 || 3, "4th Place");
+      if (p5.trim()) addPlayerScore(p5, ps.p5 || 3, "5th Place");
+      if (p6.trim()) addPlayerScore(p6, ps.p6 || 3, "6th Place");
+      if (p7.trim()) addPlayerScore(p7, ps.p7 || 3, "7th Place");
+      if (p8.trim()) addPlayerScore(p8, ps.p8 || 3, "8th Place");
+    } else {
+      const p4_8_el = document.getElementById("p4_8_input");
+      if (p4_8_el) parseLineInputs(p4_8_el.value).forEach(name => addPlayerScore(name, ps.p4_8 || 3, "4th-8th Place"));
+    }
+
     parseLineInputs(document.getElementById("p9_plus_input").value).forEach(name => addPlayerScore(name, ps.p9_plus, "9th+ Top Cut"));
     parseLineInputs(document.getElementById("bulkParticipantsInput").value).forEach(name => addPlayerScore(name, ps.part, "Participant"));
 
@@ -1689,7 +1800,17 @@
     document.getElementById("p1_input").value = "";
     document.getElementById("p2_input").value = "";
     document.getElementById("p3_input").value = "";
-    document.getElementById("p4_8_input").value = "";
+    
+    if (ps.mode4to8 === "individual") {
+      if (document.getElementById("p4_input")) document.getElementById("p4_input").value = "";
+      if (document.getElementById("p5_input")) document.getElementById("p5_input").value = "";
+      if (document.getElementById("p6_input")) document.getElementById("p6_input").value = "";
+      if (document.getElementById("p7_input")) document.getElementById("p7_input").value = "";
+      if (document.getElementById("p8_input")) document.getElementById("p8_input").value = "";
+    } else {
+      if (document.getElementById("p4_8_input")) document.getElementById("p4_8_input").value = "";
+    }
+
     document.getElementById("p9_plus_input").value = "";
     document.getElementById("bulkParticipantsInput").value = "";
     document.getElementById("topScorerInput").value = "";
@@ -1800,6 +1921,103 @@
     });
   }
 
+  // RENDER PLAYER INSPECT DROPDOWN
+  function renderPlayerInspectDropdown() {
+    const playerSelect = document.getElementById("playerInspectSelect");
+    if (!playerSelect) return;
+
+    const sId = window.viewHistorySeasonId || window.appState.activeSeasonId;
+    const targetSeason = window.appState.seasons[sId];
+
+    playerSelect.innerHTML = `<option value="">-- Select Player to Inspect --</option>`;
+
+    if (targetSeason && targetSeason.players) {
+      const sortedNames = Object.keys(targetSeason.players).sort();
+      sortedNames.forEach(name => {
+        playerSelect.innerHTML += `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`;
+      });
+    }
+
+    renderPlayerMatchBreakdown();
+  }
+
+  // RENDER DETAILED PLAYER MATCH BREAKDOWN
+  window.renderPlayerMatchBreakdown = function() {
+    const breakdownContainer = document.getElementById("playerBreakdownContainer");
+    const playerSelect = document.getElementById("playerInspectSelect");
+    if (!breakdownContainer || !playerSelect) return;
+
+    const selectedPlayer = playerSelect.value;
+    const sId = window.viewHistorySeasonId || window.appState.activeSeasonId;
+    const currentSeason = window.appState.seasons[sId];
+
+    if (!selectedPlayer || !currentSeason) {
+      breakdownContainer.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding: 12px 0;">Select a player from the dropdown above to inspect their match-by-match score history.</p>`;
+      return;
+    }
+
+    const totalMatches = currentSeason.totalMatches || 10;
+    const logsMap = {};
+    
+    if (currentSeason.weeklyLogs) {
+      currentSeason.weeklyLogs.forEach(log => {
+        logsMap[log.weekNum] = log;
+      });
+    }
+
+    let rows = "";
+    let totalScoreCalculated = 0;
+
+    for (let mNum = 1; mNum <= totalMatches; mNum++) {
+      const log = logsMap[mNum];
+      let matchDate = "Upcoming";
+      let placementLabel = `<span style="color:var(--text-muted);">Did Not Participate</span>`;
+      let pointsEarned = `<span style="color:var(--text-muted);">0 pts</span>`;
+
+      if (log) {
+        matchDate = log.matchDate || "Date Not Logged";
+        const pScore = log.scores ? log.scores.find(s => s.name.toLowerCase() === selectedPlayer.toLowerCase()) : null;
+
+        if (pScore) {
+          placementLabel = `<strong style="color:var(--text-white);">${pScore.category}</strong>`;
+          pointsEarned = `<strong style="color:var(--accent-cyan);">+${pScore.earned} pts</strong>`;
+          totalScoreCalculated += pScore.earned;
+        } else {
+          placementLabel = `<span style="color:#ff5252;">Absent</span>`;
+        }
+      }
+
+      rows += `
+        <tr>
+          <td><strong>Match ${mNum}</strong></td>
+          <td style="color:var(--text-muted); font-size:0.85rem;">${matchDate}</td>
+          <td>${placementLabel}</td>
+          <td style="text-align: right;">${pointsEarned}</td>
+        </tr>
+      `;
+    }
+
+    breakdownContainer.innerHTML = `
+      <div style="margin-top: 15px;">
+        <div class="flex-gap" style="justify-content: space-between; margin-bottom: 8px;">
+          <h4 style="color:var(--accent-cyan);">Breakdown for: <strong>${escapeHtml(selectedPlayer)}</strong></h4>
+          <span style="color:var(--accent-cyan); font-weight:bold;">Total Season Score: ${totalScoreCalculated} pts</span>
+        </div>
+        <table class="lb-table">
+          <thead>
+            <tr>
+              <th style="width: 20%;">Match #</th>
+              <th style="width: 25%;">Date</th>
+              <th style="width: 35%;">Result / Placement</th>
+              <th style="width: 20%; text-align: right;">Points Earned</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `;
+  };
+
   // RENDER SCHEDULE & HISTORY
   function renderHistory() {
     const container = document.getElementById("historyContainer");
@@ -1809,6 +2027,8 @@
 
     const sId = window.viewHistorySeasonId || window.appState.activeSeasonId;
     const currentSeason = window.appState.seasons[sId];
+
+    renderPlayerInspectDropdown();
 
     if (!currentSeason) {
       overviewContainer.innerHTML = `<p style="color:var(--text-muted);">No season selected.</p>`;
@@ -2109,7 +2329,13 @@
       window.appState = {
         activeSeasonId: "s1",
         pointSets: {
-          "ps_std": { name: "Standard Circuit", p1: 6, p2: 5, p3: 4, p4_8: 3, p9_plus: 2, part: 1, topScorer: 1, returnee: 2 }
+          "ps_std": { 
+            name: "Standard Circuit", 
+            mode4to8: "grouped", 
+            p1: 6, p2: 5, p3: 4, p4_8: 3, 
+            p4: 3, p5: 3, p6: 3, p7: 3, p8: 3, 
+            p9_plus: 2, part: 1, topScorer: 1, returnee: 2 
+          }
         },
         seasons: { 
           "s1": { 
