@@ -249,7 +249,7 @@
 
     textarea {
       resize: vertical;
-      min-height: 80px;
+      min-height: 60px;
     }
 
     input:focus, select:focus, textarea:focus {
@@ -592,26 +592,26 @@
     </div>
 
     <div class="grid-2">
-      <!-- Placement Form -->
+      <!-- Placement Form (Supports multiple co-winners per slot separated by commas/newlines) -->
       <div class="card">
-        <h3>Specific Placements</h3>
+        <h3>Specific Placements <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Multiple names allowed per slot)</span></h3>
         
         <div class="form-group" id="group_p1">
           <label id="lbl_p1">🥇 1st Place (6 pts):</label>
-          <input type="text" id="p1_input" placeholder="Player name">
+          <textarea id="p1_input" placeholder="Enter player name(s), comma or newline separated"></textarea>
         </div>
 
         <div class="form-group" id="group_p2">
           <label id="lbl_p2">🥈 2nd Place (5 pts):</label>
-          <input type="text" id="p2_input" placeholder="Player name">
+          <textarea id="p2_input" placeholder="Enter player name(s), comma or newline separated"></textarea>
         </div>
 
         <div class="form-group" id="group_p3">
           <label id="lbl_p3">🥉 3rd Place (4 pts):</label>
-          <input type="text" id="p3_input" placeholder="Player name">
+          <textarea id="p3_input" placeholder="Enter player name(s), comma or newline separated"></textarea>
         </div>
 
-        <!-- DYNAMIC 4th-8th CONTAINER (Only shows active inputs > 0 pts) -->
+        <!-- DYNAMIC 4th-8th CONTAINER -->
         <div id="dynamicPlacementContainer4to8">
           <!-- Populated dynamically based on point package setting -->
         </div>
@@ -1154,7 +1154,7 @@
           inputsHtml += `
             <div class="form-group">
               <label>${rankNum}th Place (${pts} pts):</label>
-              <input type="text" id="${fieldId}" placeholder="Player name">
+              <textarea id="${fieldId}" placeholder="Player name(s), comma or newline separated"></textarea>
             </div>
           `;
         }
@@ -1180,7 +1180,6 @@
       }
     }
 
-    // Handle 9th+ Top Cut (Hidden if 0 pts)
     const p9Group = document.getElementById("group_p9_plus");
     const p9Points = ps.p9_plus !== undefined ? ps.p9_plus : 2;
     if (p9Points > 0) {
@@ -1645,24 +1644,35 @@
     const names = new Set();
     const add = name => { if (name && name.trim()) names.add(name.trim().toLowerCase()); };
 
-    add(document.getElementById("p1_input") ? document.getElementById("p1_input").value : "");
-    add(document.getElementById("p2_input") ? document.getElementById("p2_input").value : "");
-    add(document.getElementById("p3_input") ? document.getElementById("p3_input").value : "");
+    const p1_el = document.getElementById("p1_input");
+    if (p1_el) parseLineInputs(p1_el.value).forEach(add);
+
+    const p2_el = document.getElementById("p2_input");
+    if (p2_el) parseLineInputs(p2_el.value).forEach(add);
+
+    const p3_el = document.getElementById("p3_input");
+    if (p3_el) parseLineInputs(p3_el.value).forEach(add);
 
     const ps = getActiveSeasonPointSet();
     if (ps.mode4to8 === "individual") {
-      add(document.getElementById("p4_input") ? document.getElementById("p4_input").value : "");
-      add(document.getElementById("p5_input") ? document.getElementById("p5_input").value : "");
-      add(document.getElementById("p6_input") ? document.getElementById("p6_input").value : "");
-      add(document.getElementById("p7_input") ? document.getElementById("p7_input").value : "");
-      add(document.getElementById("p8_input") ? document.getElementById("p8_input").value : "");
+      const checkAndAddInput = (fieldId, pts) => {
+        if (pts > 0) {
+          const el = document.getElementById(fieldId);
+          if (el) parseLineInputs(el.value).forEach(add);
+        }
+      };
+      checkAndAddInput("p4_input", ps.p4 !== undefined ? ps.p4 : 3);
+      checkAndAddInput("p5_input", ps.p5 !== undefined ? ps.p5 : 3);
+      checkAndAddInput("p6_input", ps.p6 !== undefined ? ps.p6 : 3);
+      checkAndAddInput("p7_input", ps.p7 !== undefined ? ps.p7 : 3);
+      checkAndAddInput("p8_input", ps.p8 !== undefined ? ps.p8 : 3);
     } else {
       const p4_8_el = document.getElementById("p4_8_input");
-      if (p4_8_el) parseLineInputs(p4_8_el.value).forEach(add);
+      if (p4_8_el && (ps.p4_8 || 3) > 0) parseLineInputs(p4_8_el.value).forEach(add);
     }
 
     const p9_el = document.getElementById("p9_plus_input");
-    if (p9_el && ps.p9_plus > 0) parseLineInputs(p9_el.value).forEach(add);
+    if (p9_el && (ps.p9_plus !== undefined ? ps.p9_plus : 2) > 0) parseLineInputs(p9_el.value).forEach(add);
 
     const part_el = document.getElementById("bulkParticipantsInput");
     if (part_el) parseLineInputs(part_el.value).forEach(add);
@@ -1750,22 +1760,20 @@
       });
     };
 
-    const p1 = document.getElementById("p1_input").value;
-    if (p1.trim()) addPlayerScore(p1, ps.p1, "1st Place");
+    const p1_el = document.getElementById("p1_input");
+    if (p1_el) parseLineInputs(p1_el.value).forEach(name => addPlayerScore(name, ps.p1, "1st Place"));
 
-    const p2 = document.getElementById("p2_input").value;
-    if (p2.trim()) addPlayerScore(p2, ps.p2, "2nd Place");
+    const p2_el = document.getElementById("p2_input");
+    if (p2_el) parseLineInputs(p2_el.value).forEach(name => addPlayerScore(name, ps.p2, "2nd Place"));
 
-    const p3 = document.getElementById("p3_input").value;
-    if (p3.trim()) addPlayerScore(p3, ps.p3, "3rd Place");
+    const p3_el = document.getElementById("p3_input");
+    if (p3_el) parseLineInputs(p3_el.value).forEach(name => addPlayerScore(name, ps.p3, "3rd Place"));
 
     if (ps.mode4to8 === "individual") {
       const checkAndAddIndividual = (fieldId, rankNum, pts) => {
         if (pts > 0) {
           const el = document.getElementById(fieldId);
-          if (el && el.value.trim()) {
-            addPlayerScore(el.value, pts, `${rankNum}th Place`);
-          }
+          if (el) parseLineInputs(el.value).forEach(name => addPlayerScore(name, pts, `${rankNum}th Place`));
         }
       };
 
@@ -1782,7 +1790,8 @@
 
     const p9Points = ps.p9_plus !== undefined ? ps.p9_plus : 2;
     if (p9Points > 0) {
-      parseLineInputs(document.getElementById("p9_plus_input").value).forEach(name => addPlayerScore(name, p9Points, "9th+ Top Cut"));
+      const p9_el = document.getElementById("p9_plus_input");
+      if (p9_el) parseLineInputs(p9_el.value).forEach(name => addPlayerScore(name, p9Points, "9th+ Top Cut"));
     }
 
     parseLineInputs(document.getElementById("bulkParticipantsInput").value).forEach(name => addPlayerScore(name, ps.part, "Participant"));
@@ -1816,9 +1825,9 @@
     currentSeason.weeklyLogs.push(weekEntryLog);
     window.saveData();
 
-    document.getElementById("p1_input").value = "";
-    document.getElementById("p2_input").value = "";
-    document.getElementById("p3_input").value = "";
+    if (document.getElementById("p1_input")) document.getElementById("p1_input").value = "";
+    if (document.getElementById("p2_input")) document.getElementById("p2_input").value = "";
+    if (document.getElementById("p3_input")) document.getElementById("p3_input").value = "";
     
     if (ps.mode4to8 === "individual") {
       if (document.getElementById("p4_input")) document.getElementById("p4_input").value = "";
@@ -1830,9 +1839,9 @@
       if (document.getElementById("p4_8_input")) document.getElementById("p4_8_input").value = "";
     }
 
-    document.getElementById("p9_plus_input").value = "";
-    document.getElementById("bulkParticipantsInput").value = "";
-    document.getElementById("topScorerInput").value = "";
+    if (document.getElementById("p9_plus_input")) document.getElementById("p9_plus_input").value = "";
+    if (document.getElementById("bulkParticipantsInput")) document.getElementById("bulkParticipantsInput").value = "";
+    if (document.getElementById("topScorerInput")) document.getElementById("topScorerInput").value = "";
     
     if (window.doublePointsActive) window.toggleDoublePoints();
     document.getElementById("weekNumInput").value = weekNum + 1;
