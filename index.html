@@ -249,7 +249,7 @@
 
     textarea {
       resize: vertical;
-      min-height: 60px;
+      min-height: 55px;
     }
 
     input:focus, select:focus, textarea:focus {
@@ -443,6 +443,43 @@
       border: 1px dashed var(--border-color);
     }
 
+    /* Live Player Counter Badge */
+    .player-counter-badge {
+      background: rgba(0, 229, 255, 0.15);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-weight: bold;
+      font-size: 0.88rem;
+    }
+
+    /* Edit Match Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 8px;
+      max-width: 750px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 22px;
+      box-shadow: 0 0 25px rgba(0, 229, 255, 0.25);
+    }
+
     /* RESPONSIVE MOBILE STYLES */
     @media (max-width: 768px) {
       body { padding: 10px; }
@@ -458,6 +495,11 @@
   </style>
 </head>
 <body>
+
+<!-- SUGGESTIONS DATALIST -->
+<datalist id="registeredPlayersList">
+  <!-- Populated dynamically -->
+</datalist>
 
 <div class="container">
   <header>
@@ -556,7 +598,10 @@
 
   <!-- TAB 3: ADMIN WEEKLY ENTRY PANEL -->
   <div id="admin" class="view-panel">
-    <h2>⚙️ Add Weekly Match Results</h2>
+    <div class="flex-gap" style="justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 18px;">
+      <h2 style="border:none; margin:0; padding:0;">⚙️ Add Weekly Match Results</h2>
+      <span class="player-counter-badge" id="livePlayerCounterBadge">👥 Total Players Entered: 0</span>
+    </div>
     
     <div class="card flex-gap" style="justify-content: space-between;">
       <div class="flex-gap">
@@ -582,7 +627,7 @@
     <div class="top-scorer-bar">
       <div style="flex: 1;" id="topScorerInputBox">
         <label for="topScorerInput" style="margin-bottom: 4px;" id="lbl_top_scorer">⭐ Top Scorers (+1 pt Bonus):</label>
-        <input type="text" id="topScorerInput" placeholder="Separated by commas (e.g. Alex, Sam, Jo)">
+        <input type="text" id="topScorerInput" list="registeredPlayersList" placeholder="Separated by commas (e.g. Alex, Sam, Jo)" oninput="updateLivePlayerCount()">
         <span style="font-size: 0.75rem; color: var(--text-muted);">Supports 2–4 players. Affected by 2x week multiplier.</span>
       </div>
       <div style="flex: 1; font-size: 0.85rem; color: var(--accent-cyan); background: rgba(0, 229, 255, 0.05); padding: 10px; border-radius: 4px; border: 1px solid var(--border-color);" id="returneeInfoBox">
@@ -592,23 +637,23 @@
     </div>
 
     <div class="grid-2">
-      <!-- Placement Form (Supports multiple co-winners per slot separated by commas/newlines) -->
+      <!-- Placement Form -->
       <div class="card">
         <h3>Specific Placements <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Multiple names allowed per slot)</span></h3>
         
         <div class="form-group" id="group_p1">
           <label id="lbl_p1">🥇 1st Place (6 pts):</label>
-          <textarea id="p1_input" placeholder="Enter player name(s), comma or newline separated"></textarea>
+          <textarea id="p1_input" placeholder="Enter player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
         </div>
 
         <div class="form-group" id="group_p2">
           <label id="lbl_p2">🥈 2nd Place (5 pts):</label>
-          <textarea id="p2_input" placeholder="Enter player name(s), comma or newline separated"></textarea>
+          <textarea id="p2_input" placeholder="Enter player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
         </div>
 
         <div class="form-group" id="group_p3">
           <label id="lbl_p3">🥉 3rd Place (4 pts):</label>
-          <textarea id="p3_input" placeholder="Enter player name(s), comma or newline separated"></textarea>
+          <textarea id="p3_input" placeholder="Enter player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
         </div>
 
         <!-- DYNAMIC 4th-8th CONTAINER -->
@@ -619,7 +664,7 @@
         <!-- 9th+ TOP CUT CONTAINER (Hidden if 0 pts) -->
         <div class="form-group" id="group_p9_plus" style="margin-top:10px;">
           <label id="lbl_p9_plus">9th+ Top Cut (2 pts each):</label>
-          <textarea id="p9_plus_input" placeholder="One name per line or separated by commas"></textarea>
+          <textarea id="p9_plus_input" placeholder="One name per line or separated by commas" oninput="updateLivePlayerCount()"></textarea>
         </div>
       </div>
 
@@ -632,7 +677,7 @@
 
         <div class="form-group">
           <label id="lbl_part">Participants (1 pt each):</label>
-          <textarea id="bulkParticipantsInput" style="height: 160px;" placeholder="John Doe&#10;Jane Smith&#10;Alex"></textarea>
+          <textarea id="bulkParticipantsInput" style="height: 160px;" placeholder="John Doe&#10;Jane Smith&#10;Alex" oninput="updateLivePlayerCount()"></textarea>
         </div>
 
         <div style="margin-top: 15px;">
@@ -674,7 +719,7 @@
 
         <div class="form-group">
           <label>Or New Player Name (If Unregistered):</label>
-          <input type="text" id="passPlayerName" placeholder="Type name only if not in dropdown">
+          <input type="text" id="passPlayerName" list="registeredPlayersList" placeholder="Type name only if not in dropdown">
         </div>
 
         <div class="form-group">
@@ -924,6 +969,25 @@
   </div>
 </div>
 
+<!-- EDIT MATCH LOG MODAL (ADMIN) -->
+<div id="editMatchModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="flex-gap" style="justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+      <h3 style="margin: 0; color: var(--accent-cyan);" id="editModalHeader">✏️ Edit Match Log</h3>
+      <button class="btn btn-secondary" onclick="closeEditModal()" style="padding: 4px 10px;">✕ Close</button>
+    </div>
+
+    <div id="editModalBody">
+      <!-- Rendered dynamically -->
+    </div>
+
+    <div class="flex-gap" style="margin-top: 20px; justify-content: flex-end;">
+      <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-action" onclick="saveEditedMatchLog()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
 <!-- FIREBASE MODULE SCRIPTS -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -946,6 +1010,66 @@
 
   window.viewLeaderboardSeasonId = null;
   window.viewHistorySeasonId = null;
+  window.editingSeasonId = null;
+  window.editingWeekNum = null;
+
+  // Firebase Key Sanitizer Helper
+  function encodeFirebaseKey(key) {
+    if (!key) return "";
+    return key
+      .replace(/\./g, '%2E')
+      .replace(/\#/g, '%23')
+      .replace(/\$/g, '%24')
+      .replace(/\//g, '%2F')
+      .replace(/\[/g, '%5B')
+      .replace(/\]/g, '%5D');
+  }
+
+  function decodeFirebaseKey(key) {
+    if (!key) return "";
+    return key
+      .replace(/%2E/g, '.')
+      .replace(/%23/g, '#')
+      .replace(/%24/g, '$')
+      .replace(/%2F/g, '/')
+      .replace(/%5B/g, '[')
+      .replace(/%5D/g, ']');
+  }
+
+  function serializeStateForFirebase(state) {
+    const cloned = JSON.parse(JSON.stringify(state));
+    if (cloned.seasons) {
+      Object.keys(cloned.seasons).forEach(sId => {
+        const season = cloned.seasons[sId];
+        if (season.players) {
+          const encodedPlayers = {};
+          Object.keys(season.players).forEach(pName => {
+            encodedPlayers[encodeFirebaseKey(pName)] = season.players[pName];
+          });
+          season.players = encodedPlayers;
+        }
+      });
+    }
+    return cloned;
+  }
+
+  function deserializeStateFromFirebase(data) {
+    if (!data) return data;
+    const cloned = JSON.parse(JSON.stringify(data));
+    if (cloned.seasons) {
+      Object.keys(cloned.seasons).forEach(sId => {
+        const season = cloned.seasons[sId];
+        if (season.players) {
+          const decodedPlayers = {};
+          Object.keys(season.players).forEach(pKey => {
+            decodedPlayers[decodeFirebaseKey(pKey)] = season.players[pKey];
+          });
+          season.players = decodedPlayers;
+        }
+      });
+    }
+    return cloned;
+  }
 
   // Initialize Firebase & Database
   const app = initializeApp(firebaseConfig);
@@ -1040,23 +1164,32 @@
     }
   };
 
-  // Sync to Firebase
+  // Sync to Firebase with safe serialization
   window.saveData = function() {
-    document.getElementById("syncStatus").className = "status-pill status-syncing";
-    document.getElementById("syncStatus").textContent = "⏳ Syncing...";
-    set(dbRef, window.appState).then(() => {
-      document.getElementById("syncStatus").className = "status-pill status-online";
-      document.getElementById("syncStatus").textContent = "🟢 Cloud Live Sync Active";
+    const statusEl = document.getElementById("syncStatus");
+    statusEl.className = "status-pill status-syncing";
+    statusEl.textContent = "⏳ Syncing...";
+
+    const safeData = serializeStateForFirebase(window.appState);
+
+    set(dbRef, safeData).then(() => {
+      statusEl.className = "status-pill status-online";
+      statusEl.textContent = "🟢 Cloud Live Sync Active";
     }).catch(err => {
       console.error("Firebase save error:", err);
+      statusEl.className = "status-pill";
+      statusEl.style.borderColor = "var(--accent-red)";
+      statusEl.style.color = "var(--accent-red)";
+      statusEl.textContent = "❌ Sync Failed";
+      alert("Firebase Sync Error: " + err.message);
     });
   };
 
-  // Real-time Cloud Listener
+  // Real-time Cloud Listener with safe deserialization
   onValue(dbRef, (snapshot) => {
     const data = snapshot.val();
     if (data) {
-      window.appState = data;
+      window.appState = deserializeStateFromFirebase(data);
 
       if (!window.appState.pointSets) {
         window.appState.pointSets = {
@@ -1095,6 +1228,8 @@
     renderHistory();
     renderPointSetSelects();
     updateWeeklyFormLabels();
+    updateDatalistSuggestions();
+    updateLivePlayerCount();
     
     const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
     if (currentSeason) {
@@ -1116,6 +1251,27 @@
       const startDateInput = document.getElementById("activeSeasonStartDateInput");
       if (totMatchInput) totMatchInput.value = currentSeason.totalMatches || 10;
       if (startDateInput) startDateInput.value = currentSeason.startDate || new Date().toISOString().slice(0, 10);
+    }
+  };
+
+  function updateDatalistSuggestions() {
+    const datalist = document.getElementById("registeredPlayersList");
+    if (!datalist) return;
+    datalist.innerHTML = "";
+
+    const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
+    if (currentSeason && currentSeason.players) {
+      Object.keys(currentSeason.players).sort().forEach(name => {
+        datalist.innerHTML += `<option value="${escapeHtml(name)}">`;
+      });
+    }
+  }
+
+  window.updateLivePlayerCount = function() {
+    const names = getCurrentlyEnteredNames();
+    const badge = document.getElementById("livePlayerCounterBadge");
+    if (badge) {
+      badge.textContent = `👥 Total Players Entered: ${names.size}`;
     }
   };
 
@@ -1154,7 +1310,7 @@
           inputsHtml += `
             <div class="form-group">
               <label>${rankNum}th Place (${pts} pts):</label>
-              <textarea id="${fieldId}" placeholder="Player name(s), comma or newline separated"></textarea>
+              <textarea id="${fieldId}" placeholder="Player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
             </div>
           `;
         }
@@ -1172,7 +1328,7 @@
         container4to8.innerHTML = `
           <div class="form-group">
             <label id="lbl_p4_8">4th - 8th Place (${ps.p4_8 || 3} pts each):</label>
-            <textarea id="p4_8_input" placeholder="One name per line or separated by commas"></textarea>
+            <textarea id="p4_8_input" placeholder="One name per line or separated by commas" oninput="updateLivePlayerCount()"></textarea>
           </div>
         `;
       } else {
@@ -1637,6 +1793,7 @@
     const textArea = document.getElementById("bulkParticipantsInput");
     const existingVal = textArea.value.trim();
     textArea.value = existingVal ? `${existingVal}\n${remaining.join("\n")}` : remaining.join("\n");
+    updateLivePlayerCount();
     alert(`Added ${remaining.length} player(s) as participants.`);
   };
 
@@ -1845,6 +2002,7 @@
     
     if (window.doublePointsActive) window.toggleDoublePoints();
     document.getElementById("weekNumInput").value = weekNum + 1;
+    updateLivePlayerCount();
 
     alert(`Week ${weekNum} results saved & synced to cloud!`);
     window.switchTab('leaderboard');
@@ -2137,10 +2295,11 @@
         `;
       }).join('');
 
-      const adminDateControl = window.isAdminLoggedIn ? `
+      const adminControls = window.isAdminLoggedIn ? `
         <div style="margin-top:5px;" onclick="event.stopPropagation();">
           <span style="font-size:0.75rem; color:var(--text-muted);">Adjust Date:</span>
-          <input type="date" value="${log.matchDate || ''}" onchange="updateLoggedMatchDate('${sId}', ${log.weekNum}, this.value)" style="width: auto; padding: 2px 6px; font-size: 0.8rem; display: inline-block;">
+          <input type="date" value="${log.matchDate || ''}" onchange="updateLoggedMatchDate('${sId}', ${log.weekNum}, this.value)" style="width: auto; padding: 2px 6px; font-size: 0.8rem; display: inline-block; margin-right: 6px;">
+          <button class="btn-mini" onclick="openEditMatchModal('${sId}', ${log.weekNum})">✏️ Edit Match Log</button>
         </div>
       ` : '';
 
@@ -2150,7 +2309,7 @@
             <h3>Week / Match ${log.weekNum} ${log.isDouble ? '🔥 (Double Points)' : ''}</h3>
             <div style="text-align: right;">
               <span style="font-size:0.85rem; color:var(--accent-cyan); font-weight:bold;">📅 ${log.matchDate || 'Date Not Set'}</span>
-              ${adminDateControl}
+              ${adminControls}
             </div>
           </div>
           <div>
@@ -2199,6 +2358,150 @@
       }
     }
   }
+
+  // MODAL EDIT LOGIC
+  window.openEditMatchModal = function(seasonId, weekNum) {
+    const season = window.appState.seasons[seasonId];
+    if (!season || !season.weeklyLogs) return;
+
+    const log = season.weeklyLogs.find(l => l.weekNum === weekNum);
+    if (!log) return;
+
+    window.editingSeasonId = seasonId;
+    window.editingWeekNum = weekNum;
+
+    document.getElementById("editModalHeader").textContent = `✏️ Edit Week/Match ${weekNum} Log`;
+    const body = document.getElementById("editModalBody");
+    body.innerHTML = "";
+
+    let rowsHtml = "";
+    log.scores.forEach((s, idx) => {
+      rowsHtml += `
+        <tr id="edit_row_${idx}">
+          <td>
+            <input type="text" id="edit_name_${idx}" value="${escapeHtml(s.name)}" list="registeredPlayersList" style="padding:4px 8px; font-size:0.9rem;">
+          </td>
+          <td>
+            <input type="text" id="edit_cat_${idx}" value="${escapeHtml(s.category)}" style="padding:4px 8px; font-size:0.9rem;">
+          </td>
+          <td>
+            <input type="number" id="edit_base_${idx}" value="${s.basePts}" style="width:60px; padding:4px 8px; font-size:0.9rem;">
+          </td>
+          <td>
+            <input type="number" id="edit_bonus_${idx}" value="${s.bonusPts || 0}" style="width:60px; padding:4px 8px; font-size:0.9rem;">
+          </td>
+          <td>
+            <input type="number" id="edit_ret_${idx}" value="${s.returneePts || 0}" style="width:60px; padding:4px 8px; font-size:0.9rem;">
+          </td>
+          <td>
+            <input type="number" id="edit_earned_${idx}" value="${s.earned}" style="width:70px; padding:4px 8px; font-size:0.9rem; font-weight:bold; color:var(--accent-cyan);">
+          </td>
+          <td style="text-align:center;">
+            <button class="btn-mini" style="background:#c62828; color:#fff;" onclick="deleteScoreEntryFromLog(${idx})">✕</button>
+          </td>
+        </tr>
+      `;
+    });
+
+    body.innerHTML = `
+      <div style="margin-bottom: 12px;" class="flex-gap">
+        <label style="margin:0;">Match Date:</label>
+        <input type="date" id="edit_modal_date" value="${log.matchDate || ''}" style="width: 140px; padding:4px 8px;">
+        <label style="margin:0 0 0 10px;">Double Points (2x):</label>
+        <input type="checkbox" id="edit_modal_double" ${log.isDouble ? 'checked' : ''} style="width:auto;">
+      </div>
+      <table class="lb-table">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Player Name</th>
+            <th style="width: 25%;">Placement</th>
+            <th style="width: 12%;">Base</th>
+            <th style="width: 12%;">Bonus</th>
+            <th style="width: 12%;">Return</th>
+            <th style="width: 14%;">Total</th>
+            <th style="width: 8%;">Del</th>
+          </tr>
+        </thead>
+        <tbody id="editModalTableBody">
+          ${rowsHtml}
+        </tbody>
+      </table>
+    `;
+
+    document.getElementById("editMatchModal").classList.add("active");
+  };
+
+  window.deleteScoreEntryFromLog = function(idx) {
+    const row = document.getElementById(`edit_row_${idx}`);
+    if (row) row.remove();
+  };
+
+  window.closeEditModal = function() {
+    document.getElementById("editMatchModal").classList.remove("active");
+  };
+
+  window.saveEditedMatchLog = function() {
+    const season = window.appState.seasons[window.editingSeasonId];
+    if (!season || !season.weeklyLogs) return;
+
+    const log = season.weeklyLogs.find(l => l.weekNum === window.editingWeekNum);
+    if (!log) return;
+
+    log.matchDate = document.getElementById("edit_modal_date").value;
+    log.isDouble = document.getElementById("edit_modal_double").checked;
+
+    let updatedScores = [];
+    const tbody = document.getElementById("editModalTableBody");
+    const trs = tbody.querySelectorAll("tr");
+
+    trs.forEach(tr => {
+      const idx = tr.id.replace("edit_row_", "");
+      const name = document.getElementById(`edit_name_${idx}`).value.trim();
+      const category = document.getElementById(`edit_cat_${idx}`).value.trim();
+      const basePts = parseInt(document.getElementById(`edit_base_${idx}`).value) || 0;
+      const bonusPts = parseInt(document.getElementById(`edit_bonus_${idx}`).value) || 0;
+      const returneePts = parseInt(document.getElementById(`edit_ret_${idx}`).value) || 0;
+      const earned = parseInt(document.getElementById(`edit_earned_${idx}`).value) || 0;
+
+      if (name) {
+        updatedScores.push({ name, category, basePts, bonusPts, returneePts, earned, pass: null });
+      }
+    });
+
+    log.scores = updatedScores;
+
+    // Recalculate Season Total Points & Attended Counts
+    let recalculatedPlayers = {};
+    season.weeklyLogs.forEach(wLog => {
+      if (wLog.scores) {
+        wLog.scores.forEach(s => {
+          if (!recalculatedPlayers[s.name]) {
+            recalculatedPlayers[s.name] = { totalPoints: 0, attendedCount: 0, pass: null };
+          }
+          recalculatedPlayers[s.name].totalPoints += s.earned;
+          if (!s.category.includes('Pass Guarantee')) {
+            recalculatedPlayers[s.name].attendedCount += 1;
+          }
+        });
+      }
+    });
+
+    // Retain passes
+    if (season.players) {
+      Object.keys(season.players).forEach(pName => {
+        if (season.players[pName].pass) {
+          if (!recalculatedPlayers[pName]) recalculatedPlayers[pName] = { totalPoints: 0, attendedCount: 0, pass: season.players[pName].pass };
+          else recalculatedPlayers[pName].pass = season.players[pName].pass;
+        }
+      });
+    }
+
+    season.players = recalculatedPlayers;
+
+    window.saveData();
+    closeEditModal();
+    alert("Match log and player standings updated successfully!");
+  };
 
   window.updateLoggedMatchDate = function(seasonId, weekNum, newDate) {
     const season = window.appState.seasons[seasonId];
@@ -2338,7 +2641,7 @@
       try {
         const imported = JSON.parse(e.target.result);
         if (imported.seasons && imported.activeSeasonId) {
-          window.appState = imported;
+          window.appState = deserializeStateFromFirebase(imported);
           window.saveData();
           alert("Leaderboard data restored and synced to cloud!");
         } else {
