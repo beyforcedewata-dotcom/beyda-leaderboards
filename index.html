@@ -10,7 +10,8 @@
     :root {
       --bg-dark: #050b14;
       --bg-card: #0a1224;
-      --bg-input: #02060d;
+      --bg-input: #ffffff;
+      --text-input: #0f172a;
       --accent-cyan: #00e5ff;
       --accent-orange: #ff3d00;
       --accent-green: #00e676;
@@ -31,7 +32,7 @@
     body {
       background-color: var(--bg-dark);
       color: var(--text-white);
-      padding: 20px;
+      padding: 16px;
       min-height: 100vh;
       position: relative;
     }
@@ -43,7 +44,7 @@
 
     header {
       text-align: center;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       border-bottom: 2px solid var(--border-color);
       padding-bottom: 15px;
     }
@@ -52,20 +53,20 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 15px;
+      gap: 12px;
       margin-bottom: 12px;
       flex-wrap: wrap;
     }
 
     .brand-logo {
-      max-height: 65px;
+      max-height: 58px;
       width: auto;
       border-radius: 50%;
       box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
     }
 
     header h1 {
-      font-size: 2.2rem;
+      font-size: 1.9rem;
       color: var(--accent-cyan);
       letter-spacing: 1px;
       text-shadow: 0 0 12px rgba(0,229,255,0.3);
@@ -75,37 +76,40 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
+    }
+
+    .season-select-pill {
+      background: var(--accent-orange);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.88rem;
+      cursor: pointer;
+      outline: none;
+    }
+    .season-select-pill option {
+      background: #101a2e;
+      color: #fff;
     }
 
     .status-pill {
       display: inline-block;
-      padding: 4px 12px;
+      padding: 4px 10px;
       border-radius: 20px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: bold;
     }
     .status-online { background: rgba(0, 229, 255, 0.15); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); }
     .status-syncing { background: rgba(255, 61, 0, 0.15); color: var(--accent-orange); border: 1px solid var(--accent-orange); }
 
-    .season-badge {
-      background: var(--accent-orange);
-      color: #fff;
-      padding: 4px 14px;
-      border-radius: 20px;
-      font-weight: bold;
-      font-size: 0.9rem;
-    }
-    .season-badge.closed {
-      background: #4a5568;
-      border: 1px solid #a0aec0;
-    }
-
     .tabs {
       display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap: 8px;
+      margin-bottom: 18px;
       flex-wrap: wrap;
     }
 
@@ -113,10 +117,11 @@
       background: var(--bg-card);
       color: var(--text-muted);
       border: 1px solid var(--border-color);
-      padding: 10px 18px;
+      padding: 8px 14px;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
+      font-size: 0.9rem;
       transition: all 0.2s ease;
     }
 
@@ -135,46 +140,12 @@
       display: none;
     }
 
-    .season-filter-bar {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-      background: rgba(0, 0, 0, 0.2);
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .season-subtab {
-      background: #101a2e;
-      color: var(--text-muted);
-      border: 1px solid var(--border-color);
-      padding: 6px 14px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.88rem;
-      font-weight: bold;
-      transition: all 0.2s;
-    }
-
-    .season-subtab:hover {
-      color: #fff;
-      border-color: var(--accent-cyan);
-    }
-
-    .season-subtab.active {
-      background: var(--accent-orange);
-      color: #fff;
-      border-color: var(--accent-orange);
-    }
-
     .view-panel {
       display: none;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 22px;
+      padding: 18px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
 
@@ -184,35 +155,36 @@
 
     h2 {
       color: var(--accent-cyan);
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       border-bottom: 1px solid var(--border-color);
       padding-bottom: 8px;
+      font-size: 1.35rem;
     }
 
     h3 {
       color: var(--text-white);
       margin-bottom: 10px;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
     }
 
     .grid-2 {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
+      gap: 16px;
     }
 
     .grid-3 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(105px, 1fr));
       gap: 10px;
     }
 
     .card {
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.35);
       border: 1px solid var(--border-color);
-      padding: 18px;
+      padding: 16px;
       border-radius: 6px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     .card-upcoming {
@@ -228,20 +200,21 @@
 
     label {
       display: block;
-      margin-bottom: 6px;
-      font-size: 0.9rem;
+      margin-bottom: 5px;
+      font-size: 0.88rem;
       font-weight: bold;
       color: var(--text-white);
     }
 
     input, select, textarea {
       width: 100%;
-      padding: 9px 12px;
+      padding: 9px 11px;
       background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      color: var(--text-white);
+      border: 1.5px solid #cbd5e1;
+      border-radius: 5px;
+      color: var(--text-input);
       font-size: 0.95rem;
+      font-weight: 500;
     }
 
     textarea {
@@ -252,14 +225,15 @@
     input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--accent-cyan);
-      box-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
+      box-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
     }
 
     .btn {
-      padding: 9px 16px;
+      padding: 8px 14px;
       border: none;
       border-radius: 4px;
       font-weight: bold;
+      font-size: 0.9rem;
       cursor: pointer;
       transition: all 0.2s;
       display: inline-flex;
@@ -274,14 +248,14 @@
     .btn-danger { background: #c62828; color: var(--text-white); }
 
     .btn-mini {
-      padding: 4px 10px;
-      font-size: 0.8rem;
+      padding: 4px 9px;
+      font-size: 0.78rem;
       border-radius: 4px;
       background: #1a2b4c;
       color: var(--accent-cyan);
       border: 1px solid var(--border-color);
       cursor: pointer;
-      margin-right: 5px;
+      margin-right: 4px;
     }
     .btn-mini:hover { background: var(--accent-cyan); color: var(--bg-dark); }
 
@@ -299,24 +273,26 @@
     .lb-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      margin-top: 6px;
     }
 
     .lb-table th {
       background: rgba(0, 0, 0, 0.45);
       color: var(--accent-cyan);
       font-weight: bold;
-      padding: 12px 10px;
+      padding: 10px 8px;
+      font-size: 0.85rem;
       border-bottom: 2px solid var(--border-color);
     }
 
     .lb-table td {
-      padding: 12px 10px;
+      padding: 10px 8px;
       vertical-align: middle;
+      font-size: 0.9rem;
     }
 
     .history-table th, .history-table td {
-      padding: 11px 12px;
+      padding: 10px 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
@@ -326,7 +302,7 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
     .player-row:hover {
-      background: rgba(0, 229, 255, 0.05);
+      background: rgba(0, 229, 255, 0.06);
     }
 
     .merged-group-border {
@@ -338,11 +314,14 @@
       align-items: center;
       gap: 6px;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
     }
 
     .details-row {
       display: none;
-      background: rgba(2, 8, 20, 0.85);
+      background: rgba(2, 8, 20, 0.9);
       border-bottom: 2px solid var(--border-color);
     }
     .details-row.open {
@@ -350,9 +329,9 @@
     }
 
     .details-container {
-      padding: 14px 15px;
+      padding: 12px 14px;
       display: flex;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
       align-items: center;
       justify-content: flex-start;
@@ -361,35 +340,29 @@
     .stat-box {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-color);
-      padding: 10px 14px;
+      padding: 8px 12px;
       border-radius: 6px;
       text-align: center;
-      min-width: 100px;
+      min-width: 90px;
       flex: 1;
     }
     .stat-box .val {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: bold;
       color: var(--accent-cyan);
     }
     .stat-box .lbl {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       color: var(--text-muted);
       text-transform: uppercase;
       margin-top: 2px;
     }
 
-    .expand-icon {
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      margin-left: 4px;
-    }
-
     .progress-bar-bg {
       width: 100%;
       background: rgba(255,255,255,0.08);
-      height: 12px;
-      border-radius: 6px;
+      height: 10px;
+      border-radius: 5px;
       overflow: hidden;
       margin: 8px 0;
       border: 1px solid var(--border-color);
@@ -401,30 +374,30 @@
       transition: width 0.4s ease;
     }
 
-    .trend-up { color: var(--accent-green); font-weight: bold; font-size: 0.88rem; }
-    .trend-down { color: var(--accent-red); font-weight: bold; font-size: 0.88rem; }
-    .trend-new { background: #ffd700; color: #000; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block; }
-    .trend-same { color: var(--text-muted); font-size: 0.88rem; }
+    .trend-up { color: var(--accent-green); font-weight: bold; font-size: 0.82rem; }
+    .trend-down { color: var(--accent-red); font-weight: bold; font-size: 0.82rem; }
+    .trend-new { background: #ffd700; color: #000; font-size: 0.65rem; padding: 2px 5px; border-radius: 3px; font-weight: bold; display: inline-block; }
+    .trend-same { color: var(--text-muted); font-size: 0.82rem; }
 
-    .rank-1 { color: #ffd700; font-weight: bold; font-size: 1.05rem; }
-    .rank-2 { color: #e0e0e0; font-weight: bold; font-size: 1.05rem; }
-    .rank-3 { color: #cd7f32; font-weight: bold; font-size: 1.05rem; }
+    .rank-1 { color: #ffd700; font-weight: bold; font-size: 1rem; }
+    .rank-2 { color: #e0e0e0; font-weight: bold; font-size: 1rem; }
+    .rank-3 { color: #cd7f32; font-weight: bold; font-size: 1rem; }
 
     .pass-badge {
-      font-size: 0.72rem;
-      padding: 2px 7px;
-      border-radius: 4px;
+      font-size: 0.65rem;
+      padding: 1px 5px;
+      border-radius: 3px;
       font-weight: bold;
       display: inline-block;
-      letter-spacing: 0.5px;
       vertical-align: middle;
+      margin-left: 4px;
     }
     .pass-silver { background: #c0c0c0; color: #000; }
     .pass-gold { background: #ffd700; color: #000; }
 
     .flex-gap {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
       flex-wrap: wrap;
     }
@@ -433,7 +406,7 @@
       display: flex;
       gap: 12px;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 14px;
       background: rgba(0,0,0,0.25);
       padding: 12px;
       border-radius: 6px;
@@ -444,13 +417,12 @@
       background: rgba(0, 229, 255, 0.15);
       border: 1px solid var(--accent-cyan);
       color: var(--accent-cyan);
-      padding: 4px 12px;
-      border-radius: 16px;
+      padding: 3px 10px;
+      border-radius: 14px;
       font-weight: bold;
-      font-size: 0.88rem;
+      font-size: 0.82rem;
     }
 
-    /* Floating Autocomplete Dropdown */
     .autocomplete-popup {
       position: absolute;
       background: #0d1b33;
@@ -466,10 +438,10 @@
       padding: 7px 12px;
       cursor: pointer;
       color: var(--text-white);
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
-    .autocomplete-item:hover, .autocomplete-item.selected {
+    .autocomplete-item:hover {
       background: var(--accent-cyan);
       color: var(--bg-dark);
       font-weight: bold;
@@ -483,7 +455,7 @@
       z-index: 9999;
       align-items: center;
       justify-content: center;
-      padding: 15px;
+      padding: 14px;
     }
     .modal-overlay.active {
       display: flex;
@@ -492,30 +464,51 @@
       background: var(--bg-card);
       border: 1px solid var(--accent-cyan);
       border-radius: 8px;
-      max-width: 750px;
+      max-width: 720px;
       width: 100%;
       max-height: 90vh;
       overflow-y: auto;
-      padding: 22px;
+      padding: 20px;
       box-shadow: 0 0 25px rgba(0, 229, 255, 0.25);
     }
 
+    .guide-section {
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .guide-section h4 {
+      color: var(--accent-cyan);
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+    }
+    .guide-section p, .guide-section li {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .guide-section ul {
+      margin-left: 18px;
+      margin-top: 4px;
+    }
+
     @media (max-width: 768px) {
-      body { padding: 10px; }
-      header h1 { font-size: 1.5rem; }
-      .brand-logo { max-height: 50px; }
-      .view-panel { padding: 14px; }
-      .tabs { gap: 6px; }
-      .tab-btn { flex: 1 1 auto; text-align: center; padding: 8px 12px; font-size: 0.85rem; }
-      .lb-table th, .lb-table td { padding: 8px 6px; font-size: 0.85rem; }
-      .stat-box { min-width: 80px; padding: 6px 8px; }
+      body { padding: 8px; }
+      header h1 { font-size: 1.45rem; }
+      .brand-logo { max-height: 46px; }
+      .view-panel { padding: 12px; }
+      .tabs { gap: 4px; }
+      .tab-btn { flex: 1 1 auto; text-align: center; padding: 7px 10px; font-size: 0.8rem; }
+      .lb-table th, .lb-table td { padding: 8px 4px; font-size: 0.8rem; }
+      .stat-box { min-width: 75px; padding: 6px 8px; }
       .top-scorer-bar { flex-direction: column; align-items: stretch; }
     }
   </style>
 </head>
 <body>
 
-<datalist id="registeredPlayersList"></datalist>
 <div id="floatingAutocomplete" class="autocomplete-popup"></div>
 
 <div class="container">
@@ -526,13 +519,16 @@
     </div>
 
     <div class="header-sub">
-      <div>
-        <span style="font-weight: bold;">Active Season: </span>
-        <span class="season-badge" id="currentSeasonLabel">Season 1</span>
+      <div class="flex-gap">
+        <span style="font-weight: bold; font-size: 0.88rem;">Active Season:</span>
+        <select id="headerSeasonSelect" class="season-select-pill" onchange="switchSeason(this.value)"></select>
       </div>
-      <span class="status-pill status-online" id="syncStatus">🟢 Cloud Live Sync Active</span>
-      <button class="btn btn-secondary" id="adminAuthBtn" onclick="toggleAdminAuth()" style="padding: 4px 12px; font-size: 0.85rem;">
+      <span class="status-pill status-online" id="syncStatus">🟢 Live Sync Active</span>
+      <button class="btn btn-secondary" id="adminAuthBtn" onclick="toggleAdminAuth()" style="padding: 4px 10px; font-size: 0.8rem;">
         🔒 Admin Login
+      </button>
+      <button class="btn btn-secondary admin-locked" id="adminGuideBtn" onclick="openGuideModal()" style="padding: 4px 10px; font-size: 0.8rem;">
+        ℹ️ Rules & System Guide
       </button>
     </div>
   </header>
@@ -548,19 +544,16 @@
   <!-- TAB 1: LIVE LEADERBOARD -->
   <div id="leaderboard" class="view-panel active">
     <h2>🏆 Live Standings</h2>
-    <div class="season-filter-bar" id="lbSeasonFilter"></div>
 
     <div>
       <table class="lb-table">
         <thead>
           <tr>
             <th style="width: 14%; text-align: center;">Rank</th>
-            <th style="width: 12%; text-align: center;">Trend</th>
-            <th style="width: 32%; text-align: left;">Player Name</th>
-            <th style="width: 12%; text-align: center;">Pass</th>
-            <th style="width: 10%; text-align: center;">Attended</th>
-            <th style="width: 8%; text-align: center;">Wins</th>
-            <th style="width: 12%; text-align: right;">Total Pts</th>
+            <th style="width: 14%; text-align: center;">Trend</th>
+            <th style="width: 44%; text-align: left;">Player / Team Name</th>
+            <th style="width: 12%; text-align: center;">Attended</th>
+            <th style="width: 16%; text-align: right;">Total Pts</th>
           </tr>
         </thead>
         <tbody id="leaderboardBody"></tbody>
@@ -571,7 +564,6 @@
   <!-- TAB 2: SCHEDULE & HISTORY LOGS -->
   <div id="history" class="view-panel">
     <h2>📅 Season Roadmap & Match History</h2>
-    <div class="season-filter-bar" id="historySeasonFilter"></div>
     <div id="seasonEstimateOverview" class="card" style="border-color: var(--accent-cyan); background: rgba(0, 229, 255, 0.03);"></div>
 
     <div class="card" style="border-color: var(--accent-orange); background: rgba(255, 61, 0, 0.03);">
@@ -590,19 +582,19 @@
 
   <!-- TAB 3: ADMIN WEEKLY ENTRY PANEL -->
   <div id="admin" class="view-panel">
-    <div class="flex-gap" style="justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 18px;">
+    <div class="flex-gap" style="justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 16px;">
       <h2 style="border:none; margin:0; padding:0;">⚙️ Add Weekly Match Results</h2>
-      <span class="player-counter-badge" id="livePlayerCounterBadge">👥 Total Players Entered: 0</span>
+      <span class="player-counter-badge" id="livePlayerCounterBadge">👥 Total Players: 0</span>
     </div>
     
     <div class="card flex-gap" style="justify-content: space-between;">
       <div class="flex-gap">
-        <label for="weekNumInput" style="margin:0;">Week/Match #:</label>
-        <input type="number" id="weekNumInput" value="1" min="1" style="width: 70px;">
+        <label for="weekNumInput" style="margin:0;">Match #:</label>
+        <input type="number" id="weekNumInput" value="1" min="1" style="width: 65px;">
       </div>
 
       <div class="flex-gap">
-        <label for="matchDateInput" style="margin:0;">Match Date:</label>
+        <label for="matchDateInput" style="margin:0;">Date:</label>
         <input type="date" id="matchDateInput" style="width: 140px;">
       </div>
 
@@ -619,31 +611,30 @@
       <div style="flex: 1;" id="topScorerInputBox">
         <label for="topScorerInput" style="margin-bottom: 4px;" id="lbl_top_scorer">⭐ Top Scorers (+1 pt Bonus):</label>
         <input type="text" id="topScorerInput" class="auto-suggest-input" placeholder="Separated by commas (e.g. Alex, Sam, Jo)" oninput="updateLivePlayerCount()">
-        <span style="font-size: 0.75rem; color: var(--text-muted);">Supports multiple players. Affected by 2x multiplier.</span>
       </div>
-      <div style="flex: 1; font-size: 0.85rem; color: var(--accent-cyan); background: rgba(0, 229, 255, 0.05); padding: 10px; border-radius: 4px; border: 1px solid var(--border-color);" id="returneeInfoBox">
+      <div style="flex: 1; font-size: 0.82rem; color: var(--accent-cyan); background: rgba(0, 229, 255, 0.05); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--border-color);" id="returneeInfoBox">
         🔄 <strong id="lbl_returnee_info">Returnee Bonus (+2 pts) is Automatic!</strong><br>
-        Auto-grants pts to players returning after 3+ missed matches or joining late.
+        Auto-applied for players missing 3+ matches or joining late.
       </div>
     </div>
 
     <div class="grid-2">
       <div class="card">
-        <h3>Specific Placements <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Multiple names allowed per slot)</span></h3>
+        <h3>Specific Placements</h3>
         
         <div class="form-group" id="group_p1">
           <label id="lbl_p1">🥇 1st Place (6 pts):</label>
-          <textarea id="p1_input" class="auto-suggest-input" placeholder="Enter player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
+          <textarea id="p1_input" class="auto-suggest-input" placeholder="Player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
         </div>
 
         <div class="form-group" id="group_p2">
           <label id="lbl_p2">🥈 2nd Place (5 pts):</label>
-          <textarea id="p2_input" class="auto-suggest-input" placeholder="Enter player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
+          <textarea id="p2_input" class="auto-suggest-input" placeholder="Player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
         </div>
 
         <div class="form-group" id="group_p3">
           <label id="lbl_p3">🥉 3rd Place (4 pts):</label>
-          <textarea id="p3_input" class="auto-suggest-input" placeholder="Enter player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
+          <textarea id="p3_input" class="auto-suggest-input" placeholder="Player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
         </div>
 
         <div id="dynamicPlacementContainer4to8"></div>
@@ -656,24 +647,24 @@
 
       <div class="card">
         <h3>Bulk Participants & Quick Entry</h3>
-        <p style="font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 10px;">
-          <strong>Tip:</strong> Paste names here (one per line). All listed names automatically get participation points.
+        <p style="font-size: 0.82rem; color: var(--accent-cyan); margin-bottom: 8px;">
+          Paste names here (one per line). All listed names receive participation points.
         </p>
 
         <div class="form-group">
           <label id="lbl_part">Participants (1 pt each):</label>
-          <textarea id="bulkParticipantsInput" class="auto-suggest-input" style="height: 160px;" placeholder="John Doe&#10;Jane Smith&#10;Alex" oninput="updateLivePlayerCount()"></textarea>
+          <textarea id="bulkParticipantsInput" class="auto-suggest-input" style="height: 155px;" placeholder="John Doe&#10;Jane Smith&#10;Alex" oninput="updateLivePlayerCount()"></textarea>
         </div>
 
-        <div style="margin-top: 15px;">
+        <div style="margin-top: 10px;">
           <button class="btn btn-secondary" style="width: 100%;" onclick="autoFillRemainingParticipants()">
-            📝 Auto-Add All Unlisted Registered Players as Participants
+            📝 Auto-Add Unlisted Registered Players as Participants
           </button>
         </div>
       </div>
     </div>
 
-    <button class="btn btn-action" style="width: 100%; padding: 12px; font-size: 1.1rem; margin-top: 10px;" onclick="submitWeeklyResults()">
+    <button class="btn btn-action" style="width: 100%; padding: 11px; font-size: 1.05rem; margin-top: 10px;" onclick="submitWeeklyResults()">
       💾 Save & Submit Weekly Score Results
     </button>
   </div>
@@ -681,9 +672,6 @@
   <!-- TAB 4: SEASON PASSES -->
   <div id="passes" class="view-panel">
     <h2>🎟️ Manage Season Passes</h2>
-    <p style="font-size: 0.9rem; margin-bottom: 15px; color: var(--text-muted);">
-      Passes grant guaranteed participant points even if a player is absent.
-    </p>
 
     <div class="card">
       <h3>Assign New Pass</h3>
@@ -699,7 +687,7 @@
         </div>
 
         <div class="form-group">
-          <label>Or New Player Name (If Unregistered):</label>
+          <label>Or New Player Name:</label>
           <input type="text" id="passPlayerName" class="auto-suggest-input" placeholder="Type name only if not in dropdown">
         </div>
 
@@ -724,10 +712,10 @@
       <table class="lb-table">
         <thead>
           <tr>
-            <th>Player</th>
-            <th>Pass Type</th>
-            <th>Valid Match Range</th>
-            <th>Status</th>
+            <th style="text-align:left;">Player</th>
+            <th style="text-align:center;">Pass Type</th>
+            <th style="text-align:center;">Valid Match Range</th>
+            <th style="text-align:center;">Status</th>
           </tr>
         </thead>
         <tbody id="passesTableBody"></tbody>
@@ -790,7 +778,7 @@
             </div>
           </div>
 
-          <label>Select Bound Point Set Ruleset:</label>
+          <label>Select Ruleset:</label>
           <select id="newSeasonPointSetSelect" style="margin-bottom:12px;"></select>
 
           <button class="btn btn-primary" style="width:100%;" onclick="createNewSeason()">➕ Create Season</button>
@@ -811,7 +799,7 @@
         <h3>⚙️ Point Package Rulesets</h3>
         
         <div style="background: rgba(0,229,255,0.05); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 15px;">
-          <h4 style="color: var(--accent-cyan); margin-bottom: 6px; font-size: 0.95rem;">Active Season's Assigned Ruleset</h4>
+          <h4 style="color: var(--accent-cyan); margin-bottom: 6px; font-size: 0.95rem;">Active Season's Ruleset</h4>
           <div class="form-group" style="margin-bottom: 8px;">
             <select id="switchActiveSeasonPointSet" onchange="changeActiveSeasonPointSet(this.value)"></select>
           </div>
@@ -835,10 +823,10 @@
         </div>
 
         <div class="form-group">
-          <label>4th–8th Point Distribution Mode:</label>
+          <label>4th–8th Distribution Mode:</label>
           <select id="ps_mode_4to8" onchange="togglePointSetEditMode()">
             <option value="grouped">Grouped 4th–8th (Same Points)</option>
-            <option value="individual">Individual 4th, 5th, 6th, 7th, 8th Points (0 = Inactive)</option>
+            <option value="individual">Individual 4th, 5th, 6th, 7th, 8th Points</option>
           </select>
         </div>
 
@@ -858,29 +846,29 @@
         </div>
 
         <div id="ps_grouped_box" class="form-group">
-          <label>4th - 8th Place (Grouped, 0=Off):</label>
+          <label>4th - 8th Place (Grouped):</label>
           <input type="number" id="ps_p4_8" value="3" min="0">
         </div>
 
         <div id="ps_individual_box" class="grid-3" style="display:none; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; margin-bottom: 12px; border: 1px dashed var(--border-color);">
           <div class="form-group">
-            <label>4th Place (0=Off):</label>
+            <label>4th Place:</label>
             <input type="number" id="ps_p4" value="3" min="0">
           </div>
           <div class="form-group">
-            <label>5th Place (0=Off):</label>
+            <label>5th Place:</label>
             <input type="number" id="ps_p5" value="3" min="0">
           </div>
           <div class="form-group">
-            <label>6th Place (0=Off):</label>
+            <label>6th Place:</label>
             <input type="number" id="ps_p6" value="3" min="0">
           </div>
           <div class="form-group">
-            <label>7th Place (0=Off):</label>
+            <label>7th Place:</label>
             <input type="number" id="ps_p7" value="3" min="0">
           </div>
           <div class="form-group">
-            <label>8th Place (0=Off):</label>
+            <label>8th Place:</label>
             <input type="number" id="ps_p8" value="3" min="0">
           </div>
         </div>
@@ -898,11 +886,11 @@
 
         <div class="grid-2">
           <div class="form-group">
-            <label>⭐ Top Scorer Bonus (0 = Disabled):</label>
+            <label>⭐ Top Scorer Bonus:</label>
             <input type="number" id="ps_top_scorer" value="1" min="0">
           </div>
           <div class="form-group">
-            <label>🔄 Returnee Bonus (0 = Disabled):</label>
+            <label>🔄 Returnee Bonus:</label>
             <input type="number" id="ps_returnee" value="2" min="0">
           </div>
         </div>
@@ -923,7 +911,6 @@
 
     <div class="card" style="margin-top:20px;">
       <h3>Import / Export & System Controls</h3>
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Backup your leaderboard data or open it in Excel.</p>
       
       <div class="flex-gap" style="margin-bottom: 15px;">
         <button class="btn btn-primary" onclick="exportCSV()">📊 Export Standings (Excel CSV)</button>
@@ -938,6 +925,48 @@
       <hr style="border-color: var(--border-color); margin: 15px 0;">
 
       <button class="btn btn-danger" onclick="clearAllData()">⚠️ Clear All Data / System Reset</button>
+    </div>
+  </div>
+</div>
+
+<!-- SYSTEM GUIDE & RULES MODAL (ADMIN ACCESSIBLE) -->
+<div id="systemGuideModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="flex-gap" style="justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+      <h3 style="margin: 0; color: var(--accent-cyan);">ℹ️ Rules & System Reference Guide</h3>
+      <button class="btn btn-secondary" onclick="closeGuideModal()" style="padding: 4px 10px;">✕ Close</button>
+    </div>
+
+    <div class="guide-section">
+      <h4>🎯 Point Distribution & Rulesets</h4>
+      <p>Configure custom point packages for circuits. Placements set to <strong>0</strong> are treated as inactive, automatically hiding their input box from weekly scoring forms.</p>
+    </div>
+
+    <div class="guide-section">
+      <h4>🏆 Top Cut Stage vs Swiss</h4>
+      <p>Toggling <strong>Top Cut Stage: OFF</strong> hides all 9th+ top cut fields and omits the <em>Top Cuts</em> stat box from leaderboard quick views, streamlining Swiss or round-robin formats.</p>
+    </div>
+
+    <div class="guide-section">
+      <h4>⭐ Bonus Points Mechanics</h4>
+      <ul>
+        <li><strong>Top Scorer Bonus:</strong> Granted to top-fragging players per week. Affected by 2x multipliers during Double Points weeks.</li>
+        <li><strong>Automatic Returnee Bonus:</strong> Automatically awarded to players who attend after missing 3+ consecutive matches or who join late.</li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <h4>🎟️ Season Passes</h4>
+      <p>Guarantees participation points for every match within the valid match range (Silver: 5 matches, Gold: 10 matches), even when absent.</p>
+    </div>
+
+    <div class="guide-section">
+      <h4>🤝 Leaderboard Standings & Tiebreaking</h4>
+      <p>Tied players share their rank block and points cell cleanly. Ties are broken in order: <strong>Total Points → 1st Place Wins → Top Cuts → Matches Attended → Average Points/Match</strong>, with manual admin overrides available in the player drawer.</p>
+    </div>
+
+    <div class="flex-gap" style="justify-content: flex-end; margin-top: 15px;">
+      <button class="btn btn-primary" onclick="closeGuideModal()">Got It</button>
     </div>
   </div>
 </div>
@@ -1095,7 +1124,14 @@
     initGlobalAutocomplete();
   });
 
-  // Top Cut Toggle Handler in Editor
+  window.openGuideModal = function() {
+    document.getElementById("systemGuideModal").classList.add("active");
+  };
+
+  window.closeGuideModal = function() {
+    document.getElementById("systemGuideModal").classList.remove("active");
+  };
+
   window.toggleTopCutInEditor = function() {
     isEditorTopCutEnabled = !isEditorTopCutEnabled;
     const btn = document.getElementById("ps_topcut_toggle");
@@ -1159,7 +1195,7 @@
 
     set(dbRef, safeData).then(() => {
       statusEl.className = "status-pill status-online";
-      statusEl.textContent = "🟢 Cloud Live Sync Active";
+      statusEl.textContent = "🟢 Live Sync Active";
     }).catch(err => {
       console.error("Firebase save error:", err);
       statusEl.className = "status-pill";
@@ -1204,27 +1240,16 @@
 
   window.renderAll = function() {
     renderSeasonDropdown();
-    renderSeasonFilters();
     renderLeaderboard();
     renderPassSeasonDropdown();
     renderPassesTable();
     renderHistory();
     renderPointSetSelects();
     updateWeeklyFormLabels();
-    updateDatalistSuggestions();
     updateLivePlayerCount();
     
     const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
     if (currentSeason) {
-      const badge = document.getElementById('currentSeasonLabel');
-      if (currentSeason.isClosed) {
-        badge.textContent = `${currentSeason.name} (FINAL - CLOSED)`;
-        badge.classList.add("closed");
-      } else {
-        badge.textContent = currentSeason.name;
-        badge.classList.remove("closed");
-      }
-
       const closeBtn = document.getElementById("closeSeasonBtn");
       if (closeBtn) {
         closeBtn.textContent = currentSeason.isClosed ? "🔓 Re-open Season for Matches" : "🔒 Close Season / Mark as Finalized";
@@ -1237,26 +1262,12 @@
     }
   };
 
-  function updateDatalistSuggestions() {
-    const datalist = document.getElementById("registeredPlayersList");
-    if (!datalist) return;
-    datalist.innerHTML = "";
-
-    const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
-    if (currentSeason && currentSeason.players) {
-      Object.keys(currentSeason.players).sort().forEach(name => {
-        datalist.innerHTML += `<option value="${escapeHtml(name)}">`;
-      });
-    }
-  }
-
   function getRegisteredPlayerNames() {
     const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
     if (!currentSeason || !currentSeason.players) return [];
     return Object.keys(currentSeason.players).sort();
   }
 
-  // FLOATING AUTOCOMPLETE HANDLER FOR TEXTAREAS & INPUTS
   let activeAutoTarget = null;
   function initGlobalAutocomplete() {
     const popup = document.getElementById("floatingAutocomplete");
@@ -1308,7 +1319,7 @@
       popup.style.display = "block";
     });
 
-    document.addEventListener("blur", (e) => {
+    document.addEventListener("blur", () => {
       setTimeout(() => { popup.style.display = "none"; }, 200);
     }, true);
   }
@@ -1331,7 +1342,7 @@
     const names = getCurrentlyEnteredNames();
     const badge = document.getElementById("livePlayerCounterBadge");
     if (badge) {
-      badge.textContent = `👥 Total Players Entered: ${names.size}`;
+      badge.textContent = `👥 Total Players: ${names.size}`;
     }
   };
 
@@ -1357,7 +1368,7 @@
   function updateWeeklyFormLabels() {
     const ps = getActiveSeasonPointSet();
     
-    document.getElementById("activePointSetBadge").textContent = `Ruleset: ${ps.name} (${ps.mode4to8 === 'individual' ? 'Individual 4th-8th' : 'Grouped 4th-8th'})`;
+    document.getElementById("activePointSetBadge").textContent = `Ruleset: ${ps.name}`;
     document.getElementById("lbl_p1").textContent = `🥇 1st Place (${ps.p1} pts):`;
     document.getElementById("lbl_p2").textContent = `🥈 2nd Place (${ps.p2} pts):`;
     document.getElementById("lbl_p3").textContent = `🥉 3rd Place (${ps.p3} pts):`;
@@ -1570,7 +1581,7 @@
     };
 
     window.saveData();
-    alert(`Applied ruleset directly to ${currentSeason.name}! Quick views and standings updated.`);
+    alert(`Applied ruleset directly to ${currentSeason.name}!`);
   };
 
   window.deleteSelectedPointSet = function() {
@@ -1605,39 +1616,8 @@
     });
   };
 
-  function renderSeasonFilters() {
-    const lbContainer = document.getElementById("lbSeasonFilter");
-    const histContainer = document.getElementById("historySeasonFilter");
-
-    lbContainer.innerHTML = `<span style="font-size:0.85rem; color:var(--text-muted); align-self:center; font-weight:bold;">Filter Season:</span>`;
-    histContainer.innerHTML = `<span style="font-size:0.85rem; color:var(--text-muted); align-self:center; font-weight:bold;">Filter Season:</span>`;
-
-    Object.keys(window.appState.seasons).forEach(sId => {
-      const s = window.appState.seasons[sId];
-      const sLabel = s.isClosed ? `${s.name} (Closed)` : s.name;
-
-      const lbActive = sId === window.viewLeaderboardSeasonId ? "active" : "";
-      lbContainer.innerHTML += `<button class="season-subtab ${lbActive}" onclick="setLeaderboardSeason('${sId}')">${escapeHtml(sLabel)}</button>`;
-
-      const histActive = sId === window.viewHistorySeasonId ? "active" : "";
-      histContainer.innerHTML += `<button class="season-subtab ${histActive}" onclick="setHistorySeason('${sId}')">${escapeHtml(sLabel)}</button>`;
-    });
-  }
-
-  window.setLeaderboardSeason = function(sId) {
-    window.viewLeaderboardSeasonId = sId;
-    renderSeasonFilters();
-    renderLeaderboard();
-  };
-
-  window.setHistorySeason = function(sId) {
-    window.viewHistorySeasonId = sId;
-    renderSeasonFilters();
-    renderHistory();
-  };
-
   function getPassBadgeHtml(passObj) {
-    if (!passObj) return '—';
+    if (!passObj) return '';
     const passClass = passObj.type === 'gold' ? 'pass-gold' : 'pass-silver';
     return `<span class="pass-badge ${passClass}">${passObj.type.toUpperCase()}</span>`;
   }
@@ -1681,13 +1661,13 @@
   }
 
   function renderLeaderboard() {
-    const sId = window.viewLeaderboardSeasonId || window.appState.activeSeasonId;
+    const sId = window.appState.activeSeasonId;
     const currentSeason = window.appState.seasons[sId];
     const tbody = document.getElementById("leaderboardBody");
     tbody.innerHTML = "";
 
     if (!currentSeason || !currentSeason.players) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:20px;">No player standings recorded yet for this season.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:20px;">No player standings recorded yet for this season.</td></tr>`;
       return;
     }
 
@@ -1756,7 +1736,7 @@
     }
 
     if (sortedPlayers.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:20px;">No player standings recorded yet for this season.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:20px;">No player standings recorded yet for this season.</td></tr>`;
       return;
     }
 
@@ -1780,7 +1760,6 @@
 
     groupedStandings.forEach(group => {
       const groupSize = group.length;
-      const isTied = groupSize > 1;
       const displayRank = currentRankNumber;
 
       let rankLabel = `${displayRank}`;
@@ -1788,10 +1767,6 @@
       else if (displayRank === 2) rankLabel = `🥈 2nd`;
       else if (displayRank === 3) rankLabel = `🥉 3rd`;
       else rankLabel = `${displayRank}th`;
-
-      if (isTied) {
-        rankLabel += ` <span style="font-size:0.75rem; color:var(--accent-orange);">(Tied)</span>`;
-      }
 
       const totalPointsVal = group[0].player.totalPoints;
 
@@ -1851,6 +1826,8 @@
           </div>
         ` : '';
 
+        const passBadgeHtml = getPassBadgeHtml(player.pass);
+
         tbody.innerHTML += `
           <tr class="player-row ${isLastInGroup ? 'merged-group-border' : ''}" onclick="togglePlayerDrawer('${rowId}')">
             ${rankTdHtml}
@@ -1858,20 +1835,18 @@
             <td>
               <div class="player-cell-content">
                 <strong>${escapeHtml(player.name)}</strong>
-                <span class="expand-icon">👁️</span>
+                ${passBadgeHtml}
               </div>
             </td>
-            <td style="text-align: center;">${getPassBadgeHtml(player.pass)}</td>
             <td style="text-align: center;">${player.attendedCount}</td>
-            <td style="text-align: center;">${player.wins > 0 ? `🥇 ${player.wins}` : '0'}</td>
             ${ptsTdHtml}
           </tr>
           <tr class="details-row" id="${rowId}">
-            <td colspan="7">
+            <td colspan="5">
               <div class="details-container">
                 <div class="stat-box">
-                  <div class="val">${player.attendedCount}</div>
-                  <div class="lbl">Matches Played</div>
+                  <div class="val">${player.wins}</div>
+                  <div class="lbl">1st Place Wins</div>
                 </div>
                 ${topScorerStatBoxHtml}
                 ${topCutStatBoxHtml}
@@ -2247,9 +2222,9 @@
       tbody.innerHTML += `
         <tr>
           <td><strong>${escapeHtml(item.name)}</strong></td>
-          <td><span class="pass-badge ${passClass}">${p.type.toUpperCase()}</span></td>
-          <td>Matches W${p.startWeek} – W${p.endWeek}</td>
-          <td><span style="color:var(--accent-cyan);">Active</span></td>
+          <td style="text-align:center;"><span class="pass-badge ${passClass}">${p.type.toUpperCase()}</span></td>
+          <td style="text-align:center;">Matches W${p.startWeek} – W${p.endWeek}</td>
+          <td style="text-align:center;"><span style="color:var(--accent-cyan);">Active</span></td>
         </tr>
       `;
     });
@@ -2259,7 +2234,7 @@
     const playerSelect = document.getElementById("playerInspectSelect");
     if (!playerSelect) return;
 
-    const sId = window.viewHistorySeasonId || window.appState.activeSeasonId;
+    const sId = window.appState.activeSeasonId;
     const targetSeason = window.appState.seasons[sId];
 
     playerSelect.innerHTML = `<option value="">-- Select Player to Inspect --</option>`;
@@ -2280,7 +2255,7 @@
     if (!breakdownContainer || !playerSelect) return;
 
     const selectedPlayer = playerSelect.value;
-    const sId = window.viewHistorySeasonId || window.appState.activeSeasonId;
+    const sId = window.appState.activeSeasonId;
     const currentSeason = window.appState.seasons[sId];
 
     if (!selectedPlayer || !currentSeason) {
@@ -2356,7 +2331,7 @@
     container.innerHTML = "";
     overviewContainer.innerHTML = "";
 
-    const sId = window.viewHistorySeasonId || window.appState.activeSeasonId;
+    const sId = window.appState.activeSeasonId;
     const currentSeason = window.appState.seasons[sId];
 
     renderPlayerInspectDropdown();
@@ -2451,7 +2426,7 @@
       container.innerHTML += `
         <div class="card">
           <div class="flex-gap" style="justify-content: space-between; margin-bottom:8px;">
-            <h3>Week / Match ${log.weekNum} ${log.isDouble ? '🔥 (Double Points)' : ''}</h3>
+            <h3>Match ${log.weekNum} ${log.isDouble ? '🔥 (Double Points)' : ''}</h3>
             <div style="text-align: right;">
               <span style="font-size:0.85rem; color:var(--accent-cyan); font-weight:bold;">📅 ${log.matchDate || 'Date Not Set'}</span>
               ${adminControls}
@@ -2514,7 +2489,7 @@
     window.editingSeasonId = seasonId;
     window.editingWeekNum = weekNum;
 
-    document.getElementById("editModalHeader").textContent = `✏️ Edit Week/Match ${weekNum} Log`;
+    document.getElementById("editModalHeader").textContent = `✏️ Edit Match ${weekNum} Log`;
     const body = document.getElementById("editModalBody");
     body.innerHTML = "";
 
@@ -2523,7 +2498,7 @@
       rowsHtml += `
         <tr id="edit_row_${idx}">
           <td>
-            <input type="text" id="edit_name_${idx}" value="${escapeHtml(s.name)}" list="registeredPlayersList" style="padding:4px 8px; font-size:0.9rem;">
+            <input type="text" id="edit_name_${idx}" value="${escapeHtml(s.name)}" class="auto-suggest-input" style="padding:4px 8px; font-size:0.9rem;">
           </td>
           <td>
             <input type="text" id="edit_cat_${idx}" value="${escapeHtml(s.category)}" style="padding:4px 8px; font-size:0.9rem;">
@@ -2666,13 +2641,19 @@
   };
 
   function renderSeasonDropdown() {
-    const select = document.getElementById("seasonSelect");
-    select.innerHTML = "";
+    const headerSelect = document.getElementById("headerSeasonSelect");
+    const settingsSelect = document.getElementById("seasonSelect");
+    
+    headerSelect.innerHTML = "";
+    settingsSelect.innerHTML = "";
+
     Object.keys(window.appState.seasons).forEach(sId => {
       const s = window.appState.seasons[sId];
       const selected = sId === window.appState.activeSeasonId ? "selected" : "";
       const label = s.isClosed ? `${s.name} (Closed)` : s.name;
-      select.innerHTML += `<option value="${sId}" ${selected}>${escapeHtml(label)}</option>`;
+      
+      headerSelect.innerHTML += `<option value="${sId}" ${selected}>${escapeHtml(label)}</option>`;
+      settingsSelect.innerHTML += `<option value="${sId}" ${selected}>${escapeHtml(label)}</option>`;
     });
   }
 
@@ -2751,7 +2732,7 @@
   };
 
   window.exportCSV = function() {
-    const sId = window.viewLeaderboardSeasonId || window.appState.activeSeasonId;
+    const sId = window.appState.activeSeasonId;
     const currentSeason = window.appState.seasons[sId];
     let csv = "Rank,Player Name,Pass Status,Games Attended,Wins,Avg Pts/Match,Total Points\n";
 
