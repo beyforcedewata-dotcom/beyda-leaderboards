@@ -84,7 +84,7 @@
       background: var(--accent-orange);
       color: #fff;
       border: 1px solid rgba(255,255,255,0.3);
-      padding: 5px 12px;
+      padding: 5px 14px;
       border-radius: 20px;
       font-weight: bold;
       font-size: 0.88rem;
@@ -513,23 +513,33 @@
 
 <div class="container">
   <header>
+    <!-- Row 1: Logo & Title -->
     <div class="brand-header">
       <img src="logo.png" alt="Beyforce Dewata Logo" class="brand-logo">
       <h1>BEYFORCE LEADERBOARDS</h1>
     </div>
 
-    <div class="header-sub">
-      <div class="flex-gap">
-        <span style="font-weight: bold; font-size: 0.88rem;">Active Season:</span>
-        <select id="headerSeasonSelect" class="season-select-pill" onchange="switchSeason(this.value)"></select>
-      </div>
+    <!-- Row 2: Live Sync & Admin Login -->
+    <div class="header-sub" style="margin-bottom: 10px;">
       <span class="status-pill status-online" id="syncStatus">🟢 Live Sync Active</span>
       <button class="btn btn-secondary" id="adminAuthBtn" onclick="toggleAdminAuth()" style="padding: 4px 10px; font-size: 0.8rem;">
         🔒 Admin Login
       </button>
-      <button class="btn btn-secondary admin-locked" id="adminGuideBtn" onclick="openGuideModal()" style="padding: 4px 10px; font-size: 0.8rem;">
-        ℹ️ Rules & System Guide
-      </button>
+    </div>
+
+    <!-- Row 3: Active Season Dropdown -->
+    <div class="header-sub" style="flex-direction: column; gap: 8px;">
+      <div class="flex-gap" style="justify-content: center;">
+        <span style="font-weight: bold; font-size: 0.9rem;">Active Season:</span>
+        <select id="headerSeasonSelect" class="season-select-pill" onchange="switchSeason(this.value)"></select>
+      </div>
+
+      <!-- Row 4: Rules & System Guide (Only visible below Active Season after Admin Login) -->
+      <div style="margin-top: 2px;">
+        <button class="btn btn-secondary admin-locked" id="adminGuideBtn" onclick="openGuideModal()" style="padding: 4px 12px; font-size: 0.82rem; display: none;">
+          ℹ️ Rules & System Guide
+        </button>
+      </div>
     </div>
   </header>
 
@@ -1006,8 +1016,6 @@
   const ADMIN_PASSCODE = "1234";
   window.isAdminLoggedIn = false;
 
-  window.viewLeaderboardSeasonId = null;
-  window.viewHistorySeasonId = null;
   window.editingSeasonId = null;
   window.editingWeekNum = null;
 
@@ -1177,7 +1185,9 @@
       if (input === ADMIN_PASSCODE) {
         window.isAdminLoggedIn = true;
         document.getElementById("adminAuthBtn").innerHTML = "🔓 Admin Logout";
-        document.querySelectorAll(".admin-locked").forEach(el => el.style.display = "inline-block");
+        document.querySelectorAll(".admin-locked").forEach(el => {
+          el.style.display = el.tagName === "BUTTON" && el.id === "adminGuideBtn" ? "inline-flex" : "inline-block";
+        });
         window.renderAll();
         alert("Admin Mode Unlocked!");
       } else if (input !== null) {
@@ -1215,13 +1225,6 @@
         window.appState.pointSets = {
           "ps_std": { name: "Standard Circuit", hasTopCut: true, mode4to8: "grouped", p1: 6, p2: 5, p3: 4, p4_8: 3, p4: 3, p5: 3, p6: 3, p7: 3, p8: 3, p9_plus: 2, part: 1, topScorer: 1, returnee: 2 }
         };
-      }
-
-      if (!window.viewLeaderboardSeasonId || !window.appState.seasons[window.viewLeaderboardSeasonId]) {
-        window.viewLeaderboardSeasonId = window.appState.activeSeasonId;
-      }
-      if (!window.viewHistorySeasonId || !window.appState.seasons[window.viewHistorySeasonId]) {
-        window.viewHistorySeasonId = window.appState.activeSeasonId;
       }
 
       window.renderAll();
@@ -2128,7 +2131,7 @@
     document.getElementById("weekNumInput").value = weekNum + 1;
     updateLivePlayerCount();
 
-    alert(`Week ${weekNum} results saved!`);
+    alert(`Match ${weekNum} results saved!`);
     window.switchTab('leaderboard');
   };
 
@@ -2659,8 +2662,6 @@
 
   window.switchSeason = function(sId) {
     window.appState.activeSeasonId = sId;
-    window.viewLeaderboardSeasonId = sId;
-    window.viewHistorySeasonId = sId;
     window.saveData();
   };
 
@@ -2712,8 +2713,6 @@
     };
 
     window.appState.activeSeasonId = newId;
-    window.viewLeaderboardSeasonId = newId;
-    window.viewHistorySeasonId = newId;
 
     nameInput.value = "";
     window.saveData();
