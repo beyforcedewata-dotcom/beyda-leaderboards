@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BEYFORCE LEADERBOARDS</title>
-
-  <!-- TAB FAVICON ICON -->
   <link rel="icon" type="image/png" href="logo.png">
 
   <style>
@@ -38,7 +36,7 @@
     }
 
     .container {
-      max-width: 1000px;
+      max-width: 1050px;
       margin: 0 auto;
     }
 
@@ -103,7 +101,6 @@
       border: 1px solid #a0aec0;
     }
 
-    /* Tabs */
     .tabs {
       display: flex;
       gap: 10px;
@@ -137,7 +134,6 @@
       display: none;
     }
 
-    /* Sub-tabs for Seasons Filter */
     .season-filter-bar {
       display: flex;
       gap: 8px;
@@ -172,7 +168,6 @@
       border-color: var(--accent-orange);
     }
 
-    /* Views */
     .view-panel {
       display: none;
       background: var(--bg-card);
@@ -214,9 +209,9 @@
     .card {
       background: rgba(0, 0, 0, 0.3);
       border: 1px solid var(--border-color);
-      padding: 16px;
+      padding: 18px;
       border-radius: 6px;
-      margin-bottom: 15px;
+      margin-bottom: 18px;
     }
 
     .card-upcoming {
@@ -258,7 +253,6 @@
       box-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
     }
 
-    /* Buttons */
     .btn {
       padding: 9px 16px;
       border: none;
@@ -300,7 +294,6 @@
       border-color: var(--accent-orange);
     }
 
-    /* Clean Leaderboard Table */
     .lb-table {
       width: 100%;
       border-collapse: collapse;
@@ -308,11 +301,21 @@
     }
 
     .lb-table th {
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.45);
       color: var(--accent-cyan);
       font-weight: bold;
       padding: 12px 10px;
-      text-align: left;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    .lb-table td {
+      padding: 12px 10px;
+      vertical-align: middle;
+    }
+
+    .history-table th, .history-table td {
+      padding: 11px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .player-row {
@@ -324,14 +327,20 @@
       background: rgba(0, 229, 255, 0.05);
     }
 
-    .player-row td {
-      padding: 12px 10px;
+    .merged-group-border {
+      border-bottom: 2px solid var(--border-color) !important;
     }
 
-    /* Expandable Stats Drawer */
+    .player-cell-content {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
     .details-row {
       display: none;
-      background: rgba(2, 8, 20, 0.8);
+      background: rgba(2, 8, 20, 0.85);
       border-bottom: 2px solid var(--border-color);
     }
     .details-row.open {
@@ -339,7 +348,7 @@
     }
 
     .details-container {
-      padding: 12px 15px;
+      padding: 14px 15px;
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
@@ -350,14 +359,14 @@
     .stat-box {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-color);
-      padding: 8px 12px;
+      padding: 10px 14px;
       border-radius: 6px;
       text-align: center;
-      min-width: 90px;
+      min-width: 100px;
       flex: 1;
     }
     .stat-box .val {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: bold;
       color: var(--accent-cyan);
     }
@@ -365,15 +374,15 @@
       font-size: 0.72rem;
       color: var(--text-muted);
       text-transform: uppercase;
+      margin-top: 2px;
     }
 
     .expand-icon {
       color: var(--text-muted);
       font-size: 0.8rem;
-      margin-left: 6px;
+      margin-left: 4px;
     }
 
-    /* Progress bar for schedule */
     .progress-bar-bg {
       width: 100%;
       background: rgba(255,255,255,0.08);
@@ -390,14 +399,12 @@
       transition: width 0.4s ease;
     }
 
-    /* Rank Trend Badges */
     .trend-up { color: var(--accent-green); font-weight: bold; font-size: 0.88rem; }
     .trend-down { color: var(--accent-red); font-weight: bold; font-size: 0.88rem; }
     .trend-new { background: #ffd700; color: #000; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; display: inline-block; }
     .trend-same { color: var(--text-muted); font-size: 0.88rem; }
 
-    /* Medals & Badges */
-    .rank-1 { color: #ffd700; font-weight: bold; font-size: 1.1rem; }
+    .rank-1 { color: #ffd700; font-weight: bold; font-size: 1.05rem; }
     .rank-2 { color: #e0e0e0; font-weight: bold; font-size: 1.05rem; }
     .rank-3 { color: #cd7f32; font-weight: bold; font-size: 1.05rem; }
 
@@ -412,18 +419,6 @@
     }
     .pass-silver { background: #c0c0c0; color: #000; }
     .pass-gold { background: #ffd700; color: #000; }
-
-    .tie-badge {
-      background: rgba(255, 61, 0, 0.2);
-      color: #ff8c00;
-      border: 1px solid #ff8c00;
-      font-size: 0.7rem;
-      padding: 1px 6px;
-      border-radius: 3px;
-      font-weight: bold;
-      margin-left: 6px;
-      vertical-align: middle;
-    }
 
     .flex-gap {
       display: flex;
@@ -443,7 +438,6 @@
       border: 1px dashed var(--border-color);
     }
 
-    /* Live Player Counter Badge */
     .player-counter-badge {
       background: rgba(0, 229, 255, 0.15);
       border: 1px solid var(--accent-cyan);
@@ -454,7 +448,6 @@
       font-size: 0.88rem;
     }
 
-    /* Edit Match Modal */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -480,7 +473,6 @@
       box-shadow: 0 0 25px rgba(0, 229, 255, 0.25);
     }
 
-    /* RESPONSIVE MOBILE STYLES */
     @media (max-width: 768px) {
       body { padding: 10px; }
       header h1 { font-size: 1.5rem; }
@@ -496,10 +488,7 @@
 </head>
 <body>
 
-<!-- SUGGESTIONS DATALIST -->
-<datalist id="registeredPlayersList">
-  <!-- Populated dynamically -->
-</datalist>
+<datalist id="registeredPlayersList"></datalist>
 
 <div class="container">
   <header>
@@ -520,12 +509,9 @@
     </div>
   </header>
 
-  <!-- Navigation Tabs -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('leaderboard')">🏆 Live Leaderboard</button>
     <button class="tab-btn" onclick="switchTab('history')">📅 Schedule & History</button>
-    
-    <!-- Admin Restricted Tabs -->
     <button class="tab-btn admin-locked" id="tab_admin" onclick="switchTab('admin')">⚙️ Weekly Entry Panel</button>
     <button class="tab-btn admin-locked" id="tab_passes" onclick="switchTab('passes')">🎟️ Season Passes</button>
     <button class="tab-btn admin-locked" id="tab_seasons" onclick="switchTab('seasons')">📁 Seasons & Data Controls</button>
@@ -535,27 +521,22 @@
   <div id="leaderboard" class="view-panel active">
     <h2>🏆 Live Standings</h2>
     
-    <!-- Season Filter Sub-tabs -->
-    <div class="season-filter-bar" id="lbSeasonFilter">
-      <!-- Season tabs rendered dynamically -->
-    </div>
+    <div class="season-filter-bar" id="lbSeasonFilter"></div>
 
     <div>
       <table class="lb-table">
         <thead>
           <tr>
-            <th style="width: 8%;">Rank</th>
-            <th style="width: 12%;">Trend</th>
-            <th style="width: 33%;">Player Name</th>
-            <th style="width: 12%;">Pass</th>
-            <th style="width: 11%;">Attended</th>
-            <th style="width: 9%;">Wins</th>
-            <th style="width: 15%; text-align: right;">Total Pts</th>
+            <th style="width: 14%; text-align: center;">Rank</th>
+            <th style="width: 12%; text-align: center;">Trend</th>
+            <th style="width: 32%; text-align: left;">Player Name</th>
+            <th style="width: 12%; text-align: center;">Pass</th>
+            <th style="width: 10%; text-align: center;">Attended</th>
+            <th style="width: 8%; text-align: center;">Wins</th>
+            <th style="width: 12%; text-align: right;">Total Pts</th>
           </tr>
         </thead>
-        <tbody id="leaderboardBody">
-          <!-- Rendered dynamically -->
-        </tbody>
+        <tbody id="leaderboardBody"></tbody>
       </table>
     </div>
   </div>
@@ -564,36 +545,22 @@
   <div id="history" class="view-panel">
     <h2>📅 Season Roadmap & Match History</h2>
 
-    <!-- Season Filter Sub-tabs -->
-    <div class="season-filter-bar" id="historySeasonFilter">
-      <!-- Season tabs rendered dynamically -->
-    </div>
+    <div class="season-filter-bar" id="historySeasonFilter"></div>
 
-    <!-- Public Estimate Overview Card -->
-    <div id="seasonEstimateOverview" class="card" style="border-color: var(--accent-cyan); background: rgba(0, 229, 255, 0.03);">
-      <!-- Rendered dynamically -->
-    </div>
+    <div id="seasonEstimateOverview" class="card" style="border-color: var(--accent-cyan); background: rgba(0, 229, 255, 0.03);"></div>
 
-    <!-- PLAYER DETAILED MATCH BREAKDOWN CARD -->
     <div class="card" style="border-color: var(--accent-orange); background: rgba(255, 61, 0, 0.03);">
       <h3>🔍 Inspect Player Match Breakdown (Matches 1–10+)</h3>
       <div class="grid-2" style="margin-top: 10px;">
         <div class="form-group">
           <label>Select Player:</label>
-          <select id="playerInspectSelect" onchange="renderPlayerMatchBreakdown()">
-            <!-- Rendered dynamically -->
-          </select>
+          <select id="playerInspectSelect" onchange="renderPlayerMatchBreakdown()"></select>
         </div>
       </div>
-
-      <div id="playerBreakdownContainer">
-        <!-- Rendered dynamically -->
-      </div>
+      <div id="playerBreakdownContainer"></div>
     </div>
 
-    <div id="historyContainer">
-      <!-- Historical & upcoming records rendered dynamically -->
-    </div>
+    <div id="historyContainer"></div>
   </div>
 
   <!-- TAB 3: ADMIN WEEKLY ENTRY PANEL -->
@@ -623,21 +590,19 @@
       </button>
     </div>
 
-    <!-- Top Scorer & Returnee Bar -->
     <div class="top-scorer-bar">
       <div style="flex: 1;" id="topScorerInputBox">
         <label for="topScorerInput" style="margin-bottom: 4px;" id="lbl_top_scorer">⭐ Top Scorers (+1 pt Bonus):</label>
         <input type="text" id="topScorerInput" list="registeredPlayersList" placeholder="Separated by commas (e.g. Alex, Sam, Jo)" oninput="updateLivePlayerCount()">
-        <span style="font-size: 0.75rem; color: var(--text-muted);">Supports 2–4 players. Affected by 2x week multiplier.</span>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Supports multiple players. Affected by 2x multiplier.</span>
       </div>
       <div style="flex: 1; font-size: 0.85rem; color: var(--accent-cyan); background: rgba(0, 229, 255, 0.05); padding: 10px; border-radius: 4px; border: 1px solid var(--border-color);" id="returneeInfoBox">
         🔄 <strong id="lbl_returnee_info">Returnee Bonus (+2 pts) is Automatic!</strong><br>
-        Checks history to auto-grant pts to players returning after 3+ missed matches or joining late.
+        Auto-grants pts to players returning after 3+ missed matches or joining late.
       </div>
     </div>
 
     <div class="grid-2">
-      <!-- Placement Form -->
       <div class="card">
         <h3>Specific Placements <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(Multiple names allowed per slot)</span></h3>
         
@@ -656,19 +621,14 @@
           <textarea id="p3_input" placeholder="Enter player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
         </div>
 
-        <!-- DYNAMIC 4th-8th CONTAINER -->
-        <div id="dynamicPlacementContainer4to8">
-          <!-- Populated dynamically based on point package setting -->
-        </div>
+        <div id="dynamicPlacementContainer4to8"></div>
 
-        <!-- 9th+ TOP CUT CONTAINER (Hidden if 0 pts) -->
         <div class="form-group" id="group_p9_plus" style="margin-top:10px;">
           <label id="lbl_p9_plus">9th+ Top Cut (2 pts each):</label>
           <textarea id="p9_plus_input" placeholder="One name per line or separated by commas" oninput="updateLivePlayerCount()"></textarea>
         </div>
       </div>
 
-      <!-- Bulk Participants Input -->
       <div class="card">
         <h3>Bulk Participants & Quick Entry</h3>
         <p style="font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 10px;">
@@ -697,7 +657,7 @@
   <div id="passes" class="view-panel">
     <h2>🎟️ Manage Season Passes</h2>
     <p style="font-size: 0.9rem; margin-bottom: 15px; color: var(--text-muted);">
-      Passes grant a <strong>guaranteed participant point</strong> for every match played within the pass duration, even if the player is absent.
+      Passes grant guaranteed participant points even if a player is absent.
     </p>
 
     <div class="card">
@@ -705,16 +665,12 @@
       <div class="grid-2" style="margin-top: 10px;">
         <div class="form-group">
           <label>Select Season:</label>
-          <select id="passSeasonSelect" onchange="updatePassPlayerDropdown()">
-            <!-- Populated dynamically -->
-          </select>
+          <select id="passSeasonSelect" onchange="updatePassPlayerDropdown()"></select>
         </div>
 
         <div class="form-group">
           <label>Select Registered Player:</label>
-          <select id="passPlayerSelect">
-            <!-- Populated dynamically -->
-          </select>
+          <select id="passPlayerSelect"></select>
         </div>
 
         <div class="form-group">
@@ -749,9 +705,7 @@
             <th>Status</th>
           </tr>
         </thead>
-        <tbody id="passesTableBody">
-          <!-- Rendered dynamically -->
-        </tbody>
+        <tbody id="passesTableBody"></tbody>
       </table>
     </div>
   </div>
@@ -761,15 +715,12 @@
     <h2>📁 Season & System Data Management</h2>
     
     <div class="grid-2">
-      <!-- Season Controls -->
       <div class="card">
         <h3>Season Configuration & Schedule</h3>
         
         <div class="form-group" style="margin-top:10px;">
           <label>Switch Active Season:</label>
-          <select id="seasonSelect" onchange="switchSeason(this.value)">
-            <!-- Rendered dynamically -->
-          </select>
+          <select id="seasonSelect" onchange="switchSeason(this.value)"></select>
         </div>
 
         <div class="form-group" style="margin-top: 10px;">
@@ -780,7 +731,6 @@
 
         <hr style="border-color: var(--border-color); margin: 15px 0;">
 
-        <!-- Edit Active Season Schedule Config -->
         <div style="background: rgba(0, 0, 0, 0.2); padding: 10px; border-radius: 6px; margin-bottom: 15px;">
           <h4 style="color:var(--accent-cyan); font-size: 0.95rem; margin-bottom: 8px;">Active Season Schedule Config</h4>
           <div class="grid-2">
@@ -800,7 +750,6 @@
 
         <hr style="border-color: var(--border-color); margin: 15px 0;">
 
-        <!-- Create Season with Bound Point Set -->
         <div class="form-group">
           <label>Create New Season:</label>
           <input type="text" id="newSeasonNameInput" placeholder="Season Name (e.g. Season 2)" style="margin-bottom:8px;">
@@ -817,9 +766,7 @@
           </div>
 
           <label>Select Bound Point Set Ruleset:</label>
-          <select id="newSeasonPointSetSelect" style="margin-bottom:12px;">
-            <!-- Rendered dynamically -->
-          </select>
+          <select id="newSeasonPointSetSelect" style="margin-bottom:12px;"></select>
 
           <button class="btn btn-primary" style="width:100%;" onclick="createNewSeason()">➕ Create Season</button>
         </div>
@@ -835,17 +782,13 @@
         </div>
       </div>
 
-      <!-- Point Sets Creator & Active Package Manager -->
       <div class="card">
         <h3>⚙️ Point Package Rulesets</h3>
         
-        <!-- View/Edit Active Season Package -->
         <div style="background: rgba(0,229,255,0.05); padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 15px;">
           <h4 style="color: var(--accent-cyan); margin-bottom: 6px; font-size: 0.95rem;">Active Season's Assigned Ruleset</h4>
           <div class="form-group" style="margin-bottom: 8px;">
-            <select id="switchActiveSeasonPointSet" onchange="changeActiveSeasonPointSet(this.value)">
-              <!-- Rendered dynamically -->
-            </select>
+            <select id="switchActiveSeasonPointSet" onchange="changeActiveSeasonPointSet(this.value)"></select>
           </div>
           <button class="btn btn-mini" style="width: 100%; text-align: center;" onclick="loadPointSetIntoEditor()">
             ✏️ Load Current Package into Editor Below
@@ -853,8 +796,6 @@
         </div>
 
         <hr style="border-color: var(--border-color); margin: 12px 0;">
-
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Create a new package or edit an existing one:</p>
 
         <div class="form-group">
           <label>Package Name:</label>
@@ -884,13 +825,11 @@
           </div>
         </div>
 
-        <!-- Grouped Mode Box -->
         <div id="ps_grouped_box" class="form-group">
           <label>4th - 8th Place (Grouped, 0=Off):</label>
           <input type="number" id="ps_p4_8" value="3" min="0">
         </div>
 
-        <!-- Individual Mode Box (0 = Inactive) -->
         <div id="ps_individual_box" class="grid-3" style="display:none; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 6px; margin-bottom: 12px; border: 1px dashed var(--border-color);">
           <div class="form-group">
             <label>4th Place (0=Off):</label>
@@ -938,16 +877,18 @@
 
         <div class="flex-gap" style="margin-top:10px;">
           <button class="btn btn-primary" style="flex:1;" onclick="saveCustomPointSet()">
-            💾 Save / Update Point Set
+            💾 Save Package
           </button>
-          <button class="btn btn-danger" style="flex:1;" onclick="deleteSelectedPointSet()">
-            🗑️ Delete Point Set
+          <button class="btn btn-action" style="flex:1.2;" onclick="applyPointSetDirectlyToActiveSeason()">
+            🔄 Apply & Update Active Season
+          </button>
+          <button class="btn btn-danger" style="flex:0.8;" onclick="deleteSelectedPointSet()">
+            🗑️ Delete
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Export/Import Controls -->
     <div class="card" style="margin-top:20px;">
       <h3>Import / Export & System Controls</h3>
       <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Backup your leaderboard data or open it in Excel.</p>
@@ -969,7 +910,7 @@
   </div>
 </div>
 
-<!-- EDIT MATCH LOG MODAL (ADMIN) -->
+<!-- EDIT MATCH LOG MODAL -->
 <div id="editMatchModal" class="modal-overlay">
   <div class="modal-card">
     <div class="flex-gap" style="justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
@@ -977,9 +918,7 @@
       <button class="btn btn-secondary" onclick="closeEditModal()" style="padding: 4px 10px;">✕ Close</button>
     </div>
 
-    <div id="editModalBody">
-      <!-- Rendered dynamically -->
-    </div>
+    <div id="editModalBody"></div>
 
     <div class="flex-gap" style="margin-top: 20px; justify-content: flex-end;">
       <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
@@ -988,12 +927,10 @@
   </div>
 </div>
 
-<!-- FIREBASE MODULE SCRIPTS -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-  // Regional Firebase Database URL
   const firebaseConfig = {
     apiKey: "AIzaSyCEU08RVmLf1Sjdw8ALyN9ZwkzF76nJu9I",
     authDomain: "beyda-leaderboards.firebaseapp.com",
@@ -1013,7 +950,6 @@
   window.editingSeasonId = null;
   window.editingWeekNum = null;
 
-  // Firebase Key Sanitizer Helper
   function encodeFirebaseKey(key) {
     if (!key) return "";
     return key
@@ -1071,12 +1007,10 @@
     return cloned;
   }
 
-  // Initialize Firebase & Database
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const dbRef = ref(db, 'appState');
 
-  // App State Structure with Default Point Sets
   window.appState = {
     activeSeasonId: "s1",
     pointSets: {
@@ -1129,7 +1063,6 @@
     document.getElementById("ps_individual_box").style.display = mode === "individual" ? "grid" : "none";
   };
 
-  // Two-Step Delete Helper Function
   window.executeTwoStepDelete = function(actionDescription, onConfirmedCallback) {
     const step1Confirmed = confirm(`⚠️ DELETION CONFIRMATION (Step 1 of 2)\n\nAre you sure you want to ${actionDescription}?`);
     if (!step1Confirmed) return;
@@ -1142,7 +1075,6 @@
     }
   };
 
-  // Admin Toggle
   window.toggleAdminAuth = function() {
     if (window.isAdminLoggedIn) {
       window.isAdminLoggedIn = false;
@@ -1164,7 +1096,6 @@
     }
   };
 
-  // Sync to Firebase with safe serialization
   window.saveData = function() {
     const statusEl = document.getElementById("syncStatus");
     statusEl.className = "status-pill status-syncing";
@@ -1185,7 +1116,6 @@
     });
   };
 
-  // Real-time Cloud Listener with safe deserialization
   onValue(dbRef, (snapshot) => {
     const data = snapshot.val();
     if (data) {
@@ -1210,7 +1140,6 @@
     }
   });
 
-  // Navigation Tabs
   window.switchTab = function(tabId) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
@@ -1275,8 +1204,8 @@
     }
   };
 
-  function getActiveSeasonPointSet() {
-    const s = window.appState.seasons[window.appState.activeSeasonId];
+  function getActiveSeasonPointSet(seasonObj) {
+    const s = seasonObj || window.appState.seasons[window.appState.activeSeasonId];
     if (s && s.pointSetSnapshot) {
       return s.pointSetSnapshot;
     }
@@ -1421,7 +1350,7 @@
     document.getElementById("ps_returnee").value = ps.returnee !== undefined ? ps.returnee : 2;
 
     togglePointSetEditMode();
-    alert(`Loaded "${ps.name}" into editor below.`);
+    alert(`Loaded "${ps.name}" into editor.`);
   };
 
   window.saveCustomPointSet = function() {
@@ -1465,6 +1394,36 @@
     alert(`Saved Point Set: ${name}`);
   };
 
+  window.applyPointSetDirectlyToActiveSeason = function() {
+    const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
+    if (!currentSeason) return alert("No active season found.");
+
+    const name = document.getElementById("ps_name").value.trim() || "Active Custom Ruleset";
+    const mode4to8 = document.getElementById("ps_mode_4to8").value;
+    const p1 = parseInt(document.getElementById("ps_p1").value) || 0;
+    const p2 = parseInt(document.getElementById("ps_p2").value) || 0;
+    const p3 = parseInt(document.getElementById("ps_p3").value) || 0;
+
+    const p4_8 = parseInt(document.getElementById("ps_p4_8").value) || 0;
+    const p4 = parseInt(document.getElementById("ps_p4").value) || 0;
+    const p5 = parseInt(document.getElementById("ps_p5").value) || 0;
+    const p6 = parseInt(document.getElementById("ps_p6").value) || 0;
+    const p7 = parseInt(document.getElementById("ps_p7").value) || 0;
+    const p8 = parseInt(document.getElementById("ps_p8").value) || 0;
+
+    const p9_plus = parseInt(document.getElementById("ps_p9_plus").value) || 0;
+    const part = parseInt(document.getElementById("ps_part").value) || 0;
+    const topScorer = parseInt(document.getElementById("ps_top_scorer").value) || 0;
+    const returnee = parseInt(document.getElementById("ps_returnee").value) || 0;
+
+    currentSeason.pointSetSnapshot = {
+      name, mode4to8, p1, p2, p3, p4_8, p4, p5, p6, p7, p8, p9_plus, part, topScorer, returnee
+    };
+
+    window.saveData();
+    alert(`Applied ruleset directly to ${currentSeason.name}! Quick views and standings updated.`);
+  };
+
   window.deleteSelectedPointSet = function() {
     const activeSeasonSelect = document.getElementById("switchActiveSeasonPointSet");
     const psIdToDelete = activeSeasonSelect ? activeSeasonSelect.value : null;
@@ -1493,7 +1452,7 @@
       }
 
       window.saveData();
-      alert(`✅ Point Set "${psName}" successfully deleted.`);
+      alert(`✅ Point Set "${psName}" deleted.`);
     });
   };
 
@@ -1529,9 +1488,9 @@
   };
 
   function getPassBadgeHtml(passObj) {
-    if (!passObj) return '';
+    if (!passObj) return '—';
     const passClass = passObj.type === 'gold' ? 'pass-gold' : 'pass-silver';
-    return `<span class="pass-badge ${passClass}">${passObj.type.toUpperCase()} PASS</span>`;
+    return `<span class="pass-badge ${passClass}">${passObj.type.toUpperCase()}</span>`;
   }
 
   function calculateStandingsUpToWeek(seasonObj, maxWeekIndex) {
@@ -1572,7 +1531,6 @@
     return rankMap;
   }
 
-  // RENDER LEADERBOARD
   function renderLeaderboard() {
     const sId = window.viewLeaderboardSeasonId || window.appState.activeSeasonId;
     const currentSeason = window.appState.seasons[sId];
@@ -1583,6 +1541,10 @@
       tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:20px;">No player standings recorded yet for this season.</td></tr>`;
       return;
     }
+
+    const currentPs = getActiveSeasonPointSet(currentSeason);
+    const usesTopCut = (currentPs.p9_plus !== undefined ? currentPs.p9_plus : 2) > 0;
+    const usesTopScorer = (currentPs.topScorer !== undefined ? currentPs.topScorer : 1) > 0;
 
     const totalLogs = currentSeason.weeklyLogs ? currentSeason.weeklyLogs.length : 0;
     const previousWeekRanks = totalLogs > 1 ? calculateStandingsUpToWeek(currentSeason, totalLogs - 1) : {};
@@ -1609,7 +1571,7 @@
               playerStatsMap[pName] = { name: pName, totalPoints: 0, attendedCount: 0, wins: 0, topScorerCount: 0, topCutCount: 0, pass: null };
             }
 
-            const isPassGuarantee = s.category.includes('Pass Guarantee');
+            const isPassGuarantee = s.category && s.category.includes('Pass Guarantee');
             if (!isPassGuarantee) {
               playerStatsMap[pName].attendedCount += 1;
             }
@@ -1622,15 +1584,10 @@
       });
     }
 
-    let scoreCount = {};
-    Object.values(playerStatsMap).forEach(p => {
-      scoreCount[p.totalPoints] = (scoreCount[p.totalPoints] || 0) + 1;
-    });
-
     let sortedPlayers = Object.values(playerStatsMap).sort((a, b) => {
       if (b.totalPoints !== a.totalPoints) return b.totalPoints - a.totalPoints;
       if (b.wins !== a.wins) return b.wins - a.wins;
-      if (b.topCutCount !== a.topCutCount) return b.topCutCount - a.topCutCount;
+      if (usesTopCut && b.topCutCount !== a.topCutCount) return b.topCutCount - a.topCutCount;
       
       const avgA = a.attendedCount > 0 ? a.totalPoints / a.attendedCount : 0;
       const avgB = b.attendedCount > 0 ? b.totalPoints / b.attendedCount : 0;
@@ -1654,89 +1611,133 @@
       return;
     }
 
-    sortedPlayers.forEach((player, index) => {
-      const currentRank = index + 1;
-      let rankDisplay = currentRank;
-      if (currentRank === 1) rankDisplay = `<span class="rank-1">🥇 1st</span>`;
-      else if (currentRank === 2) rankDisplay = `<span class="rank-2">🥈 2nd</span>`;
-      else if (currentRank === 3) rankDisplay = `<span class="rank-3">🥉 3rd</span>`;
+    let groupedStandings = [];
+    let currentGroup = [];
+    let currentScore = null;
 
-      const pNameLower = player.name.toLowerCase();
-      let trendDisplay = `<span class="trend-same">—</span>`;
-
-      if (totalLogs <= 1) {
-        trendDisplay = `<span class="trend-new">⭐ NEW</span>`;
-      } else if (previousWeekRanks[pNameLower] === undefined) {
-        trendDisplay = `<span class="trend-new">⭐ NEW</span>`;
+    sortedPlayers.forEach((player, idx) => {
+      if (currentScore === null || player.totalPoints === currentScore) {
+        currentGroup.push({ player, rawIndex: idx });
+        currentScore = player.totalPoints;
       } else {
-        const prevRank = previousWeekRanks[pNameLower];
-        const diff = prevRank - currentRank;
+        groupedStandings.push(currentGroup);
+        currentGroup = [{ player, rawIndex: idx }];
+        currentScore = player.totalPoints;
+      }
+    });
+    if (currentGroup.length > 0) groupedStandings.push(currentGroup);
 
-        if (diff > 0) {
-          trendDisplay = `<span class="trend-up">🟢 ▲ ${diff}</span>`;
-        } else if (diff < 0) {
-          trendDisplay = `<span class="trend-down">🔴 ▼ ${Math.abs(diff)}</span>`;
+    let currentRankNumber = 1;
+
+    groupedStandings.forEach(group => {
+      const groupSize = group.length;
+      const isTied = groupSize > 1;
+      const displayRank = currentRankNumber;
+
+      let rankLabel = `${displayRank}`;
+      if (displayRank === 1) rankLabel = `🥇 1st`;
+      else if (displayRank === 2) rankLabel = `🥈 2nd`;
+      else if (displayRank === 3) rankLabel = `🥉 3rd`;
+      else rankLabel = `${displayRank}th`;
+
+      if (isTied) {
+        rankLabel += ` <span style="font-size:0.75rem; color:var(--accent-orange);">(Tied)</span>`;
+      }
+
+      const totalPointsVal = group[0].player.totalPoints;
+
+      group.forEach((item, itemIdx) => {
+        const player = item.player;
+        const rawIdx = item.rawIndex;
+        const pNameLower = player.name.toLowerCase();
+
+        let trendDisplay = `<span class="trend-same">—</span>`;
+        if (totalLogs <= 1) {
+          trendDisplay = `<span class="trend-new">⭐ NEW</span>`;
+        } else if (previousWeekRanks[pNameLower] === undefined) {
+          trendDisplay = `<span class="trend-new">⭐ NEW</span>`;
         } else {
-          trendDisplay = `<span class="trend-same">—</span>`;
+          const prevRank = previousWeekRanks[pNameLower];
+          const diff = prevRank - displayRank;
+          if (diff > 0) trendDisplay = `<span class="trend-up">🟢 ▲ ${diff}</span>`;
+          else if (diff < 0) trendDisplay = `<span class="trend-down">🔴 ▼ ${Math.abs(diff)}</span>`;
+          else trendDisplay = `<span class="trend-same">—</span>`;
         }
-      }
 
-      let passDisplay = `<span style="color:var(--text-muted); font-size:0.85rem;">None</span>`;
-      if (player.pass) {
-        const passClass = player.pass.type === 'gold' ? 'pass-gold' : 'pass-silver';
-        passDisplay = `<span class="pass-badge ${passClass}">${player.pass.type.toUpperCase()}</span>`;
-      }
+        const avgPts = player.attendedCount > 0 
+          ? (player.totalPoints / player.attendedCount).toFixed(2) 
+          : "0.00";
 
-      const isPointsTied = scoreCount[player.totalPoints] > 1;
-      const tieBadgeHtml = isPointsTied ? `<span class="tie-badge">🤝 TIED (${player.totalPoints} pts)</span>` : '';
+        const rowId = `drawer_${rawIdx}`;
+        const isFirstInGroup = itemIdx === 0;
+        const isLastInGroup = itemIdx === groupSize - 1;
 
-      const avgPts = player.attendedCount > 0 
-        ? (player.totalPoints / player.attendedCount).toFixed(2) 
-        : "0.00";
+        let rankTdHtml = isFirstInGroup 
+          ? `<td rowspan="${groupSize}" style="text-align:center; font-weight:bold; border-right: 1px solid rgba(255,255,255,0.05);">${rankLabel}</td>` 
+          : '';
 
-      const adminControlsHtml = window.isAdminLoggedIn ? `
-        <div style="margin-top: 10px; border-top: 1px dashed var(--border-color); padding-top: 8px;">
-          <span style="font-size:0.75rem; color:var(--text-muted); margin-right:8px;">Admin Manual Tiebreak:</span>
-          <button class="btn-mini" onclick="event.stopPropagation(); movePlayerRank('${sId}', ${index}, -1)">▲ Move Up</button>
-          <button class="btn-mini" onclick="event.stopPropagation(); movePlayerRank('${sId}', ${index}, 1)">▼ Move Down</button>
-        </div>
-      ` : '';
+        let ptsTdHtml = isFirstInGroup 
+          ? `<td rowspan="${groupSize}" style="text-align: right; color:var(--accent-cyan); font-weight:bold; font-size:1.15rem; border-left: 1px solid rgba(255,255,255,0.05);">${totalPointsVal} pts</td>` 
+          : '';
 
-      const rowId = `drawer_${index}`;
+        const adminControlsHtml = window.isAdminLoggedIn ? `
+          <div style="margin-top: 10px; border-top: 1px dashed var(--border-color); padding-top: 8px;">
+            <span style="font-size:0.75rem; color:var(--text-muted); margin-right:8px;">Admin Manual Sort:</span>
+            <button class="btn-mini" onclick="event.stopPropagation(); movePlayerRank('${sId}', ${rawIdx}, -1)">▲ Move Up</button>
+            <button class="btn-mini" onclick="event.stopPropagation(); movePlayerRank('${sId}', ${rawIdx}, 1)">▼ Move Down</button>
+          </div>
+        ` : '';
 
-      tbody.innerHTML += `
-        <tr class="player-row" onclick="togglePlayerDrawer('${rowId}')">
-          <td>${rankDisplay}</td>
-          <td>${trendDisplay}</td>
-          <td>
-            <strong>${escapeHtml(player.name)}</strong>${tieBadgeHtml}
-            <span class="expand-icon">👁️</span>
-          </td>
-          <td>${passDisplay}</td>
-          <td>${player.attendedCount}</td>
-          <td>${player.wins > 0 ? `🥇 ${player.wins}` : '0'}</td>
-          <td style="text-align: right; color:var(--accent-cyan); font-weight:bold; font-size:1.1rem;">${player.totalPoints} pts</td>
-        </tr>
-        <tr class="details-row" id="${rowId}">
-          <td colspan="7">
-            <div class="details-container">
-              <div class="stat-box">
-                <div class="val">${player.topScorerCount}</div>
-                <div class="lbl">Top Scorers (⭐)</div>
+        const topCutStatBoxHtml = usesTopCut ? `
+          <div class="stat-box">
+            <div class="val">${player.topCutCount}</div>
+            <div class="lbl">Top Cuts</div>
+          </div>
+        ` : '';
+
+        const topScorerStatBoxHtml = usesTopScorer ? `
+          <div class="stat-box">
+            <div class="val">${player.topScorerCount}</div>
+            <div class="lbl">Top Scorers (⭐)</div>
+          </div>
+        ` : '';
+
+        tbody.innerHTML += `
+          <tr class="player-row ${isLastInGroup ? 'merged-group-border' : ''}" onclick="togglePlayerDrawer('${rowId}')">
+            ${rankTdHtml}
+            <td style="text-align: center;">${trendDisplay}</td>
+            <td>
+              <div class="player-cell-content">
+                <strong>${escapeHtml(player.name)}</strong>
+                <span class="expand-icon">👁️</span>
               </div>
-              <div class="stat-box">
-                <div class="val">${player.topCutCount}</div>
-                <div class="lbl">Top Cuts</div>
+            </td>
+            <td style="text-align: center;">${getPassBadgeHtml(player.pass)}</td>
+            <td style="text-align: center;">${player.attendedCount}</td>
+            <td style="text-align: center;">${player.wins > 0 ? `🥇 ${player.wins}` : '0'}</td>
+            ${ptsTdHtml}
+          </tr>
+          <tr class="details-row" id="${rowId}">
+            <td colspan="7">
+              <div class="details-container">
+                <div class="stat-box">
+                  <div class="val">${player.attendedCount}</div>
+                  <div class="lbl">Matches Played</div>
+                </div>
+                ${topScorerStatBoxHtml}
+                ${topCutStatBoxHtml}
+                <div class="stat-box">
+                  <div class="val">${avgPts}</div>
+                  <div class="lbl">Avg Pts/Match</div>
+                </div>
               </div>
-              <div class="stat-box">
-                <div class="val">${avgPts}</div>
-                <div class="lbl">Avg Pts/Match</div>
-              </div>
-            </div>
-            ${adminControlsHtml}
-          </td>
-        </tr>
-      `;
+              ${adminControlsHtml}
+            </td>
+          </tr>
+        `;
+      });
+
+      currentRankNumber += groupSize;
     });
   }
 
@@ -1870,7 +1871,7 @@
     const ps = getActiveSeasonPointSet();
 
     if (currentSeason.isClosed) {
-      return alert("This season is marked as CLOSED. Please re-open it or switch to an active season in the Seasons tab before adding match results.");
+      return alert("This season is marked as CLOSED.");
     }
 
     const weekNum = parseInt(document.getElementById("weekNumInput").value) || 1;
@@ -1953,7 +1954,6 @@
 
     parseLineInputs(document.getElementById("bulkParticipantsInput").value).forEach(name => addPlayerScore(name, ps.part, "Participant"));
 
-    // Pass Guarantee Automation
     Object.keys(currentSeason.players).forEach(name => {
       const pObj = currentSeason.players[name];
       if (pObj.pass) {
@@ -2004,11 +2004,10 @@
     document.getElementById("weekNumInput").value = weekNum + 1;
     updateLivePlayerCount();
 
-    alert(`Week ${weekNum} results saved & synced to cloud!`);
+    alert(`Week ${weekNum} results saved!`);
     window.switchTab('leaderboard');
   };
 
-  // PASS SEASON & PLAYER DROPDOWNS
   function renderPassSeasonDropdown() {
     const seasonSelect = document.getElementById("passSeasonSelect");
     if (!seasonSelect) return;
@@ -2068,7 +2067,7 @@
     window.saveData();
     document.getElementById("passPlayerName").value = "";
     document.getElementById("passPlayerSelect").value = "";
-    alert(`Assigned ${type.toUpperCase()} pass to ${name} in ${targetSeason.name}.`);
+    alert(`Assigned ${type.toUpperCase()} pass to ${name}.`);
   };
 
   function renderPassesTable() {
@@ -2107,7 +2106,6 @@
     });
   }
 
-  // RENDER PLAYER INSPECT DROPDOWN
   function renderPlayerInspectDropdown() {
     const playerSelect = document.getElementById("playerInspectSelect");
     if (!playerSelect) return;
@@ -2127,7 +2125,6 @@
     renderPlayerMatchBreakdown();
   }
 
-  // RENDER DETAILED PLAYER MATCH BREAKDOWN
   window.renderPlayerMatchBreakdown = function() {
     const breakdownContainer = document.getElementById("playerBreakdownContainer");
     const playerSelect = document.getElementById("playerInspectSelect");
@@ -2138,7 +2135,7 @@
     const currentSeason = window.appState.seasons[sId];
 
     if (!selectedPlayer || !currentSeason) {
-      breakdownContainer.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding: 12px 0;">Select a player from the dropdown above to inspect their match-by-match score history.</p>`;
+      breakdownContainer.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding: 12px 0;">Select a player from the dropdown above to inspect their match history.</p>`;
       return;
     }
 
@@ -2189,7 +2186,7 @@
           <h4 style="color:var(--accent-cyan);">Breakdown for: <strong>${escapeHtml(selectedPlayer)}</strong></h4>
           <span style="color:var(--accent-cyan); font-weight:bold;">Total Season Score: ${totalScoreCalculated} pts</span>
         </div>
-        <table class="lb-table">
+        <table class="lb-table history-table">
           <thead>
             <tr>
               <th style="width: 20%;">Match #</th>
@@ -2204,7 +2201,6 @@
     `;
   };
 
-  // RENDER SCHEDULE & HISTORY
   function renderHistory() {
     const container = document.getElementById("historyContainer");
     const overviewContainer = document.getElementById("seasonEstimateOverview");
@@ -2287,7 +2283,7 @@
 
         return `
           <tr>
-            <td><strong>${escapeHtml(s.name)}</strong>${getPassBadgeHtml(s.pass)}</td>
+            <td><strong>${escapeHtml(s.name)}</strong>${s.pass ? ' ' + getPassBadgeHtml(s.pass) : ''}</td>
             <td>${s.category}</td>
             <td>${s.basePts} ${bonusLabel}</td>
             <td style="color:var(--accent-cyan); font-weight:bold;">+${s.earned} pts</td>
@@ -2313,13 +2309,13 @@
             </div>
           </div>
           <div>
-            <table class="lb-table">
+            <table class="lb-table history-table">
               <thead>
                 <tr>
-                  <th>Player</th>
-                  <th>Result Placement</th>
-                  <th>Base Points / Bonuses</th>
-                  <th>Total Earned</th>
+                  <th style="text-align:left;">Player</th>
+                  <th style="text-align:left;">Result Placement</th>
+                  <th style="text-align:left;">Base Points / Bonuses</th>
+                  <th style="text-align:left;">Total Earned</th>
                 </tr>
               </thead>
               <tbody>${rows}</tbody>
@@ -2336,7 +2332,7 @@
 
         const adminUpcomingDateControl = window.isAdminLoggedIn ? `
           <div style="margin-top:5px;">
-            <span style="font-size:0.75rem; color:var(--text-muted);">Override Scheduled Date:</span>
+            <span style="font-size:0.75rem; color:var(--text-muted);">Override Date:</span>
             <input type="date" value="${estDate}" onchange="updateUpcomingMatchDate('${sId}', ${mNum}, this.value)" style="width: auto; padding: 2px 6px; font-size: 0.8rem; display: inline-block;">
           </div>
         ` : '';
@@ -2359,7 +2355,6 @@
     }
   }
 
-  // MODAL EDIT LOGIC
   window.openEditMatchModal = function(seasonId, weekNum) {
     const season = window.appState.seasons[seasonId];
     if (!season || !season.weeklyLogs) return;
@@ -2470,7 +2465,6 @@
 
     log.scores = updatedScores;
 
-    // Recalculate Season Total Points & Attended Counts
     let recalculatedPlayers = {};
     season.weeklyLogs.forEach(wLog => {
       if (wLog.scores) {
@@ -2486,7 +2480,6 @@
       }
     });
 
-    // Retain passes
     if (season.players) {
       Object.keys(season.players).forEach(pName => {
         if (season.players[pName].pass) {
@@ -2500,7 +2493,7 @@
 
     window.saveData();
     closeEditModal();
-    alert("Match log and player standings updated successfully!");
+    alert("Match log updated successfully!");
   };
 
   window.updateLoggedMatchDate = function(seasonId, weekNum, newDate) {
@@ -2611,7 +2604,7 @@
   window.exportCSV = function() {
     const sId = window.viewLeaderboardSeasonId || window.appState.activeSeasonId;
     const currentSeason = window.appState.seasons[sId];
-    let csv = "Rank,Player Name,Pass Status,Games Attended,Wins,Top Scorers,Top Cuts,Avg Pts/Match,Total Points\n";
+    let csv = "Rank,Player Name,Pass Status,Games Attended,Wins,Avg Pts/Match,Total Points\n";
 
     if (currentSeason && currentSeason.players) {
       let sorted = Object.keys(currentSeason.players).map(n => ({
@@ -2620,7 +2613,8 @@
 
       sorted.forEach((p, idx) => {
         const passInfo = p.pass ? `${p.pass.type.toUpperCase()} (W${p.pass.startWeek}-W${p.pass.endWeek})` : "None";
-        csv += `${idx + 1},"${p.name}","${passInfo}",${p.attendedCount || 0},${p.totalPoints}\n`;
+        const avg = p.attendedCount > 0 ? (p.totalPoints / p.attendedCount).toFixed(2) : "0.00";
+        csv += `${idx + 1},"${p.name}","${passInfo}",${p.attendedCount || 0},${p.wins || 0},${avg},${p.totalPoints}\n`;
       });
     }
 
@@ -2641,9 +2635,9 @@
       try {
         const imported = JSON.parse(e.target.result);
         if (imported.seasons && imported.activeSeasonId) {
-          window.appState = deserializeStateFromFirebase(imported);
+          window.appState = imported;
           window.saveData();
-          alert("Leaderboard data restored and synced to cloud!");
+          alert("Leaderboard data restored and synced!");
         } else {
           alert("Invalid backup file structure.");
         }
@@ -2654,7 +2648,6 @@
     reader.readAsText(file);
   };
 
-  // Two-Step Security Deletion for Clear All Data / Reset
   window.clearAllData = function() {
     window.executeTwoStepDelete("PERMANENTLY CLEAR ALL DATABASE DATA & SYSTEM RESET", () => {
       window.appState = {
@@ -2683,7 +2676,7 @@
         }
       };
       window.saveData();
-      alert("💥 System Reset Complete! All leaderboard data cleared.");
+      alert("💥 System Reset Complete!");
     });
   };
 
