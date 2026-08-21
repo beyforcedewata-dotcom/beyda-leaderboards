@@ -33,6 +33,7 @@
       color: var(--text-white);
       padding: 20px;
       min-height: 100vh;
+      position: relative;
     }
 
     .container {
@@ -222,6 +223,7 @@
 
     .form-group {
       margin-bottom: 14px;
+      position: relative;
     }
 
     label {
@@ -448,6 +450,31 @@
       font-size: 0.88rem;
     }
 
+    /* Floating Autocomplete Dropdown */
+    .autocomplete-popup {
+      position: absolute;
+      background: #0d1b33;
+      border: 1px solid var(--accent-cyan);
+      border-radius: 4px;
+      max-height: 180px;
+      overflow-y: auto;
+      z-index: 10000;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+      display: none;
+    }
+    .autocomplete-item {
+      padding: 7px 12px;
+      cursor: pointer;
+      color: var(--text-white);
+      font-size: 0.9rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .autocomplete-item:hover, .autocomplete-item.selected {
+      background: var(--accent-cyan);
+      color: var(--bg-dark);
+      font-weight: bold;
+    }
+
     .modal-overlay {
       display: none;
       position: fixed;
@@ -489,6 +516,7 @@
 <body>
 
 <datalist id="registeredPlayersList"></datalist>
+<div id="floatingAutocomplete" class="autocomplete-popup"></div>
 
 <div class="container">
   <header>
@@ -520,7 +548,6 @@
   <!-- TAB 1: LIVE LEADERBOARD -->
   <div id="leaderboard" class="view-panel active">
     <h2>🏆 Live Standings</h2>
-    
     <div class="season-filter-bar" id="lbSeasonFilter"></div>
 
     <div>
@@ -544,9 +571,7 @@
   <!-- TAB 2: SCHEDULE & HISTORY LOGS -->
   <div id="history" class="view-panel">
     <h2>📅 Season Roadmap & Match History</h2>
-
     <div class="season-filter-bar" id="historySeasonFilter"></div>
-
     <div id="seasonEstimateOverview" class="card" style="border-color: var(--accent-cyan); background: rgba(0, 229, 255, 0.03);"></div>
 
     <div class="card" style="border-color: var(--accent-orange); background: rgba(255, 61, 0, 0.03);">
@@ -593,7 +618,7 @@
     <div class="top-scorer-bar">
       <div style="flex: 1;" id="topScorerInputBox">
         <label for="topScorerInput" style="margin-bottom: 4px;" id="lbl_top_scorer">⭐ Top Scorers (+1 pt Bonus):</label>
-        <input type="text" id="topScorerInput" list="registeredPlayersList" placeholder="Separated by commas (e.g. Alex, Sam, Jo)" oninput="updateLivePlayerCount()">
+        <input type="text" id="topScorerInput" class="auto-suggest-input" placeholder="Separated by commas (e.g. Alex, Sam, Jo)" oninput="updateLivePlayerCount()">
         <span style="font-size: 0.75rem; color: var(--text-muted);">Supports multiple players. Affected by 2x multiplier.</span>
       </div>
       <div style="flex: 1; font-size: 0.85rem; color: var(--accent-cyan); background: rgba(0, 229, 255, 0.05); padding: 10px; border-radius: 4px; border: 1px solid var(--border-color);" id="returneeInfoBox">
@@ -608,24 +633,24 @@
         
         <div class="form-group" id="group_p1">
           <label id="lbl_p1">🥇 1st Place (6 pts):</label>
-          <textarea id="p1_input" placeholder="Enter player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
+          <textarea id="p1_input" class="auto-suggest-input" placeholder="Enter player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
         </div>
 
         <div class="form-group" id="group_p2">
           <label id="lbl_p2">🥈 2nd Place (5 pts):</label>
-          <textarea id="p2_input" placeholder="Enter player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
+          <textarea id="p2_input" class="auto-suggest-input" placeholder="Enter player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
         </div>
 
         <div class="form-group" id="group_p3">
           <label id="lbl_p3">🥉 3rd Place (4 pts):</label>
-          <textarea id="p3_input" placeholder="Enter player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
+          <textarea id="p3_input" class="auto-suggest-input" placeholder="Enter player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
         </div>
 
         <div id="dynamicPlacementContainer4to8"></div>
 
         <div class="form-group" id="group_p9_plus" style="margin-top:10px;">
           <label id="lbl_p9_plus">9th+ Top Cut (2 pts each):</label>
-          <textarea id="p9_plus_input" placeholder="One name per line or separated by commas" oninput="updateLivePlayerCount()"></textarea>
+          <textarea id="p9_plus_input" class="auto-suggest-input" placeholder="One name per line or separated by commas" oninput="updateLivePlayerCount()"></textarea>
         </div>
       </div>
 
@@ -637,7 +662,7 @@
 
         <div class="form-group">
           <label id="lbl_part">Participants (1 pt each):</label>
-          <textarea id="bulkParticipantsInput" style="height: 160px;" placeholder="John Doe&#10;Jane Smith&#10;Alex" oninput="updateLivePlayerCount()"></textarea>
+          <textarea id="bulkParticipantsInput" class="auto-suggest-input" style="height: 160px;" placeholder="John Doe&#10;Jane Smith&#10;Alex" oninput="updateLivePlayerCount()"></textarea>
         </div>
 
         <div style="margin-top: 15px;">
@@ -675,7 +700,7 @@
 
         <div class="form-group">
           <label>Or New Player Name (If Unregistered):</label>
-          <input type="text" id="passPlayerName" list="registeredPlayersList" placeholder="Type name only if not in dropdown">
+          <input type="text" id="passPlayerName" class="auto-suggest-input" placeholder="Type name only if not in dropdown">
         </div>
 
         <div class="form-group">
@@ -803,6 +828,13 @@
         </div>
 
         <div class="form-group">
+          <label>Top Cut Stage (Playoffs):</label>
+          <button type="button" class="btn toggle-btn active" id="ps_topcut_toggle" onclick="toggleTopCutInEditor()" style="width:100%; justify-content:center;">
+            🏆 Top Cut Stage: ON
+          </button>
+        </div>
+
+        <div class="form-group">
           <label>4th–8th Point Distribution Mode:</label>
           <select id="ps_mode_4to8" onchange="togglePointSetEditMode()">
             <option value="grouped">Grouped 4th–8th (Same Points)</option>
@@ -854,12 +886,12 @@
         </div>
 
         <div class="grid-2">
-          <div class="form-group">
-            <label>Top Cut 9th+ (0 = Inactive):</label>
+          <div class="form-group" id="ps_topcut_points_box">
+            <label>Top Cut (9th+) Points:</label>
             <input type="number" id="ps_p9_plus" value="2" min="0">
           </div>
           <div class="form-group">
-            <label>Participant:</label>
+            <label>Participant Points:</label>
             <input type="number" id="ps_part" value="1">
           </div>
         </div>
@@ -950,6 +982,8 @@
   window.editingSeasonId = null;
   window.editingWeekNum = null;
 
+  let isEditorTopCutEnabled = true;
+
   function encodeFirebaseKey(key) {
     if (!key) return "";
     return key
@@ -1016,6 +1050,7 @@
     pointSets: {
       "ps_std": { 
         name: "Standard Circuit", 
+        hasTopCut: true,
         mode4to8: "grouped", 
         p1: 6, p2: 5, p3: 4, p4_8: 3, 
         p4: 3, p5: 3, p6: 3, p7: 3, p8: 3, 
@@ -1023,13 +1058,15 @@
       },
       "ps_major": { 
         name: "Major Championship (2x Base)", 
+        hasTopCut: true,
         mode4to8: "grouped", 
         p1: 12, p2: 10, p3: 8, p4_8: 6, 
         p4: 6, p5: 6, p6: 6, p7: 6, p8: 6, 
         p9_plus: 4, part: 2, topScorer: 2, returnee: 2 
       },
       "ps_individual": { 
-        name: "Gradual Circuit (Individual 4th-8th)", 
+        name: "Gradual Circuit (No Top Cut)", 
+        hasTopCut: false,
         mode4to8: "individual", 
         p1: 10, p2: 8, p3: 6, p4_8: 4, 
         p4: 5, p5: 4, p6: 3, p7: 2, p8: 0, 
@@ -1055,7 +1092,24 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("matchDateInput").value = new Date().toISOString().slice(0, 10);
+    initGlobalAutocomplete();
   });
+
+  // Top Cut Toggle Handler in Editor
+  window.toggleTopCutInEditor = function() {
+    isEditorTopCutEnabled = !isEditorTopCutEnabled;
+    const btn = document.getElementById("ps_topcut_toggle");
+    const box = document.getElementById("ps_topcut_points_box");
+    if (isEditorTopCutEnabled) {
+      btn.classList.add("active");
+      btn.innerHTML = "🏆 Top Cut Stage: ON";
+      box.style.display = "block";
+    } else {
+      btn.classList.remove("active");
+      btn.innerHTML = "🏆 Top Cut Stage: OFF";
+      box.style.display = "none";
+    }
+  };
 
   window.togglePointSetEditMode = function() {
     const mode = document.getElementById("ps_mode_4to8").value;
@@ -1123,7 +1177,7 @@
 
       if (!window.appState.pointSets) {
         window.appState.pointSets = {
-          "ps_std": { name: "Standard Circuit", mode4to8: "grouped", p1: 6, p2: 5, p3: 4, p4_8: 3, p4: 3, p5: 3, p6: 3, p7: 3, p8: 3, p9_plus: 2, part: 1, topScorer: 1, returnee: 2 }
+          "ps_std": { name: "Standard Circuit", hasTopCut: true, mode4to8: "grouped", p1: 6, p2: 5, p3: 4, p4_8: 3, p4: 3, p5: 3, p6: 3, p7: 3, p8: 3, p9_plus: 2, part: 1, topScorer: 1, returnee: 2 }
         };
       }
 
@@ -1196,6 +1250,83 @@
     }
   }
 
+  function getRegisteredPlayerNames() {
+    const currentSeason = window.appState.seasons[window.appState.activeSeasonId];
+    if (!currentSeason || !currentSeason.players) return [];
+    return Object.keys(currentSeason.players).sort();
+  }
+
+  // FLOATING AUTOCOMPLETE HANDLER FOR TEXTAREAS & INPUTS
+  let activeAutoTarget = null;
+  function initGlobalAutocomplete() {
+    const popup = document.getElementById("floatingAutocomplete");
+
+    document.addEventListener("input", (e) => {
+      const target = e.target;
+      if (!target.classList.contains("auto-suggest-input")) {
+        popup.style.display = "none";
+        return;
+      }
+
+      activeAutoTarget = target;
+      const text = target.value;
+      const cursorPos = target.selectionStart || text.length;
+      
+      const textBeforeCursor = text.slice(0, cursorPos);
+      const lastDelimiter = Math.max(textBeforeCursor.lastIndexOf("\n"), textBeforeCursor.lastIndexOf(","));
+      const currentQuery = textBeforeCursor.slice(lastDelimiter + 1).trim();
+
+      if (currentQuery.length === 0) {
+        popup.style.display = "none";
+        return;
+      }
+
+      const allPlayers = getRegisteredPlayerNames();
+      const matches = allPlayers.filter(p => p.toLowerCase().includes(currentQuery.toLowerCase()));
+
+      if (matches.length === 0) {
+        popup.style.display = "none";
+        return;
+      }
+
+      popup.innerHTML = "";
+      matches.slice(0, 6).forEach(m => {
+        const item = document.createElement("div");
+        item.className = "autocomplete-item";
+        item.textContent = m;
+        item.onmousedown = (ev) => {
+          ev.preventDefault();
+          selectAutocompleteSuggestion(m, lastDelimiter, cursorPos);
+        };
+        popup.appendChild(item);
+      });
+
+      const rect = target.getBoundingClientRect();
+      popup.style.left = `${window.scrollX + rect.left}px`;
+      popup.style.top = `${window.scrollY + rect.bottom + 2}px`;
+      popup.style.width = `${Math.min(rect.width, 280)}px`;
+      popup.style.display = "block";
+    });
+
+    document.addEventListener("blur", (e) => {
+      setTimeout(() => { popup.style.display = "none"; }, 200);
+    }, true);
+  }
+
+  function selectAutocompleteSuggestion(playerName, delimiterIndex, cursorPos) {
+    if (!activeAutoTarget) return;
+    const val = activeAutoTarget.value;
+    const before = val.slice(0, delimiterIndex + 1);
+    const after = val.slice(cursorPos);
+
+    const separator = (delimiterIndex >= 0 && val[delimiterIndex] === ',') ? ' ' : '';
+    activeAutoTarget.value = before + separator + playerName + (activeAutoTarget.tagName === "TEXTAREA" ? "\n" : ", ") + after.trimStart();
+    
+    document.getElementById("floatingAutocomplete").style.display = "none";
+    updateLivePlayerCount();
+    activeAutoTarget.focus();
+  }
+
   window.updateLivePlayerCount = function() {
     const names = getCurrentlyEnteredNames();
     const badge = document.getElementById("livePlayerCounterBadge");
@@ -1211,10 +1342,11 @@
     }
     const psId = (s && s.pointSetId) ? s.pointSetId : "ps_std";
     const ps = window.appState.pointSets[psId] || { 
-      name: "Standard Circuit", mode4to8: "grouped", p1: 6, p2: 5, p3: 4, p4_8: 3, 
+      name: "Standard Circuit", hasTopCut: true, mode4to8: "grouped", p1: 6, p2: 5, p3: 4, p4_8: 3, 
       p4: 3, p5: 3, p6: 3, p7: 3, p8: 3, p9_plus: 2, part: 1, topScorer: 1, returnee: 2 
     };
 
+    if (ps.hasTopCut === undefined) ps.hasTopCut = (ps.p9_plus > 0);
     if (ps.mode4to8 === undefined) ps.mode4to8 = "grouped";
     if (ps.topScorer === undefined) ps.topScorer = 1;
     if (ps.returnee === undefined) ps.returnee = 2;
@@ -1239,7 +1371,7 @@
           inputsHtml += `
             <div class="form-group">
               <label>${rankNum}th Place (${pts} pts):</label>
-              <textarea id="${fieldId}" placeholder="Player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
+              <textarea id="${fieldId}" class="auto-suggest-input" placeholder="Player name(s), comma or newline separated" oninput="updateLivePlayerCount()"></textarea>
             </div>
           `;
         }
@@ -1257,7 +1389,7 @@
         container4to8.innerHTML = `
           <div class="form-group">
             <label id="lbl_p4_8">4th - 8th Place (${ps.p4_8 || 3} pts each):</label>
-            <textarea id="p4_8_input" placeholder="One name per line or separated by commas" oninput="updateLivePlayerCount()"></textarea>
+            <textarea id="p4_8_input" class="auto-suggest-input" placeholder="One name per line or separated by commas" oninput="updateLivePlayerCount()"></textarea>
           </div>
         `;
       } else {
@@ -1266,10 +1398,10 @@
     }
 
     const p9Group = document.getElementById("group_p9_plus");
-    const p9Points = ps.p9_plus !== undefined ? ps.p9_plus : 2;
-    if (p9Points > 0) {
+    const hasTopCut = ps.hasTopCut !== false && (ps.p9_plus > 0);
+    if (hasTopCut) {
       p9Group.style.display = "block";
-      document.getElementById("lbl_p9_plus").textContent = `9th+ Top Cut (${p9Points} pts each):`;
+      document.getElementById("lbl_p9_plus").textContent = `9th+ Top Cut (${ps.p9_plus} pts each):`;
     } else {
       p9Group.style.display = "none";
     }
@@ -1302,7 +1434,8 @@
       Object.keys(window.appState.pointSets).forEach(psId => {
         const ps = window.appState.pointSets[psId];
         const modeLabel = ps.mode4to8 === 'individual' ? 'Indiv 4-8' : 'Grouped 4-8';
-        newSeasonSelect.innerHTML += `<option value="${psId}">${escapeHtml(ps.name)} (${modeLabel})</option>`;
+        const tcLabel = ps.hasTopCut ? 'With TopCut' : 'No TopCut';
+        newSeasonSelect.innerHTML += `<option value="${psId}">${escapeHtml(ps.name)} (${modeLabel}, ${tcLabel})</option>`;
       });
     }
 
@@ -1333,6 +1466,20 @@
     const ps = getActiveSeasonPointSet();
     document.getElementById("ps_name").value = ps.name;
     document.getElementById("ps_mode_4to8").value = ps.mode4to8 || "grouped";
+    
+    isEditorTopCutEnabled = ps.hasTopCut !== false;
+    const btn = document.getElementById("ps_topcut_toggle");
+    const box = document.getElementById("ps_topcut_points_box");
+    if (isEditorTopCutEnabled) {
+      btn.classList.add("active");
+      btn.innerHTML = "🏆 Top Cut Stage: ON";
+      box.style.display = "block";
+    } else {
+      btn.classList.remove("active");
+      btn.innerHTML = "🏆 Top Cut Stage: OFF";
+      box.style.display = "none";
+    }
+
     document.getElementById("ps_p1").value = ps.p1;
     document.getElementById("ps_p2").value = ps.p2;
     document.getElementById("ps_p3").value = ps.p3;
@@ -1357,6 +1504,7 @@
     const name = document.getElementById("ps_name").value.trim();
     if (!name) return alert("Enter point set name.");
 
+    const hasTopCut = isEditorTopCutEnabled;
     const mode4to8 = document.getElementById("ps_mode_4to8").value;
     const p1 = parseInt(document.getElementById("ps_p1").value) || 0;
     const p2 = parseInt(document.getElementById("ps_p2").value) || 0;
@@ -1369,7 +1517,7 @@
     const p7 = parseInt(document.getElementById("ps_p7").value) || 0;
     const p8 = parseInt(document.getElementById("ps_p8").value) || 0;
 
-    const p9_plus = parseInt(document.getElementById("ps_p9_plus").value) || 0;
+    const p9_plus = hasTopCut ? (parseInt(document.getElementById("ps_p9_plus").value) || 0) : 0;
     const part = parseInt(document.getElementById("ps_part").value) || 0;
     const topScorer = parseInt(document.getElementById("ps_top_scorer").value) || 0;
     const returnee = parseInt(document.getElementById("ps_returnee").value) || 0;
@@ -1386,7 +1534,7 @@
     }
 
     window.appState.pointSets[targetPsId] = { 
-      name, mode4to8, p1, p2, p3, p4_8, p4, p5, p6, p7, p8, p9_plus, part, topScorer, returnee 
+      name, hasTopCut, mode4to8, p1, p2, p3, p4_8, p4, p5, p6, p7, p8, p9_plus, part, topScorer, returnee 
     };
 
     document.getElementById("ps_name").value = "";
@@ -1399,6 +1547,7 @@
     if (!currentSeason) return alert("No active season found.");
 
     const name = document.getElementById("ps_name").value.trim() || "Active Custom Ruleset";
+    const hasTopCut = isEditorTopCutEnabled;
     const mode4to8 = document.getElementById("ps_mode_4to8").value;
     const p1 = parseInt(document.getElementById("ps_p1").value) || 0;
     const p2 = parseInt(document.getElementById("ps_p2").value) || 0;
@@ -1411,13 +1560,13 @@
     const p7 = parseInt(document.getElementById("ps_p7").value) || 0;
     const p8 = parseInt(document.getElementById("ps_p8").value) || 0;
 
-    const p9_plus = parseInt(document.getElementById("ps_p9_plus").value) || 0;
+    const p9_plus = hasTopCut ? (parseInt(document.getElementById("ps_p9_plus").value) || 0) : 0;
     const part = parseInt(document.getElementById("ps_part").value) || 0;
     const topScorer = parseInt(document.getElementById("ps_top_scorer").value) || 0;
     const returnee = parseInt(document.getElementById("ps_returnee").value) || 0;
 
     currentSeason.pointSetSnapshot = {
-      name, mode4to8, p1, p2, p3, p4_8, p4, p5, p6, p7, p8, p9_plus, part, topScorer, returnee
+      name, hasTopCut, mode4to8, p1, p2, p3, p4_8, p4, p5, p6, p7, p8, p9_plus, part, topScorer, returnee
     };
 
     window.saveData();
@@ -1543,7 +1692,7 @@
     }
 
     const currentPs = getActiveSeasonPointSet(currentSeason);
-    const usesTopCut = (currentPs.p9_plus !== undefined ? currentPs.p9_plus : 2) > 0;
+    const usesTopCut = currentPs.hasTopCut !== false && (currentPs.p9_plus > 0);
     const usesTopScorer = (currentPs.topScorer !== undefined ? currentPs.topScorer : 1) > 0;
 
     const totalLogs = currentSeason.weeklyLogs ? currentSeason.weeklyLogs.length : 0;
@@ -1571,7 +1720,7 @@
               playerStatsMap[pName] = { name: pName, totalPoints: 0, attendedCount: 0, wins: 0, topScorerCount: 0, topCutCount: 0, pass: null };
             }
 
-            const isPassGuarantee = s.category && s.category.includes('Pass Guarantee');
+            const isPassGuarantee = s.category.includes('Pass Guarantee');
             if (!isPassGuarantee) {
               playerStatsMap[pName].attendedCount += 1;
             }
@@ -1830,7 +1979,7 @@
     }
 
     const p9_el = document.getElementById("p9_plus_input");
-    if (p9_el && (ps.p9_plus !== undefined ? ps.p9_plus : 2) > 0) parseLineInputs(p9_el.value).forEach(add);
+    if (p9_el && ps.hasTopCut !== false && (ps.p9_plus || 0) > 0) parseLineInputs(p9_el.value).forEach(add);
 
     const part_el = document.getElementById("bulkParticipantsInput");
     if (part_el) parseLineInputs(part_el.value).forEach(add);
@@ -1946,10 +2095,10 @@
       if (p4_8_el && p4_8_pts > 0) parseLineInputs(p4_8_el.value).forEach(name => addPlayerScore(name, p4_8_pts, "4th-8th Place"));
     }
 
-    const p9Points = ps.p9_plus !== undefined ? ps.p9_plus : 2;
-    if (p9Points > 0) {
+    const hasTopCut = ps.hasTopCut !== false && (ps.p9_plus > 0);
+    if (hasTopCut) {
       const p9_el = document.getElementById("p9_plus_input");
-      if (p9_el) parseLineInputs(p9_el.value).forEach(name => addPlayerScore(name, p9Points, "9th+ Top Cut"));
+      if (p9_el) parseLineInputs(p9_el.value).forEach(name => addPlayerScore(name, ps.p9_plus, "9th+ Top Cut"));
     }
 
     parseLineInputs(document.getElementById("bulkParticipantsInput").value).forEach(name => addPlayerScore(name, ps.part, "Participant"));
@@ -2655,6 +2804,7 @@
         pointSets: {
           "ps_std": { 
             name: "Standard Circuit", 
+            hasTopCut: true,
             mode4to8: "grouped", 
             p1: 6, p2: 5, p3: 4, p4_8: 3, 
             p4: 3, p5: 3, p6: 3, p7: 3, p8: 3, 
